@@ -2,6 +2,7 @@ package controller;
 
 import java.util.Scanner;
 
+import model.portfolio.Portfolio;
 import model.user.UserData;
 import view.StocksView;
 
@@ -18,6 +19,7 @@ public class StockController {
   private final UserData userData;
   private final Readable in;
   private final StocksView out;
+  private final ControllerState state;
 
   /**
    * Create a controller that works with a specified UserData that contains
@@ -34,6 +36,7 @@ public class StockController {
     this.userData = userData;
     this.in = in;
     this.out = out;
+    this.state = ControllerState.START_MENU;
   }
 
   /**
@@ -47,11 +50,34 @@ public class StockController {
   private void processCommand(String userInstruction, Scanner sc, UserData userData) {
   }
 
-  private void writeMessage(String message) throws IllegalStateException {
-
+  private void writeMessage(String message) {
+    out.write(message);
   }
 
-  private void welcomeMessage() throws IllegalStateException {
+  private void printStartMenu() {
+    writeMessage("1: View Portfolios\n");
+    writeMessage("2: View Stocks\n");
+    quitPrompt();
+  }
 
+  private void printPortfolioMenu() {
+    writeMessage("1: Add Portfolio\n");
+    int portfolioIndex = 1;
+    for (Portfolio portfolio : userData.listPortfolios()) {
+      writeMessage(portfolioIndex++ + ": " + portfolio.getName());
+    }
+  }
+
+  private void welcomeMessage() {
+    writeMessage("Welcome to the virtual stocks program!\nChoose your input number.\n");
+    printStartMenu();
+  }
+
+  private void farewellMessage() {
+    writeMessage("Thanks for using our virtual stocks program!\n");
+  }
+
+  private void quitPrompt() {
+    writeMessage("q or quit to quit\n");
   }
 }
