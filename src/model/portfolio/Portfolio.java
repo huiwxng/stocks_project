@@ -54,8 +54,9 @@ public interface Portfolio {
    * Removes a stock from the portfolio.
    * @param ticker of the stock
    * @param shareAmt amount of shares to remove
+   * @return the number of shares removed
    */
-  void removeStock(String ticker, int shareAmt);
+  int removeStock(String ticker, int shareAmt);
 
   /**
    * Checks if the portfolio has stocks inside.

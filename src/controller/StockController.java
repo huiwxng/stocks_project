@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import model.portfolio.BasicPortfolio;
@@ -8,7 +9,6 @@ import model.portfolio.Portfolio;
 import model.portfolio.PortfolioCommand;
 import model.stock.Stock;
 import model.user.UserData;
-import view.StocksView;
 
 /**
  * This class represents the controller of an interactive virtual stocks application.
@@ -22,7 +22,7 @@ import view.StocksView;
 public class StockController {
   private final UserData userData;
   private final Readable in;
-  private final StocksView out;
+  private final Appendable out;
   private ControllerState state;
   private Stock currentStock;
   private Portfolio currentPortfolio;
@@ -35,7 +35,7 @@ public class StockController {
    * @param in       the Readable object for inputs
    * @param out      the Appendable object to transmit output
    */
-  public StockController(UserData userData, Readable in, StocksView out) {
+  public StockController(UserData userData, Readable in, Appendable out) {
     if ((userData == null) || (in == null) || (out == null)) {
       throw new IllegalArgumentException("Sheet, readable or appendable is null");
     }
@@ -50,12 +50,12 @@ public class StockController {
    *
    * @throws IllegalStateException if the controller is unable to transmit output
    */
-  public void control() throws IllegalStateException {
+  public void control() throws IllegalStateException, InterruptedException {
     Scanner scanner = new Scanner(in);
     this.welcomeMessage();
     while (this.state != ControllerState.QUIT) {
       printCurrentMenu();
-      writeMessage("Input number: ");
+      writeMessage("Select menu option: ");
       String userInput = scanner.next();
       processCommand(userInput, scanner);
     }
@@ -86,6 +86,7 @@ public class StockController {
         break;
       case "2":
         state = ControllerState.STOCK_MENU;
+        break;
       case "q":
       case "quit":
         state = ControllerState.QUIT;
@@ -102,7 +103,10 @@ public class StockController {
         String name = scanner.next();
         Portfolio portfolio = new BasicPortfolio(name);
         userData.addPortfolio(portfolio);
-        writeMessage(name + " portfolio created.");
+        writeMessage("------------------------------\n");
+        writeMessage(name + " portfolio created.\n");
+        state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
+        currentPortfolio = portfolio;
         break;
       case "r":
       case "return":
@@ -112,44 +116,42 @@ public class StockController {
       case "quit":
         state = ControllerState.QUIT;
         break;
-    }
-
-    int userInputNum = 0;
-    try {
-      userInputNum = Integer.parseInt(userInput);
-    } catch (NumberFormatException e) {
-      writeMessage("Invalid input. Please try again.\n");
-    }
-
-    if (userInputNum < 2 || userInputNum > userData.listPortfolios().size() + 1) {
-      writeMessage("Invalid input. Please try again.\n");
-    } else {
-      currentPortfolio = userData.listPortfolios().get(userInputNum - 2);
-      state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
+      default:
+        int userInputNum = 0;
+        try {
+          userInputNum = Integer.parseInt(userInput);
+          if (userInputNum >= 2 && userInputNum <= userData.listPortfolios().size() + 1) {
+            currentPortfolio = userData.listPortfolios().get(userInputNum - 2);
+            state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
+          } else {
+            writeMessage("There is no portfolio with that number.\n");
+          }
+        } catch (NumberFormatException e) {
+          writeMessage("Invalid menu option. Please try again.\n");
+        }
+        break;
     }
   }
 
   private void helpSpecificPortfolioMenu(String userInput, Scanner scanner) {
     switch (userInput) {
       case "1":
+        writeMessage("------------------------------\n");
         writeMessage("Stocks in current portfolio:\n");
         for (String stock : currentPortfolio.getStocksWithAmt()) {
-          writeMessage(stock + System.lineSeparator());
+          writeMessage(stock + "\n");
         }
         break;
       case "2":
-        boolean validDate = false;
-        while (!validDate) {
-          writeMessage("Date (YYYY-MM-DD): ");
-          String date = scanner.next();
-          PortfolioCommand<Double> command = new GetValueCommand(date);
-          try {
-            double value = command.execute(currentPortfolio);
-            writeMessage("Current portfolio value: " + value + System.lineSeparator());
-            validDate = true;
-          } catch (IllegalArgumentException e) {
-            writeMessage("Invalid date. Please try again.\n");
-          }
+        writeMessage("Date (YYYY-MM-DD): ");
+        String date = scanner.next();
+        PortfolioCommand<Double> command = new GetValueCommand(date);
+        try {
+          double value = command.execute(currentPortfolio);
+          writeMessage("------------------------------\n");
+          writeMessage("Portfolio value: " + value + "\n");
+        } catch (IllegalArgumentException e) {
+          writeMessage(e.getMessage() + "\n");
         }
         break;
       case "3":
@@ -160,9 +162,10 @@ public class StockController {
           boolean validShareCountToAdd = false;
           while (!validShareCountToAdd) {
             try {
-              writeMessage("New Stock Share Count: ");
+              writeMessage("Number of shares to add: ");
               int addedShareCount = Integer.parseInt(scanner.next());
               currentPortfolio.addStock(addedTicker, addedShareCount);
+              writeMessage("------------------------------\n");
               writeMessage("Added " + addedShareCount + " " + addedTicker + " to your portfolio.\n");
               validShareCountToAdd = true;
               validTickerToAdd = true;
@@ -183,10 +186,11 @@ public class StockController {
           boolean validShareCountToRemove = false;
           while (!validShareCountToRemove) {
             try {
-              writeMessage("Removed Stock Share Count: ");
+              writeMessage("Number of shares to remove: ");
               int removedShareCount = Integer.parseInt(scanner.next());
-              currentPortfolio.removeStock(removedTicker, removedShareCount);
-              writeMessage("Removed " + removedShareCount + " "
+              int remove = currentPortfolio.removeStock(removedTicker, removedShareCount);
+              writeMessage("------------------------------\n");
+              writeMessage("Removed " + remove + " "
                       + removedTicker + " from your portfolio.\n");
               validShareCountToRemove = true;
               validTickerToRemove = true;
@@ -201,6 +205,7 @@ public class StockController {
         break;
       case "5":
         userData.removePortfolio(currentPortfolio);
+        writeMessage("------------------------------\n");
         writeMessage("Portfolio " + currentPortfolio.getName() + " deleted.\n");
         state = ControllerState.PORTFOLIO_MENU;
         break;
@@ -217,13 +222,19 @@ public class StockController {
     }
   }
 
-  
+  private void helpStockMenu(String userInput, Scanner scanner) {
 
-  private void writeMessage(String message) {
-    out.write(message);
   }
 
-  private void printCurrentMenu() {
+  private void writeMessage(String message) throws IllegalStateException {
+    try {
+      out.append(message);
+    } catch (IOException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  private void printCurrentMenu() throws InterruptedException {
     switch (state) {
       case START_MENU:
         printStartMenu();
@@ -232,32 +243,37 @@ public class StockController {
         printPortfolioMenu();
         break;
       case SPECIFIC_PORTFOLIO_MENU:
+        Thread.sleep(500);
         printSpecificPortfolioMenu();
         break;
       case STOCK_MENU:
+        Thread.sleep(500);
         printStockMenu();
         break;
     }
   }
 
   private void printStartMenu() {
+    writeMessage("------------------------------\n");
     writeMessage("1: View Portfolios\n");
     writeMessage("2: View Stocks\n");
     quitPrompt();
   }
 
   private void printPortfolioMenu() {
+    writeMessage("------------------------------\n");
     writeMessage("1: Create Portfolio\n");
-    int portfolioIndex = 1;
+    int portfolioIndex = 2;
     for (Portfolio portfolio : userData.listPortfolios()) {
-      writeMessage(portfolioIndex++ + ": " + portfolio.getName());
+      writeMessage(portfolioIndex++ + ": " + portfolio.getName() + "\n");
     }
     returnPrompt();
     quitPrompt();
   }
 
   private void printSpecificPortfolioMenu() {
-    writeMessage(currentPortfolio.getName());
+    writeMessage("------------------------------\n");
+    writeMessage(currentPortfolio.getName() + "\n");
     writeMessage("1: View Stocks\n");
     writeMessage("2: Portfolio Value\n");
     writeMessage("3: Add Stock\n");
@@ -268,7 +284,8 @@ public class StockController {
   }
 
   private void printStockMenu() {
-    writeMessage(currentStock.getTicker());
+    writeMessage("------------------------------\n");
+    writeMessage(currentStock.getTicker() + "\n");
     writeMessage("1: Last Closing Price\n");
     writeMessage("2: Stock Value\n");
     writeMessage("3: Net Gain\n");
@@ -279,22 +296,22 @@ public class StockController {
   }
 
   private void welcomeMessage() {
-    writeMessage("""
-            Welcome to the virtual stocks program!
-            In menus that are numbered, input your number option.
-            Otherwise, type string input if prompted.
-            """);
+    writeMessage("------------------------------\n");
+    writeMessage("Welcome to the virtual stocks program!\n" +
+            "In menus that are numbered, input your number option.\n" +
+            "Otherwise, type string input if prompted.\n");
   }
 
   private void farewellMessage() {
+    writeMessage("------------------------------\n");
     writeMessage("Thanks for using our virtual stocks program!\n");
   }
 
   private void returnPrompt() {
-    writeMessage("r or return to go back\n");
+    writeMessage("(r or return to go back)\n");
   }
 
   private void quitPrompt() {
-    writeMessage("q or quit to quit\n");
+    writeMessage("(q or quit to quit)\n");
   }
 }

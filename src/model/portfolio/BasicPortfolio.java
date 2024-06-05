@@ -111,7 +111,10 @@ public class BasicPortfolio implements Portfolio {
    * @param ticker of the stock
    */
   @Override
-  public void removeStock(String ticker, int shareAmt) throws IllegalArgumentException {
+  public int removeStock(String ticker, int shareAmt) throws IllegalArgumentException {
+
+    int removed = 0;
+
     // checks if the portfolio is empty
     if (isEmpty()) {
       throw new IllegalArgumentException("There are no stocks in the portfolio.");
@@ -127,10 +130,14 @@ public class BasicPortfolio implements Portfolio {
     // the amount from the current, otherwise, remove the stock completely
     if (shareAmt < shares.get(i)) {
       shares.set(i, shares.get(i) - shareAmt);
+      removed = shareAmt;
     } else {
+      removed = shares.get(i);
       stocks.remove(i);
       shares.remove(i);
     }
+
+    return removed;
   }
 
   /**
