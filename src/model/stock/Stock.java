@@ -9,9 +9,8 @@ public interface Stock {
 
   /**
    * Gets the data (either from local files or the Alpha Vantage API
-   * @param ticker Stock symbol (ticker)
    */
-  void getData(String ticker);
+  void getData();
 
   /**
    * Gets the ticker of the stock object.

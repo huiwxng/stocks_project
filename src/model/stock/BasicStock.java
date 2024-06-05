@@ -1,5 +1,6 @@
 package model.stock;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,12 +11,11 @@ import java.util.List;
  */
 public class BasicStock implements Stock {
 
-  private String apiKey = "PV8JPCAV6GLG3Y73"; // api key for Alpha Vantage
   private String ticker; // stock symbol / ticker
-  private URL url; // url of the csv file
 
-  public Stock(String ticker) {
-    
+  public BasicStock(String ticker) {
+    this.ticker = ticker;
+    this.getData();
   }
 
   /**
@@ -24,21 +24,39 @@ public class BasicStock implements Stock {
    * @param ticker Stock symbol (ticker)
    */
   @Override
-  public void getData(String ticker) {
+  public void getData() {
+
+  }
+
+  private getDataFromAPI() {
+    String apiKey = "PV8JPCAV6GLG3Y73";
+    URL url;
+
     try {
       url = new URL("https://www.alphavantage"
               + ".co/query?function=TIME_SERIES_DAILY"
-              + "&outputsize=full"
-              + "&symbol"
-              + "=" + stockSymbol + "&apikey="+apiKey+"&datatype=csv");
+              + "&outputsize=full&symbol=" + ticker
+              + "&apikey=" + apiKey + "&datatype=csv");
     }
     catch (MalformedURLException e) {
-      throw new RuntimeException("the alphavantage API has either changed or "
+      throw new RuntimeException("the Alpha Vantage API has either changed or "
               + "no longer works");
     }
 
     InputStream in = null;
     StringBuilder output = new StringBuilder();
+
+    try {
+      in = url.openStream();
+      int b;
+
+      while ((b=in.read())!=-1) {
+        output.append((char)b);
+      }
+    }
+    catch (IOException e) {
+      throw new IllegalArgumentException("No price data found for "+stockSymbol);
+    }
   }
 
   /**
