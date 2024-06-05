@@ -19,7 +19,7 @@ public class BasicStock implements Stock {
 
   private String ticker; // stock symbol / ticker
   private List<String> dates;
-  private List<Double> closingPrices;
+  private List<Double> prices;
   private String path;
 
   public BasicStock(String ticker) {
@@ -35,7 +35,7 @@ public class BasicStock implements Stock {
    */
   @Override
   public String getTicker() {
-    return "";
+    return ticker;
   }
 
   /**
@@ -45,7 +45,11 @@ public class BasicStock implements Stock {
    */
   @Override
   public List<String> getAllClosingPrices() {
-    return List.of();
+    List<String> res = new ArrayList<>();
+    for (int i = 0; i < prices.size(); i++) {
+      res.add(String.format("%s: %d", dates[i], prices[i]));
+    }
+    return res;
   }
 
   /**
@@ -56,7 +60,8 @@ public class BasicStock implements Stock {
    */
   @Override
   public double getClosingPrice(String date) {
-    return 0;
+    int i = getIndex(date);
+    return prices.get(i);
   }
 
   /**
@@ -67,7 +72,12 @@ public class BasicStock implements Stock {
    */
   @Override
   public int getIndex(String date) {
-    return 0;
+    for (int i = 0; i < dates.size(); i++) {
+      if (dates.get(i).equals(date)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   /**
@@ -77,7 +87,7 @@ public class BasicStock implements Stock {
    */
   @Override
   public void execute(StockCommand cmd) {
-
+    cmd.execute(this);
   }
 
   private void getData() {
@@ -124,7 +134,7 @@ public class BasicStock implements Stock {
 
   private void readCSV() {
     dates = new ArrayList<>();
-    closingPrices = new ArrayList<>();
+    prices = new ArrayList<>();
 
     try {
       BufferedReader br = new BufferedReader(new FileReader(path));
@@ -137,7 +147,7 @@ public class BasicStock implements Stock {
       while ((line = br.readLine()) != null) {
         String[] values = line.split(",");
         dates.add(values[dateIndex]);
-        closingPrices.add(Double.parseDouble(values[closingIndex]));
+        prices.add(Double.parseDouble(values[closingIndex]));
       }
     } catch (IOException e) {
       System.err.println("Error reading file: " + e.getMessage());
@@ -146,13 +156,13 @@ public class BasicStock implements Stock {
     }
   }
 
-  private int findIndex(String[] headers, String label) {
-    for (int i = 0; i < headers.length; i++) {
-      if (headers[i].equalsIgnoreCase(label)) {
+  private int findIndex(String[] strList, String str) {
+    for (int i = 0; i < strList.length; i++) {
+      if (strList[i].equalsIgnoreCase(str)) {
         return i;
       }
     }
-    return 0;
+    return -1;
   }
 
   public static void main(String args[]) {
