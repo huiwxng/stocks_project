@@ -20,86 +20,12 @@ public class BasicStock implements Stock {
   private String ticker; // stock symbol / ticker
   private List<String> dates;
   private List<Double> closingPrices;
+  private String path;
 
   public BasicStock(String ticker) {
     this.ticker = ticker;
+    this.path = "res/data/" + ticker + ".csv";
     this.getData();
-  }
-
-  private void getData() {
-    String path = "/res/data/" + ticker + ".csv";
-    if (!Files.exists(Path.of(path))) {
-      getDataFromAPI();
-    }
-    readCSV(path);
-  }
-
-  private void getDataFromAPI() {
-    String apiKey = "PV8JPCAV6GLG3Y73";
-    URL url;
-
-    try {
-      url = new URL("https://www.alphavantage"
-              + ".co/query?function=TIME_SERIES_DAILY"
-              + "&outputsize=full&symbol=" + ticker
-              + "&apikey=" + apiKey + "&datatype=csv");
-    } catch (MalformedURLException e) {
-      throw new RuntimeException("the Alpha Vantage API has either changed or "
-              + "no longer works");
-    }
-
-    InputStream in = null;
-    StringBuilder output = new StringBuilder();
-
-    try {
-      in = url.openStream();
-      int b;
-
-      while ((b = in.read()) != -1) {
-        output.append((char) b);
-      }
-    } catch (IOException e) {
-      throw new IllegalArgumentException("No price data found for " + ticker);
-    }
-
-    try (FileWriter writer = new FileWriter("/res/data/" + ticker + ".csv")) {
-      writer.write(output.toString());
-    } catch (IOException e) {
-      System.err.println("Error writing to file: " + e.getMessage());
-    }
-  }
-
-  private void readCSV(String path) {
-    dates = new ArrayList<>();
-    closingPrices = new ArrayList<>();
-
-    try {
-      BufferedReader br = new BufferedReader(new FileReader(path));
-
-      String line = br.readLine();
-      String[] headers = line.split(",");
-      int dateIndex = findIndex(headers, "timestamp");
-      int closingIndex = findIndex(headers, "close");
-
-      while ((line = br.readLine()) != null) {
-        String[] values = line.split(",");
-        dates.add(values[dateIndex]);
-        closingPrices.add(Double.parseDouble(values[closingIndex]));
-      }
-    } catch (IOException e) {
-      System.err.println("Error reading file: " + e.getMessage());
-    } catch (NumberFormatException e) {
-      System.err.println("Error parsing number: " + e.getMessage());
-    }
-  }
-
-  private int findIndex(String[] headers, String label) {
-    for (int i = 0; i < headers.length; i++) {
-      if (headers[i].equalsIgnoreCase(label)) {
-        return i;
-      }
-    }
-    return 0;
   }
 
   /**
@@ -154,7 +80,92 @@ public class BasicStock implements Stock {
 
   }
 
+  private void getData() {
+    if (!Files.exists(Path.of(path))) {
+      getDataFromAPI();
+    }
+    readCSV();
+  }
+
+  private void getDataFromAPI() {
+    String apiKey = "PV8JPCAV6GLG3Y73";
+    URL url;
+
+    try {
+      url = new URL("https://www.alphavantage"
+              + ".co/query?function=TIME_SERIES_DAILY"
+              + "&outputsize=full&symbol=" + ticker
+              + "&apikey=" + apiKey + "&datatype=csv");
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("the Alpha Vantage API has either changed or "
+              + "no longer works");
+    }
+
+    InputStream in = null;
+    StringBuilder output = new StringBuilder();
+
+    try {
+      in = url.openStream();
+      int b;
+
+      while ((b = in.read()) != -1) {
+        output.append((char) b);
+      }
+    } catch (IOException e) {
+      throw new IllegalArgumentException("No price data found for " + ticker);
+    }
+
+    try (FileWriter writer = new FileWriter(path)) {
+      writer.write(output.toString());
+    } catch (IOException e) {
+      System.err.println("Error writing to file: " + e.getMessage());
+    }
+  }
+
+  private void readCSV() {
+    dates = new ArrayList<>();
+    closingPrices = new ArrayList<>();
+
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(path));
+
+      String line = br.readLine();
+      String[] headers = line.split(",");
+      int dateIndex = findIndex(headers, "timestamp");
+      int closingIndex = findIndex(headers, "close");
+
+      while ((line = br.readLine()) != null) {
+        String[] values = line.split(",");
+        dates.add(values[dateIndex]);
+        closingPrices.add(Double.parseDouble(values[closingIndex]));
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading file: " + e.getMessage());
+    } catch (NumberFormatException e) {
+      System.err.println("Error parsing number: " + e.getMessage());
+    }
+  }
+
+  private int findIndex(String[] headers, String label) {
+    for (int i = 0; i < headers.length; i++) {
+      if (headers[i].equalsIgnoreCase(label)) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
   public static void main(String args[]) {
-    Stock stock = new BasicStock("AAPL");
+    Stock Apple = new BasicStock("AAPL");
+    Stock Google = new BasicStock("GOOG");
+    Stock Nvidia = new BasicStock("NVDA");
+    Stock Amazon = new BasicStock("AMZN");
+    Stock Tesla = new BasicStock("TSLA");
+    Stock Meta = new BasicStock("META");
+    Stock Microsoft = new BasicStock("MSFT");
+    Stock JPMorgan = new BasicStock("JPM");
+    Stock HomeDepot = new BasicStock("HD");
+    Stock TSM = new BasicStock("TSM");
+    Stock Walmart = new BasicStock("WMT");
   }
 }
