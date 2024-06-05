@@ -1,9 +1,15 @@
 package model.stock;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +18,8 @@ import java.util.List;
 public class BasicStock implements Stock {
 
   private String ticker; // stock symbol / ticker
+  private List<String> dates;
+  private List<Double> closingPrices;
 
   public BasicStock(String ticker) {
     this.ticker = ticker;
@@ -20,15 +28,17 @@ public class BasicStock implements Stock {
 
   /**
    * Gets the data (either from local files or the Alpha Vantage API
-   *
-   * @param ticker Stock symbol (ticker)
    */
   @Override
   public void getData() {
-
+    String path = "/res/data/" + ticker + ".csv";
+    if (!Files.exists(Path.of(path))) {
+      getDataFromAPI();
+    }
+    readCSV(path);
   }
 
-  private getDataFromAPI() {
+  private void getDataFromAPI() {
     String apiKey = "PV8JPCAV6GLG3Y73";
     URL url;
 
@@ -50,12 +60,50 @@ public class BasicStock implements Stock {
       in = url.openStream();
       int b;
 
-      while ((b=in.read())!=-1) {
-        output.append((char)b);
+      while ((b = in.read())!=-1) {
+        output.append((char) b);
       }
     }
     catch (IOException e) {
-      throw new IllegalArgumentException("No price data found for "+stockSymbol);
+      throw new IllegalArgumentException("No price data found for " + ticker);
+    }
+
+    try (FileWriter writer = new FileWriter("/res/data/" + ticker + ".csv")) {
+      writer.write(output.toString());
+    } catch (IOException e) {
+      System.err.println("Error writing to file: " + e.getMessage());
+    }
+  }
+
+  private void readCSV(String path) {
+    dates = new ArrayList<>();
+    closingPrices = new ArrayList<>();
+
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(path);
+
+      String line = br.readLine();
+      String[] headers = line.split(",");
+      int dateIndex = findIndex(headers, "timestamp");
+      int closingIndex = findIndex(headers, "close");
+
+      while ((line = br.readLine()) != null) {
+        String[] values = line.split(",");
+        dates.add(values[dateIndex]);
+        closingPrices.add(Double.parseDouble(values[closingIndex]));
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading file: " + e.getMessage());
+    } catch (NumberFormatException e) {
+      System.err.println("Error parsing number: " + e.getMessage());
+    }
+  }
+
+  private int findIndex(String[] headers, String label) {
+    for (int i = 0; i < headers.length; i++) {
+      if (headers[i].equalsIgnoreCase(label)) {
+        return i;
+      }
     }
   }
 
