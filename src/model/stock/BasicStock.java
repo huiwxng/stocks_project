@@ -1,11 +1,22 @@
 package model.stock;
 
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
  * Basic implementation of the {@link Stock} interface.
  */
 public class BasicStock implements Stock {
+
+  private String apiKey = "PV8JPCAV6GLG3Y73"; // api key for Alpha Vantage
+  private String ticker; // stock symbol / ticker
+  private URL url; // url of the csv file
+
+  public Stock(String ticker) {
+    
+  }
 
   /**
    * Gets the data (either from local files or the Alpha Vantage API
@@ -14,7 +25,20 @@ public class BasicStock implements Stock {
    */
   @Override
   public void getData(String ticker) {
-    
+    try {
+      url = new URL("https://www.alphavantage"
+              + ".co/query?function=TIME_SERIES_DAILY"
+              + "&outputsize=full"
+              + "&symbol"
+              + "=" + stockSymbol + "&apikey="+apiKey+"&datatype=csv");
+    }
+    catch (MalformedURLException e) {
+      throw new RuntimeException("the alphavantage API has either changed or "
+              + "no longer works");
+    }
+
+    InputStream in = null;
+    StringBuilder output = new StringBuilder();
   }
 
   /**

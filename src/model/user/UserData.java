@@ -1,5 +1,7 @@
 package model.user;
 
+import java.util.List;
+
 import model.portfolio.Portfolio;
 
 /**
@@ -20,4 +22,10 @@ public interface UserData {
    * @param portfolio {@link Portfolio} object to remove from the data
    */
   void removePortfolio(Portfolio portfolio);
+
+  /**
+   * Gets a list of portfolios from the user's data.
+   * @return a list of {@link Portfolio} objects that the user holds.
+   */
+  List<Portfolio> listPortfolios();
 }
