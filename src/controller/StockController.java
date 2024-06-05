@@ -45,6 +45,11 @@ public class StockController {
    * @throws IllegalStateException if the controller is unable to transmit output
    */
   public void control() throws IllegalStateException {
+    Scanner sc = new Scanner(in);
+    this.welcomeMessage();
+    while (this.state != ControllerState.QUIT && sc.hasNext()) {
+
+    }
   }
 
   private void processCommand(String userInstruction, Scanner sc, UserData userData) {
@@ -61,11 +66,33 @@ public class StockController {
   }
 
   private void printPortfolioMenu() {
-    writeMessage("1: Add Portfolio\n");
+    writeMessage("1: Create Portfolio\n");
     int portfolioIndex = 1;
     for (Portfolio portfolio : userData.listPortfolios()) {
       writeMessage(portfolioIndex++ + ": " + portfolio.getName());
     }
+    returnPrompt();
+    quitPrompt();
+  }
+
+  private void printSpecificPortfolioMenu() {
+    writeMessage("1: View Stocks\n");
+    writeMessage("2: Portfolio Value\n");
+    writeMessage("3: Add Stock\n");
+    writeMessage("4: Remove Stock\n");
+    writeMessage("5: Delete Portfolio\n");
+    returnPrompt();
+    quitPrompt();
+  }
+
+  private void printStockMenu() {
+    writeMessage("1: Last Closing Price\n");
+    writeMessage("2: Stock Value\n");
+    writeMessage("3: Net Gain\n");
+    writeMessage("4: X-Day Moving Average\n");
+    writeMessage("5: X-Day Crossovers\n");
+    returnPrompt();
+    quitPrompt();
   }
 
   private void welcomeMessage() {
@@ -75,6 +102,10 @@ public class StockController {
 
   private void farewellMessage() {
     writeMessage("Thanks for using our virtual stocks program!\n");
+  }
+
+  private void returnPrompt() {
+    writeMessage("r or return to go back\n");
   }
 
   private void quitPrompt() {
