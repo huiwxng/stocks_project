@@ -43,8 +43,7 @@ public class BasicStock implements Stock {
               + ".co/query?function=TIME_SERIES_DAILY"
               + "&outputsize=full&symbol=" + ticker
               + "&apikey=" + apiKey + "&datatype=csv");
-    }
-    catch (MalformedURLException e) {
+    } catch (MalformedURLException e) {
       throw new RuntimeException("the Alpha Vantage API has either changed or "
               + "no longer works");
     }
@@ -56,11 +55,10 @@ public class BasicStock implements Stock {
       in = url.openStream();
       int b;
 
-      while ((b = in.read())!=-1) {
+      while ((b = in.read()) != -1) {
         output.append((char) b);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new IllegalArgumentException("No price data found for " + ticker);
     }
 
@@ -76,7 +74,7 @@ public class BasicStock implements Stock {
     closingPrices = new ArrayList<>();
 
     try {
-      BufferedReader br = new BufferedReader(new FileReader(path);
+      BufferedReader br = new BufferedReader(new FileReader(path));
 
       String line = br.readLine();
       String[] headers = line.split(",");
@@ -101,6 +99,7 @@ public class BasicStock implements Stock {
         return i;
       }
     }
+    return 0;
   }
 
   /**
@@ -153,5 +152,9 @@ public class BasicStock implements Stock {
   @Override
   public void execute(StockCommand cmd) {
 
+  }
+
+  public static void main(String args[]) {
+    Stock stock = new BasicStock("AAPL");
   }
 }
