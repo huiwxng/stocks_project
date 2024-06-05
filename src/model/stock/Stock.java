@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Interface that represents a singular stock.
  */
-interface Stock {
+public interface Stock {
 
   /**
    * Gets the data (either from local files or the Alpha Vantage API
