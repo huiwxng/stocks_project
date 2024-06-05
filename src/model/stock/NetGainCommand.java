@@ -29,7 +29,7 @@ public class NetGainCommand implements StockCommand<Double> {
     int startI = stock.getIndex(start);
     int endI = stock.getIndex(end);
     if (startI == -1 || endI == -1) {
-      throw new IllegalArgumentException("Data does not exist on this date.");
+      throw new IllegalArgumentException("No data found on this date.");
     }
     // if the end date is earlier than the start date, throw error
     // since the arrays go from most recent to oldest, the sign is flipped

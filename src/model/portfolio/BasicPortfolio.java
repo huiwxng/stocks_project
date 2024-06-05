@@ -27,7 +27,7 @@ public class BasicPortfolio implements Portfolio {
    * @param cmd PortfolioCommand to be executed.
    */
   @Override
-  public void execute(PortfolioCommand cmd) {
+  public <T> void executeReturn(PortfolioCommand<T> cmd) {
     cmd.execute(this);
   }
 
@@ -49,6 +49,16 @@ public class BasicPortfolio implements Portfolio {
   @Override
   public List<Stock> getStocks() {
     return new ArrayList<>(stocks);
+  }
+
+  /**
+   * Gets the list of share amounts of the stocks within the portfolio.
+   *
+   * @return a list of share amounts inside the portfolio
+   */
+  @Override
+  public List<Integer> getShares() {
+    return new ArrayList<>(shares);
   }
 
   /**

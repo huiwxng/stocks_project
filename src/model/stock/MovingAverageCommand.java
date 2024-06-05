@@ -34,7 +34,7 @@ public class MovingAverageCommand implements StockCommand<Double> {
   public Double execute(Stock stock) {
     int start = stock.getIndex(date);
     if (start == -1) {
-      throw new IllegalArgumentException("Data does not exist on this date.");
+      throw new IllegalArgumentException("No data found on this date.");
     }
 
     double total = 0;

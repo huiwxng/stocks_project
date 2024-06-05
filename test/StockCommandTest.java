@@ -1,7 +1,6 @@
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.stock.BasicStock;
@@ -11,8 +10,13 @@ import model.stock.NetGainCommand;
 import model.stock.Stock;
 import model.stock.StockCommand;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
+
+/**
+ * Test class to test the implementations of the {@link StockCommand} interface.
+ */
 public class StockCommandTest {
 
   Stock stock;

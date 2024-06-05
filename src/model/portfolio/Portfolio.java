@@ -3,6 +3,7 @@ package model.portfolio;
 import java.util.List;
 
 import model.stock.Stock;
+import model.stock.StockCommand;
 
 /**
  * Interface that represents a portfolio of stocks.
@@ -12,9 +13,10 @@ public interface Portfolio {
   /**
    * Takes in the object of PortfolioCommand and executes it onto a portfolio.
    *
-   * @param cmd PortfolioCommand to be executed.
+   * @param cmd PortfolioCommand to be executed
+   * @param <T> type of data to be returned
    */
-  void execute(PortfolioCommand cmd);
+  <T> void executeReturn(PortfolioCommand<T> cmd);
 
   /**
    * Gets the name of the portfolio.
@@ -28,6 +30,12 @@ public interface Portfolio {
    * @return a list of Stocks inside the portfolio
    */
   List<Stock> getStocks();
+
+  /**
+   * Gets the list of share amounts of the stocks within the portfolio.
+   * @return a list of share amounts inside the portfolio
+   */
+  List<Integer> getShares();
 
   /**
    * Gets the list of {@link Stock} objects within the portfolio along with the amount of shares.

@@ -32,7 +32,7 @@ public class CrossoverCommand implements StockCommand<List<String>> {
     int startI = stock.getIndex(start);
     int endI = stock.getIndex(end);
     if (startI == -1 || endI == -1) {
-      throw new IllegalArgumentException("Data does not exist on this date.");
+      throw new IllegalArgumentException("No data found on this date.");
     }
     if (startI < endI) {
       throw new IllegalArgumentException("The start date must be before the end date.");

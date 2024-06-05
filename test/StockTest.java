@@ -1,11 +1,10 @@
 import org.junit.Before;
 import org.junit.Test;
 
-import model.portfolio.Portfolio;
 import model.stock.BasicStock;
 import model.stock.Stock;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test class to test the implementations of the {@link Stock} interface.
