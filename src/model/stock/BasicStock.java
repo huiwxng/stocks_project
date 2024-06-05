@@ -26,11 +26,7 @@ public class BasicStock implements Stock {
     this.getData();
   }
 
-  /**
-   * Gets the data (either from local files or the Alpha Vantage API
-   */
-  @Override
-  public void getData() {
+  private void getData() {
     String path = "/res/data/" + ticker + ".csv";
     if (!Files.exists(Path.of(path))) {
       getDataFromAPI();
