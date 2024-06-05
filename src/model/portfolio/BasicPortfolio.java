@@ -11,9 +11,9 @@ import model.stock.Stock;
  */
 public class BasicPortfolio implements Portfolio {
 
-  private String name;
-  private List<Stock> stocks;
-  private List<Integer> shares;
+  private final String name;
+  private final List<Stock> stocks;
+  private final List<Integer> shares;
 
   public BasicPortfolio(String name) {
     this.name = name;
@@ -82,19 +82,27 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void addStock(String ticker, int shareAmt) {
+    if (shareAmt < 0) {
+      throw new IllegalArgumentException("Share amount cannot be negative.");
+    }
+
     // gets the index of the stock
     int i = getIndex(ticker);
 
     // if the stock does not exist already in the portfolio, add the stock and the
     // share amount, otherwise, add to the existing share amount
     if (i == -1) {
-      Stock stock = new BasicStock(ticker);
+      Stock stock;
+      try {
+        stock = new BasicStock(ticker);
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("A stock with this ticker does not exist.");
+      }
       stocks.add(stock);
       shares.add(shareAmt);
     } else {
       shares.set(i, shares.get(i) + shareAmt);
     }
-
   }
 
   /**
@@ -145,7 +153,7 @@ public class BasicPortfolio implements Portfolio {
     return -1;
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     // tests to write:
     // run getters at every step
     // test for an empty portfolio:

@@ -181,8 +181,9 @@ public class BasicStock implements Stock {
     return -1;
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
+    
     Stock Apple = new BasicStock("AAPL");
     Stock Google = new BasicStock("GOOG");
     Stock Nvidia = new BasicStock("NVDA");
