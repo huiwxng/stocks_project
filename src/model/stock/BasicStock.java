@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.MutableCallSite;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -45,12 +44,27 @@ public class BasicStock implements Stock {
    * @return a list of the closing prices.
    */
   @Override
-  public List<String> getAllClosingPrices() {
+  public List<String> getAllClosingPricesWithDates() {
     List<String> res = new ArrayList<>();
     for (int i = 0; i < prices.size(); i++) {
       res.add(String.format("%s: %.2f", dates.get(i), prices.get(i)));
     }
     return res;
+  }
+
+  @Override
+  public List<Double> getAllClosingPrices() {
+    return new ArrayList<>(prices);
+  }
+
+  /**
+   * Gets a list of all the valid dates.
+   *
+   * @return a list of dates
+   */
+  @Override
+  public List<String> getAllDates() {
+    return new ArrayList<>(dates);
   }
 
   /**
@@ -84,11 +98,11 @@ public class BasicStock implements Stock {
 
   /**
    * Executes a given stock command.
-   *
    * @param cmd stock command
+   * @param <T> return type of the command
    */
   @Override
-  public void execute(StockCommand cmd) {
+  public <T> void executeReturn(StockCommand<T> cmd) {
     cmd.execute(this);
   }
 
@@ -181,7 +195,7 @@ public class BasicStock implements Stock {
     Stock TSM = new BasicStock("TSM");
     Stock Walmart = new BasicStock("WMT");
     for (int i = 0; i < 10; i++) {
-      System.out.println(Apple.getAllClosingPrices().get(i));
+      System.out.println(Apple.getAllClosingPricesWithDates().get(i));
     }
     System.out.println(Apple.getClosingPrice("2002-01-10"));
     System.out.println(Google.getClosingPrice("2024-05-21"));

@@ -3,11 +3,11 @@ package model.stock;
 /**
  * Interface for stock commands.
  */
-public interface StockCommand {
+public interface StockCommand<T> {
 
   /**
    * Executes the command onto a {@link Stock} object.
    * @param stock {@link Stock} object
    */
-  void execute(Stock stock);
+  T execute(Stock stock);
 }

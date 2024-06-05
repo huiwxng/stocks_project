@@ -15,9 +15,21 @@ public interface Stock {
 
   /**
    * Gets a list of all the closing prices with the corresponding dates.
-   * @return a list of the closing prices.
+   * @return a list of the closing prices
    */
-  List<String> getAllClosingPrices();
+  List<String> getAllClosingPricesWithDates();
+
+  /**
+   * Gets a list of all the closing prices.
+   * @return a list of the closing prices
+   */
+  List<Double> getAllClosingPrices();
+
+  /**
+   * Gets a list of all the valid dates.
+   * @return a list of dates
+   */
+  List<String> getAllDates();
 
   /**
    * Gets the closing price of the stock on a specified date.
@@ -36,6 +48,7 @@ public interface Stock {
   /**
    * Executes a given stock command.
    * @param cmd stock command
+   * @param <T> return type of the command
    */
-  void execute(StockCommand cmd);
+  <T> void executeReturn(StockCommand<T> cmd);
 }
