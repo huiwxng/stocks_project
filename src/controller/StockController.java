@@ -1,7 +1,5 @@
 package controller;
 
-
-import java.io.StringReader;
 import java.util.Scanner;
 
 import model.user.UserData;
@@ -50,11 +48,10 @@ public class StockController {
   }
 
   private void writeMessage(String message) throws IllegalStateException {
-    try {
+
   }
 
   private void welcomeMessage() throws IllegalStateException {
-      
-    }
+
   }
 }
