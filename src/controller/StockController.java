@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 import model.portfolio.BasicPortfolio;
@@ -92,6 +94,7 @@ public class StockController {
         state = ControllerState.QUIT;
         break;
       default:
+        writeMessage("------------------------------\n");
         writeMessage("Invalid input. Please try again.\n");
     }
   }
@@ -124,9 +127,11 @@ public class StockController {
             currentPortfolio = userData.listPortfolios().get(userInputNum - 2);
             state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
           } else {
+            writeMessage("------------------------------\n");
             writeMessage("There is no portfolio with that number.\n");
           }
         } catch (NumberFormatException e) {
+          writeMessage("------------------------------\n");
           writeMessage("Invalid menu option. Please try again.\n");
         }
         break;
@@ -143,15 +148,24 @@ public class StockController {
         }
         break;
       case "2":
-        writeMessage("Date (YYYY-MM-DD): ");
-        String date = scanner.next();
-        PortfolioCommand<Double> command = new GetValueCommand(date);
-        try {
-          double value = command.execute(currentPortfolio);
-          writeMessage("------------------------------\n");
-          writeMessage("Portfolio value: " + value + "\n");
-        } catch (IllegalArgumentException e) {
-          writeMessage(e.getMessage() + "\n");
+        boolean validDate = false;
+        while (!validDate) {
+          writeMessage("Date (YYYY-MM-DD): ");
+          String date = scanner.next();
+          if (isValidDate(date)) {
+            PortfolioCommand<Double> command = new GetValueCommand(date);
+            try {
+              double value = command.execute(currentPortfolio);
+              writeMessage("------------------------------\n");
+              writeMessage("Portfolio value: " + value + "\n");
+            } catch (IllegalArgumentException e) {
+              writeMessage(e.getMessage() + " Please try again.\n");
+            }
+            validDate = true;
+          } else {
+            writeMessage("------------------------------\n");
+            writeMessage("Invalid date. Please try again.\n");
+          }
         }
         break;
       case "3":
@@ -170,8 +184,10 @@ public class StockController {
               validShareCountToAdd = true;
               validTickerToAdd = true;
             } catch (NumberFormatException e) {
+              writeMessage("------------------------------\n");
               writeMessage("Invalid stock share amount. Please try again.\n");
             } catch (IllegalArgumentException e) {
+              writeMessage("------------------------------\n");
               writeMessage("Invalid ticker or stock share amount. Please try again.\n");
               break;
             }
@@ -195,9 +211,11 @@ public class StockController {
               validShareCountToRemove = true;
               validTickerToRemove = true;
             } catch (NumberFormatException e) {
-              writeMessage("Invalid stock share amount. Please try again.\n");
+              writeMessage("------------------------------\n");
+              writeMessage("Stock share amount must be a whole number. Please try again.\n");
             } catch (IllegalArgumentException e) {
-              writeMessage("Invalid ticker or stock share amount. Please try again.\n");
+              writeMessage("------------------------------\n");
+              writeMessage(e.getMessage() + " Please try again.\n");
               break;
             }
           }
@@ -218,12 +236,13 @@ public class StockController {
         state = ControllerState.QUIT;
         break;
       default:
+        writeMessage("------------------------------\n");
         writeMessage("Invalid input. Please try again.\n");
     }
   }
 
   private void helpStockMenu(String userInput, Scanner scanner) {
-
+    
   }
 
   private void writeMessage(String message) throws IllegalStateException {
@@ -313,5 +332,14 @@ public class StockController {
 
   private void quitPrompt() {
     writeMessage("(q or quit to quit)\n");
+  }
+
+  private boolean isValidDate(String date) {
+    try {
+      LocalDate.parse(date);
+      return true;
+    } catch (DateTimeParseException e) {
+      return false;
+    }
   }
 }
