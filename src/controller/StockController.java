@@ -531,7 +531,7 @@ public class StockController {
   private void printStartMenu() {
     lineSeparator();
     writeMessage("1: View Portfolios\n");
-    writeMessage("2: View a Stock\n");
+    writeMessage("2: View Stocks\n");
     quitPrompt();
   }
 

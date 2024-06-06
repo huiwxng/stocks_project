@@ -38,7 +38,9 @@ public class StockControllerTest {
             + "1: View Portfolios\n"
             + "2: View Stocks\n"
             + "(q or quit to quit)\n"
-            + "Select menu option: ";
+            + "Select menu option: "
+            + "-------------------------------------------------\n"
+            + "Thanks for using our virtual stocks program!\n";
     assertEquals(expected, output);
   }
 }
