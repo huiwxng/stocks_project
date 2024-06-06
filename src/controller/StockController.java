@@ -173,7 +173,7 @@ public class StockController {
         addStocks(scanner);
         break;
       case "4":
-        removeStock(scanner);
+        removeStocks(scanner);
         break;
       case "5":
         deletePortfolio();
@@ -250,7 +250,7 @@ public class StockController {
     }
   }
 
-  private void removeStock(Scanner scanner) {
+  private void removeStocks(Scanner scanner) {
     boolean validTickerToRemove = false;
     while (!validTickerToRemove) {
       writeMessage("Stock Ticker (to be removed): ");
