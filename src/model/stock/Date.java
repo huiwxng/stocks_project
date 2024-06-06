@@ -1,5 +1,10 @@
 package model.stock;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * A class representing a date containing a day, month, and year.
  */
@@ -11,24 +16,64 @@ public class Date {
   private final int[] DAYS_IN_MONTH = new int[]{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
   /**
-   * Constructs a date given a day, month, and year and
+   * Constructs a date given a string in the format of 'YYYY-MM-DD' and
    * throws an IllegalArgumentException if the date is invalid.
    *
-   * @param day   the day of the month
-   * @param month the month of the year
-   * @param year  the year
-   * @throws IllegalArgumentException if the given date is invalid
+   * @param date String of the given day
+   * @throws IllegalArgumentException if the date is invalid or the date is before the current date
    */
-  public Date(int day, int month, int year) throws IllegalArgumentException {
-    this.day = day;
-    this.month = month;
-    this.year = year;
-    if (!isValidDate(day, month, year)) {
-      throw new IllegalArgumentException();
+  public Date(String date) throws IllegalArgumentException {
+    List<Integer> arr = parseDate(date);
+    this.year = arr.get(0);
+    this.month = arr.get(1);
+    this.day = arr.get(2);
+
+    if (!beforeToday()) {
+      throw new IllegalArgumentException("We cannot check for days in the future.");
     }
   }
 
-  private boolean isValidDate(int day, int month, int year) {
+  private List<Integer> parseDate(String date) {
+    String[] parts = date.split("-");
+
+    int year = Integer.parseInt(parts[0]);
+    int month = Integer.parseInt(parts[1]);
+    int day = Integer.parseInt(parts[2]);
+
+    if (!isValidDate(year, month, day)) {
+      throw new IllegalArgumentException("This is not a valid date.");
+    }
+
+    List<Integer> res = new ArrayList<>();
+    res.add(year);
+    res.add(month);
+    res.add(day);
+
+    return res;
+  }
+
+  private boolean beforeToday() {
+    LocalDate today = LocalDate.now();
+    String td = today.toString();
+    List<Integer> curr = parseDate(td);
+    int currYear = curr.get(0);
+    int currMonth = curr.get(1);
+    int currDay = curr.get(2);
+
+    if (year < currYear) {
+      return true;
+    } else if (year == currYear) {
+      if (month < currMonth) {
+        return true;
+      } else if (month == currMonth) {
+        return day <= currDay;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  private boolean isValidDate(int year, int month, int day) {
     if (day < 1 || month < 1 || month > 12 || year < 0) {
       return false;
     } else if (isLeapYear(year) && month == 2) {
@@ -103,5 +148,9 @@ public class Date {
    */
   public String toString() {
     return String.format("%04d-%02d-%02d", year, month, day);
+  }
+
+  public static void main(String[] args) {
+    Date date = new Date("2024-06-05");
   }
 }
