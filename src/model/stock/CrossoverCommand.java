@@ -84,4 +84,14 @@ public class CrossoverCommand implements StockCommand<List<String>> {
       throw new IllegalArgumentException("The start date must be before the end date.");
     }
   }
+
+  private String advanceStart(String start) {
+    List<String> dates = stock.getAllDates();
+    String oldest = dates.get(dates.size() - 1);
+    Date startDate = new Date(start);
+
+    while (startDate.isBefore(oldest)) {
+      startDate.advance(1);
+    }
+  }
 }

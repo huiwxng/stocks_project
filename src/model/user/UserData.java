@@ -3,6 +3,7 @@ package model.user;
 import java.util.List;
 
 import model.portfolio.Portfolio;
+import model.stock.Stock;
 
 /**
  * Interface that represents all of a user's portfolios.
@@ -28,4 +29,11 @@ public interface UserData {
    * @return a list of {@link Portfolio} objects that the user holds.
    */
   List<Portfolio> listPortfolios();
+
+  /**
+   * Gets a stock that the user is currently viewing.
+   * @param ticker of the stock
+   * @return a stock object
+   */
+  Stock viewStock(String ticker);
 }

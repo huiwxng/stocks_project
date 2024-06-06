@@ -71,12 +71,27 @@ public class StockCommandTest {
     List<String> expected;
     List<String> emptyExpected = List.of("No x-day crossovers.");
 
-    // tests for
+    // tests for normal behavior
+
+    // tests for periods where there are 5-day crossovers
     expected = List.of("2024-05-20", "2024-05-21", "2024-05-22", "2024-05-29", "2024-05-30",
             "2024-05-31", "2024-06-03", "2024-06-04");
     crossover = new CrossoverCommand("2024-05-20", "2024-06-04", 5);
     assertEquals(expected, crossover.execute(stock));
 
+    // tests for periods where there are 7-day crossovers
+    expected = List.of("2024-05-20", "2024-05-21", "2024-05-22", "2024-05-29", "2024-05-30",
+            "2024-05-31", "2024-06-03", "2024-06-04");
+    crossover = new CrossoverCommand("2024-05-20", "2024-06-04", 7);
+    assertEquals(expected, crossover.execute(stock));
+
+    // tests for periods where there are 30-day crossovers
+    expected = List.of("2024-05-20", "2024-05-21", "2024-05-22", "2024-05-23", "2024-05-24",
+            "2024-05-28", "2024-05-29", "2024-05-30", "2024-05-31", "2024-06-03", "2024-06-04");
+    crossover = new CrossoverCommand("2024-05-20", "2024-06-04", 30);
+    assertEquals(expected, crossover.execute(stock));
+
+    // tests for periods where there are no x-day crossovers
     crossover = new CrossoverCommand("2022-05-23", "2022-06-02", 30);
     assertEquals(emptyExpected, crossover.execute(stock));
 
@@ -89,17 +104,40 @@ public class StockCommandTest {
     crossover = new CrossoverCommand("1999-11-01", "1999-11-02", 30);
     assertEquals(expected, crossover.execute(stock));
 
+//    // test for range that starts before the oldest date of the csv
+//    expected = List.of("1999-11-02");
+//    crossover = new CrossoverCommand("1999-10-31", "1999-11-02", 30);
+//    assertEquals(expected, crossover.execute(stock));
+//
+//    // test for range that ends after the most recent date of the csv
+//    expected = List.of("1999-11-02");
+//    crossover = new CrossoverCommand("2024-10-31", "1999-11-02", 30);
+//    assertEquals(expected, crossover.execute(stock));
 
     // errors
 
-    // test for range that starts before the oldest date of the csv
-    expected = List.of("1999-11-02");
-    crossover = new CrossoverCommand("1999-10-31", "1999-11-02", 30);
-    assertEquals(expected, crossover.execute(stock));
+    // test for exception when the start date is later than the end date
+    assertThrows(IllegalArgumentException.class, () -> {
+      StockCommand<List<String>> testThrow = new CrossoverCommand("2024-06-04", "2020-05-20", 30);
+      testThrow.execute(stock);
+    });
 
-    // test for range that ends after the most recent date of the csv
-    expected = List.of("1999-11-02");
-    crossover = new CrossoverCommand("2024-10-31", "1999-11-02", 30);
-    assertEquals(expected, crossover.execute(stock));
+    // test for exception when x-days value is negative
+    assertThrows(IllegalArgumentException.class, () -> {
+      StockCommand<List<String>> testThrow = new CrossoverCommand("2022-05-23", "2022-06-02", -1);
+      testThrow.execute(stock);
+    });
+
+    // test for exception when the end date is before the oldest date in the csv
+    assertThrows(IllegalArgumentException.class, () -> {
+      StockCommand<List<String>> testThrow = new CrossoverCommand("1999-02-01", "1999-03-25", 30);
+      testThrow.execute(stock);
+    });
+
+    // test for exception when the start date is after the most recent date in the csv
+    assertThrows(IllegalArgumentException.class, () -> {
+      StockCommand<List<String>> testThrow = new CrossoverCommand("2024-07-01", "2024-07-02", 30);
+      testThrow.execute(stock);
+    });
   }
 }

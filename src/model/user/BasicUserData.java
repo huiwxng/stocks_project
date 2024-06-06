@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.portfolio.Portfolio;
+import model.stock.BasicStock;
 import model.stock.Stock;
 
 /**
@@ -48,5 +49,16 @@ public class BasicUserData implements UserData {
   @Override
   public List<Portfolio> listPortfolios() {
     return new ArrayList<>(portfolios);
+  }
+
+  /**
+   * Gets a stock that the user is currently viewing.
+   *
+   * @param ticker of the stock
+   * @return a stock object
+   */
+  @Override
+  public Stock viewStock(String ticker) {
+    return new BasicStock(ticker);
   }
 }
