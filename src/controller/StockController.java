@@ -10,7 +10,6 @@ import model.portfolio.BasicPortfolio;
 import model.portfolio.GetValueCommand;
 import model.portfolio.Portfolio;
 import model.portfolio.PortfolioCommand;
-import model.stock.BasicStock;
 import model.stock.CrossoverCommand;
 import model.Date;
 import model.stock.MovingAverageCommand;
@@ -97,7 +96,7 @@ public class StockController {
         writeMessage("Stock Ticker (to be viewed): ");
         String ticker = scanner.next();
         try {
-          currentStock = new BasicStock(ticker);
+          currentStock = userData.viewStock(ticker);
         } catch (Exception e) {
           lineSeparator();
           writeMessage(e.getMessage() + "\n");
@@ -572,7 +571,7 @@ public class StockController {
     writeMessage("2: Closing Price\n");
     writeMessage("3: Net Gain\n");
     writeMessage("4: X-Day Moving Average\n");
-    writeMessage("5: X-Day Crossovers\n");
+      writeMessage("5: X-Day Crossovers\n");
     returnPrompt();
     quitPrompt();
   }
