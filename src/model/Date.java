@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class Date {
 
+  private String date;
   private int day;
   private int month;
   private int year;
@@ -23,13 +24,14 @@ public class Date {
    */
   public Date(String date) throws IllegalArgumentException {
     List<Integer> arr = parseDate(date);
+    this.date = date;
     this.year = arr.get(0);
     this.month = arr.get(1);
     this.day = arr.get(2);
 
     LocalDate today = LocalDate.now();
     String td = today.toString();
-    if (!isBefore(td)) {
+    if (!(isBefore(td) || sameDay(td))) {
       throw new IllegalArgumentException("We cannot check for days in the future.");
     }
   }
@@ -69,11 +71,15 @@ public class Date {
       if (month < currMonth) {
         return true;
       } else if (month == currMonth) {
-        return day <= currDay;
+        return day < currDay;
       }
       return false;
     }
     return false;
+  }
+
+  public boolean sameDay(String date) {
+    return this.date.equals(date);
   }
 
   private boolean isValidDate(int year, int month, int day) {

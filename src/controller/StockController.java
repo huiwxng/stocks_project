@@ -365,7 +365,7 @@ public class StockController {
       try {
         startDate = new Date(start);
         endDate = new Date(end);
-        if (isValidDate(end) && startDate.isBefore(endDate.toString())) {
+        if (isValidDate(end) && (startDate.isBefore(end) || startDate.sameDay(end))) {
           validEnd = true;
         } else {
           lineSeparator();
@@ -455,7 +455,7 @@ public class StockController {
       try {
         startDate = new Date(start);
         endDate = new Date(end);
-        if (isValidDate(end) && startDate.isBefore(endDate.toString())) {
+        if (isValidDate(end) && (startDate.isBefore(end) || startDate.sameDay(end))) {
           validEnd = true;
         } else {
           lineSeparator();
