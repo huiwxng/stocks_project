@@ -220,7 +220,7 @@ public class BasicStock implements Stock {
   }
 
   public static void main(String[] args) {
-//    Stock stock = new BasicStock("asdfasdf");
+    Stock stock = new BasicStock("asdfasdf");
 
     Stock Apple = new BasicStock("AAPL");
     Stock Google = new BasicStock("GOOG");
