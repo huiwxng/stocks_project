@@ -120,7 +120,7 @@ public class StockController {
         state = ControllerState.QUIT;
         break;
       default:
-        int userInputNum = 0;
+        int userInputNum;
         try {
           userInputNum = Integer.parseInt(userInput);
           if (userInputNum >= 2 && userInputNum <= userData.listPortfolios().size() + 1) {
