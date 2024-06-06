@@ -12,7 +12,7 @@ import model.portfolio.Portfolio;
 import model.portfolio.PortfolioCommand;
 import model.stock.BasicStock;
 import model.stock.CrossoverCommand;
-import model.stock.Date;
+import model.Date;
 import model.stock.MovingAverageCommand;
 import model.stock.NetGainCommand;
 import model.stock.Stock;

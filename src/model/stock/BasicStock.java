@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Date;
+
 /**
  * Basic implementation of the {@link Stock} interface.
  */
@@ -89,22 +91,18 @@ public class BasicStock implements Stock {
    */
   public int getIndex(String date) {
     if (outOfRange(date)) {
-      throw new IllegalArgumentException("There is no data for this date");
+      return -1;
     }
 
     String recent = getMostRecentDate(date);
 
-    for (int i = 0; i < dates.size(); i++) {
-      if (dates.get(i).equals(recent)) {
-        return i;
-      }
-    }
-    return -1;
+    return dates.indexOf(recent);
   }
 
   private boolean outOfRange(String date) {
     Date current = new Date(date);
-    return current.isBefore(dates.get(dates.size() - 1));
+    String oldest = dates.get(dates.size() - 1);
+    return current.isBefore(oldest);
   }
 
   private String getMostRecentDate(String date) {
@@ -237,7 +235,7 @@ public class BasicStock implements Stock {
   }
 
   public static void main(String[] args) {
-    Stock stock = new BasicStock("asdfasdf");
+//    Stock stock = new BasicStock("asdfasdf");
 
     Stock Apple = new BasicStock("AAPL");
     Stock Google = new BasicStock("GOOG");
@@ -255,16 +253,15 @@ public class BasicStock implements Stock {
     }
     System.out.println(Apple.getClosingPrice("2002-01-10"));
     System.out.println(Apple.getClosingPrice("2024-06-01"));
-    System.out.println(Apple.getClosingPrice("204-06-01"));
-//    System.out.println(Google.getClosingPrice("2024-05-21"));
-//    System.out.println(Nvidia.getClosingPrice("2024-05-20"));
-//    System.out.println(Amazon.getClosingPrice("2024-05-20"));
-//    System.out.println(Tesla.getClosingPrice("2023-04-21"));
-//    System.out.println(Meta.getClosingPrice("2023-04-21"));
-//    System.out.println(Microsoft.getClosingPrice("2020-01-23"));
-//    System.out.println(JPMorgan.getClosingPrice("2024-05-21"));
-//    System.out.println(HomeDepot.getClosingPrice("2024-05-21"));
-//    System.out.println(TSM.getClosingPrice("2024-05-21"));
-//    System.out.println(Walmart.getClosingPrice("2024-05-21"));
+    System.out.println(Google.getClosingPrice("2024-05-21"));
+    System.out.println(Nvidia.getClosingPrice("2024-05-20"));
+    System.out.println(Amazon.getClosingPrice("2024-05-20"));
+    System.out.println(Tesla.getClosingPrice("2023-04-21"));
+    System.out.println(Meta.getClosingPrice("2023-04-21"));
+    System.out.println(Microsoft.getClosingPrice("2020-01-23"));
+    System.out.println(JPMorgan.getClosingPrice("2024-05-21"));
+    System.out.println(HomeDepot.getClosingPrice("2024-05-21"));
+    System.out.println(TSM.getClosingPrice("2024-05-21"));
+    System.out.println(Walmart.getClosingPrice("2024-05-21"));
   }
 }
