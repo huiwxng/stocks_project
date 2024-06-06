@@ -145,7 +145,10 @@ public class BasicStock implements Stock {
               "requests per day. Please subscribe to any of the premium plans at " +
               "https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.";
 
-      if (response.contains(ratelimit) || response.contains("Unknown symbol")) {
+      String invalidTicker = "Invalid API call. Please retry or visit the documentation " +
+              "(https://www.alphavantage.co/documentation/) for TIME_SERIES_DAILY.";
+
+      if (response.contains(ratelimit) || response.contains(invalidTicker)) {
         throw new IllegalArgumentException("The ticker '" + ticker
                 + "' is not available on Alpha Vantage API or you have ran out of API requests.");
       }
