@@ -109,10 +109,10 @@ public class StockCommandTest {
 //    crossover = new CrossoverCommand("1999-10-31", "1999-11-02", 30);
 //    assertEquals(expected, crossover.execute(stock));
 //
-//    // test for range that ends after the most recent date of the csv
-//    expected = List.of("1999-11-02");
-//    crossover = new CrossoverCommand("2024-10-31", "1999-11-02", 30);
-//    assertEquals(expected, crossover.execute(stock));
+    // test for range that ends after the most recent date of the csv
+    expected = List.of("1999-11-02");
+    crossover = new CrossoverCommand("2024-06-03", "2024-11-02", 30);
+    assertEquals(expected, crossover.execute(stock));
 
     // errors
 

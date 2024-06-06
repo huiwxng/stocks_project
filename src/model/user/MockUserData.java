@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import model.portfolio.Portfolio;
+import model.stock.Stock;
 
 /**
  * This class represents a mock of the UserData class so that the controller can be
@@ -34,5 +35,16 @@ public class MockUserData implements UserData {
   public List<Portfolio> listPortfolios() {
     log.append("listPortfolios\n");
     return List.of();
+  }
+
+  /**
+   * Gets a stock that the user is currently viewing.
+   *
+   * @param ticker of the stock
+   * @return a stock object
+   */
+  @Override
+  public Stock viewStock(String ticker) {
+    return null;
   }
 }

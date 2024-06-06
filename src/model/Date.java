@@ -28,12 +28,6 @@ public class Date {
     this.year = arr.get(0);
     this.month = arr.get(1);
     this.day = arr.get(2);
-
-    LocalDate today = LocalDate.now();
-    String td = today.toString();
-    if (!(isBefore(td) || sameDay(td))) {
-      throw new IllegalArgumentException("We cannot check for days in the future.");
-    }
   }
 
   private List<Integer> parseDate(String date) {
