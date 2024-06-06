@@ -170,10 +170,10 @@ public class StockController {
         portfolioValue(scanner);
         break;
       case "3":
-        changeStocks(scanner, true);
+        addStocks(scanner);
         break;
       case "4":
-        changeStocks(scanner, false);
+        removeStock(scanner);
         break;
       case "5":
         deletePortfolio();
@@ -222,41 +222,56 @@ public class StockController {
     }
   }
 
-  private void changeStocks(Scanner scanner, boolean add) {
-    boolean validTicker = false;
-    while (!validTicker) {
-      if (add) {
-        writeMessage("Stock Ticker (to be added): ");
-      } else {
-        writeMessage("Stock Ticker (to be removed): ");
-      }
-      String ticker = scanner.next();
-      boolean validSharesAmount = false;
-      while (!validSharesAmount) {
+  private void addStocks(Scanner scanner) {
+    boolean validTickerToAdd = false;
+    while (!validTickerToAdd) {
+      writeMessage("Stock Ticker (to be added): ");
+      String addedTicker = scanner.next();
+      boolean validShareCountToAdd = false;
+      while (!validShareCountToAdd) {
         try {
-          if (add) {
-            writeMessage("Number of shares to add: ");
-            int addedShareCount = Integer.parseInt(scanner.next());
-            currentPortfolio.addStock(ticker, addedShareCount);
-            lineSeparator();
-            writeMessage("Added " + addedShareCount + " " + ticker
-                    + " to your portfolio.\n");
-          } else {
-            writeMessage("Number of shares to remove: ");
-            int removedShareCount = Integer.parseInt(scanner.next());
-            int remove = currentPortfolio.removeStock(ticker, removedShareCount);
-            lineSeparator();
-            writeMessage("Removed " + remove + " "
-                    + ticker + " from your portfolio.\n");
-          }
-          validSharesAmount = true;
-          validTicker = true;
+          writeMessage("Number of shares to add: ");
+          int addedShareCount = Integer.parseInt(scanner.next());
+          currentPortfolio.addStock(addedTicker, addedShareCount);
+          lineSeparator();
+          writeMessage("Added " + addedShareCount + " " + addedTicker
+                  + " to your portfolio.\n");
+          validShareCountToAdd = true;
+          validTickerToAdd = true;
         } catch (NumberFormatException e) {
           lineSeparator();
           writeMessage("Invalid stock share amount. Please try again.\n");
         } catch (IllegalArgumentException e) {
           lineSeparator();
           writeMessage("Invalid ticker or stock share amount. Please try again.\n");
+          break;
+        }
+      }
+    }
+  }
+
+  private void removeStock(Scanner scanner) {
+    boolean validTickerToRemove = false;
+    while (!validTickerToRemove) {
+      writeMessage("Stock Ticker (to be removed): ");
+      String removedTicker = scanner.next();
+      boolean validShareCountToRemove = false;
+      while (!validShareCountToRemove) {
+        try {
+          writeMessage("Number of shares to remove: ");
+          int removedShareCount = Integer.parseInt(scanner.next());
+          int remove = currentPortfolio.removeStock(removedTicker, removedShareCount);
+          lineSeparator();
+          writeMessage("Removed " + remove + " "
+                  + removedTicker + " from your portfolio.\n");
+          validShareCountToRemove = true;
+          validTickerToRemove = true;
+        } catch (NumberFormatException e) {
+          lineSeparator();
+          writeMessage("Stock share amount must be a whole number. Please try again.\n");
+        } catch (IllegalArgumentException e) {
+          lineSeparator();
+          writeMessage(e.getMessage() + " Please try again.\n");
           break;
         }
       }
@@ -493,7 +508,7 @@ public class StockController {
     }
   }
 
-  private void printCurrentMenu() throws InterruptedException {
+  private void printCurrentMenu() throws IllegalStateException, InterruptedException {
     switch (state) {
       case START_MENU:
         printStartMenu();
@@ -589,7 +604,7 @@ public class StockController {
       return false;
     }
   }
-
+  
   private void lineSeparator() {
     writeMessage("-------------------------------------------------\n");
   }
