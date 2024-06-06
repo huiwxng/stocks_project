@@ -301,6 +301,7 @@ public class StockController {
         break;
       case "5":
         xDayCrossovers(scanner);
+        break;
       case "r":
       case "return":
         state = ControllerState.START_MENU;
@@ -530,7 +531,7 @@ public class StockController {
   private void printStartMenu() {
     lineSeparator();
     writeMessage("1: View Portfolios\n");
-    writeMessage("2: View Stocks\n");
+    writeMessage("2: View a Stock\n");
     quitPrompt();
   }
 
@@ -550,8 +551,8 @@ public class StockController {
     writeMessage(currentPortfolio.getName() + "\n");
     writeMessage("1: View Stocks\n");
     writeMessage("2: Portfolio Value\n");
-    writeMessage("3: Add Stock\n");
-    writeMessage("4: Remove Stock\n");
+    writeMessage("3: Buy Stock(s)\n");
+    writeMessage("4: Sell Stock(s)\n");
     writeMessage("5: Delete Portfolio\n");
     returnPrompt();
     quitPrompt();
