@@ -114,7 +114,7 @@ public class BasicStock implements Stock {
   }
 
   private void getDataFromAPI() {
-    String apiKey = "PV8JPCAV6GLG3Y73";
+    String apiKey = getAPIKey();
     URL url;
 
     try {
@@ -137,6 +137,25 @@ public class BasicStock implements Stock {
       while ((b = in.read()) != -1) {
         output.append((char) b);
       }
+
+      // Check if the API returned an error
+      String response = output.toString();
+
+      String ratelimit = "Thank you for using Alpha Vantage! Our standard API rate limit is 25 " +
+              "requests per day. Please subscribe to any of the premium plans at " +
+              "https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.";
+
+      if (response.contains(ratelimit) || response.contains("Unknown symbol")) {
+        throw new IllegalArgumentException("The ticker '" + ticker
+                + "' is not available on Alpha Vantage API or you have ran out of API requests.");
+      }
+
+      try (FileWriter writer = new FileWriter(path)) {
+        writer.write(response);
+      } catch (IOException e) {
+        System.err.println("Error writing to file: " + e.getMessage());
+      }
+
     } catch (IOException e) {
       throw new IllegalArgumentException("No price data found for " + ticker);
     }
@@ -172,6 +191,25 @@ public class BasicStock implements Stock {
     }
   }
 
+  private String getAPIKey() {
+    String apiKey = null;
+    String path = "res/apikey.txt";  // Adjust this path as needed
+
+    try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+      apiKey = br.readLine().trim();
+    } catch (IOException e) {
+      System.err.println("Error reading API key file: " + e.getMessage());
+      System.err.println("Please ensure that the file '" + path + "' exists and contains a valid API key.");
+      throw new RuntimeException("Failed to read API key", e);
+    }
+
+    if (apiKey == null || apiKey.isEmpty()) {
+      throw new RuntimeException("API key is empty or not found in '" + path + "'");
+    }
+
+    return apiKey;
+  }
+
   private int findIndex(String[] strList, String str) {
     for (int i = 0; i < strList.length; i++) {
       if (strList[i].equalsIgnoreCase(str)) {
@@ -182,8 +220,8 @@ public class BasicStock implements Stock {
   }
 
   public static void main(String[] args) {
+//    Stock stock = new BasicStock("asdfasdf");
 
-    
     Stock Apple = new BasicStock("AAPL");
     Stock Google = new BasicStock("GOOG");
     Stock Nvidia = new BasicStock("NVDA");

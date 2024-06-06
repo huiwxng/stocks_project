@@ -5,6 +5,7 @@ import model.stock.BasicStock;
 import model.stock.Stock;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Test class to test the implementations of the {@link Stock} interface.
@@ -52,7 +53,14 @@ public class StockTest {
   }
 
   @Test
-  public void getTicker() {
+  public void testThrows() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      Stock stock = new BasicStock("asdfasfasdfasdf");
+    });
+  }
+
+  @Test
+  public void testGetTicker() {
     assertEquals("AAPL", Apple.getTicker());
     assertEquals("GOOG", Google.getTicker());
     assertEquals("NVDA", Nvidia.getTicker());
@@ -67,7 +75,7 @@ public class StockTest {
   }
 
   @Test
-  public void getClosingPrice() {
+  public void testGetClosingPrice() {
     assertEquals(21.23, Apple.getClosingPrice("2002-01-10"), 0.01);
     assertEquals(179.54, Google.getClosingPrice("2024-05-21"), 0.01);
     assertEquals(947.8, Nvidia.getClosingPrice("2024-05-20"), 0.01);
