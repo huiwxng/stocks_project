@@ -104,14 +104,14 @@ public class StockCommandTest {
     crossover = new CrossoverCommand("1999-11-01", "1999-11-02", 30);
     assertEquals(expected, crossover.execute(stock));
 
-//    // test for range that starts before the oldest date of the csv
-//    expected = List.of("1999-11-02");
-//    crossover = new CrossoverCommand("1999-10-31", "1999-11-02", 30);
-//    assertEquals(expected, crossover.execute(stock));
-//
-    // test for range that ends after the most recent date of the csv
+    // test for range that starts before the oldest date of the csv
     expected = List.of("1999-11-02");
-    crossover = new CrossoverCommand("2024-06-03", "2024-11-02", 30);
+    crossover = new CrossoverCommand("1999-10-31", "1999-11-02", 30);
+    assertEquals(expected, crossover.execute(stock));
+
+    // test for range that ends after the most recent date of the csv
+    expected = List.of("2024-06-03", "2024-06-04");
+    crossover = new CrossoverCommand("2024-06-03", "2024-11-10", 30);
     assertEquals(expected, crossover.execute(stock));
 
     // errors

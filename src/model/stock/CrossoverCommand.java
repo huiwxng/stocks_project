@@ -40,9 +40,6 @@ public class CrossoverCommand implements StockCommand<List<String>> {
 
     checkValidDates(start, end, stock);
 
-    advanceStart(start, stock);
-    decreaseEnd(end, stock);
-
     List<String> dates = stock.getAllDates();
     List<String> temp = new ArrayList<>();
 
@@ -73,6 +70,7 @@ public class CrossoverCommand implements StockCommand<List<String>> {
     String newest = dates.get(0);
     Date newestDate = new Date(newest);
 
+    Date startDate = new Date(start);
     Date endDate = new Date(end);
 
     if (endDate.isBefore(oldest)) {
@@ -86,9 +84,17 @@ public class CrossoverCommand implements StockCommand<List<String>> {
     if (endDate.isBefore(start)) {
       throw new IllegalArgumentException("The start date must be before the end date.");
     }
+
+    if (startDate.isBefore(oldest)) {
+      advanceStart(stock);
+    }
+
+    if (newestDate.isBefore(end)) {
+      decreaseEnd(stock);
+    }
   }
 
-  private void advanceStart(String start, Stock stock) {
+  private void advanceStart(Stock stock) {
     List<String> dates = stock.getAllDates();
     String oldest = dates.get(dates.size() - 1);
     Date startDate = new Date(start);
@@ -100,13 +106,13 @@ public class CrossoverCommand implements StockCommand<List<String>> {
     this.start = startDate.toString();
   }
 
-  private void decreaseEnd(String end, Stock stock) {
+  private void decreaseEnd(Stock stock) {
     List<String> dates = stock.getAllDates();
     String newest = dates.get(0);
     Date newestDate = new Date(newest);
     Date endDate = new Date(end);
 
-    while (newestDate.isBefore(end)) {
+    while (newestDate.isBefore(endDate.toString())) {
       endDate.advance(-1);
     }
 
