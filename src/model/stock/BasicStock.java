@@ -162,14 +162,7 @@ public class BasicStock implements Stock {
       // Check if the API returned an error
       String response = output.toString();
 
-      String ratelimit = "Thank you for using Alpha Vantage! Our standard API rate limit is 25 " +
-              "requests per day. Please subscribe to any of the premium plans at " +
-              "https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.";
-
-      String invalidTicker = "Invalid API call. Please retry or visit the documentation " +
-              "(https://www.alphavantage.co/documentation/) for TIME_SERIES_DAILY.";
-
-      if (response.contains(ratelimit) || response.contains(invalidTicker)) {
+      if (response.contains("Error Message")) {
         throw new IllegalArgumentException("The ticker '" + ticker
                 + "' is not available on Alpha Vantage API or you have ran out of API requests.");
       }
@@ -244,7 +237,7 @@ public class BasicStock implements Stock {
   }
 
   public static void main(String[] args) {
-//    Stock stock = new BasicStock("asdfasdf");
+    Stock stock = new BasicStock("asdfasdf");
 
     Stock Apple = new BasicStock("AAPL");
     Stock Google = new BasicStock("GOOG");
