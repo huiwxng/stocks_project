@@ -2,7 +2,6 @@ package model.stock;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,7 +27,9 @@ public class Date {
     this.month = arr.get(1);
     this.day = arr.get(2);
 
-    if (!beforeToday()) {
+    LocalDate today = LocalDate.now();
+    String td = today.toString();
+    if (!isBefore(td)) {
       throw new IllegalArgumentException("We cannot check for days in the future.");
     }
   }
@@ -52,10 +53,8 @@ public class Date {
     return res;
   }
 
-  private boolean beforeToday() {
-    LocalDate today = LocalDate.now();
-    String td = today.toString();
-    List<Integer> curr = parseDate(td);
+  public boolean isBefore(String date) {
+    List<Integer> curr = parseDate(date);
     int currYear = curr.get(0);
     int currMonth = curr.get(1);
     int currDay = curr.get(2);
@@ -148,9 +147,5 @@ public class Date {
    */
   public String toString() {
     return String.format("%04d-%02d-%02d", year, month, day);
-  }
-
-  public static void main(String[] args) {
-    Date date = new Date("2024-06-05");
   }
 }

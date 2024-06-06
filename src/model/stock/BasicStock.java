@@ -88,13 +88,23 @@ public class BasicStock implements Stock {
    * @return the index of the closing prices list
    */
   public int getIndex(String date) {
+    if (outOfRange(date)) {
+      throw new IllegalArgumentException("There is no data for this date");
+    }
+
     String recent = getMostRecentDate(date);
+
     for (int i = 0; i < dates.size(); i++) {
       if (dates.get(i).equals(recent)) {
         return i;
       }
     }
     return -1;
+  }
+
+  private boolean outOfRange(String date) {
+    Date current = new Date(date);
+    return current.isBefore(dates.get(dates.size() - 1));
   }
 
   private String getMostRecentDate(String date) {
@@ -252,6 +262,7 @@ public class BasicStock implements Stock {
     }
     System.out.println(Apple.getClosingPrice("2002-01-10"));
     System.out.println(Apple.getClosingPrice("2024-06-01"));
+    System.out.println(Apple.getClosingPrice("204-06-01"));
 //    System.out.println(Google.getClosingPrice("2024-05-21"));
 //    System.out.println(Nvidia.getClosingPrice("2024-05-20"));
 //    System.out.println(Amazon.getClosingPrice("2024-05-20"));

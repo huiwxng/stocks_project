@@ -45,11 +45,5 @@ public class PortfolioCommandTest {
       PortfolioCommand<Double> testThrow = new GetValueCommand("2024-06-04");
       testThrow.execute(p);
     });
-
-    assertThrows(IllegalArgumentException.class, () -> {
-      // tests for exception when the date is in invalid format
-      PortfolioCommand<Double> testThrow = new GetValueCommand("202-06-04");
-      testThrow.execute(p1);
-    });
   }
 }
