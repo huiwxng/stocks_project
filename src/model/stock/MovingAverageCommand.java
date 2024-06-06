@@ -19,7 +19,7 @@ public class MovingAverageCommand implements StockCommand<Double> {
    */
   public MovingAverageCommand(String date, int x) throws IllegalArgumentException {
     if (x < 0) {
-      throw new IllegalArgumentException("x-days cannot be negative.");
+      throw new IllegalArgumentException("X-Days cannot be negative.");
     }
     this.date = date;
     this.x = x;

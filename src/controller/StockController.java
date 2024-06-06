@@ -3,13 +3,20 @@ package controller;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Scanner;
 
 import model.portfolio.BasicPortfolio;
 import model.portfolio.GetValueCommand;
 import model.portfolio.Portfolio;
 import model.portfolio.PortfolioCommand;
+import model.stock.BasicStock;
+import model.stock.CrossoverCommand;
+import model.stock.Date;
+import model.stock.MovingAverageCommand;
+import model.stock.NetGainCommand;
 import model.stock.Stock;
+import model.stock.StockCommand;
 import model.user.UserData;
 
 /**
@@ -67,7 +74,7 @@ public class StockController {
   private void processCommand(String userInput, Scanner scanner) {
     switch (state) {
       case START_MENU:
-        helpStartMenu(userInput);
+        helpStartMenu(userInput, scanner);
         break;
       case PORTFOLIO_MENU:
         helpPortfolioMenu(userInput, scanner);
@@ -81,12 +88,20 @@ public class StockController {
     }
   }
 
-  private void helpStartMenu(String userInput) {
+  private void helpStartMenu(String userInput, Scanner scanner) {
     switch (userInput) {
       case "1":
         state = ControllerState.PORTFOLIO_MENU;
         break;
       case "2":
+        writeMessage("Stock Ticker (to be viewed): ");
+        String ticker = scanner.next();
+        try {
+          currentStock = new BasicStock(ticker);
+        } catch (Exception e) {
+          lineSeparator();
+          writeMessage(e.getMessage() + "\n");
+        }
         state = ControllerState.STOCK_MENU;
         break;
       case "q":
@@ -94,7 +109,7 @@ public class StockController {
         state = ControllerState.QUIT;
         break;
       default:
-        writeMessage("------------------------------\n");
+        lineSeparator();
         writeMessage("Invalid input. Please try again.\n");
     }
   }
@@ -102,14 +117,7 @@ public class StockController {
   private void helpPortfolioMenu(String userInput, Scanner scanner) {
     switch (userInput) {
       case "1":
-        writeMessage("Name your portfolio: ");
-        String name = scanner.next();
-        Portfolio portfolio = new BasicPortfolio(name);
-        userData.addPortfolio(portfolio);
-        writeMessage("------------------------------\n");
-        writeMessage(name + " portfolio created.\n");
-        state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
-        currentPortfolio = portfolio;
+        createPortfolio(scanner);
         break;
       case "r":
       case "return":
@@ -120,112 +128,55 @@ public class StockController {
         state = ControllerState.QUIT;
         break;
       default:
-        int userInputNum;
-        try {
-          userInputNum = Integer.parseInt(userInput);
-          if (userInputNum >= 2 && userInputNum <= userData.listPortfolios().size() + 1) {
-            currentPortfolio = userData.listPortfolios().get(userInputNum - 2);
-            state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
-          } else {
-            writeMessage("------------------------------\n");
-            writeMessage("There is no portfolio with that number.\n");
-          }
-        } catch (NumberFormatException e) {
-          writeMessage("------------------------------\n");
-          writeMessage("Invalid menu option. Please try again.\n");
-        }
+        selectPortfolio(userInput);
         break;
+    }
+  }
+
+  private void createPortfolio(Scanner scanner) {
+    writeMessage("Name your portfolio: ");
+    String name = scanner.next();
+    Portfolio portfolio = new BasicPortfolio(name);
+    userData.addPortfolio(portfolio);
+    lineSeparator();
+    writeMessage(name + " portfolio created.\n");
+    state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
+    currentPortfolio = portfolio;
+  }
+
+  private void selectPortfolio(String userInput) {
+    int userInputNum;
+    try {
+      userInputNum = Integer.parseInt(userInput);
+      if (userInputNum >= 2 && userInputNum <= userData.listPortfolios().size() + 1) {
+        currentPortfolio = userData.listPortfolios().get(userInputNum - 2);
+        state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
+      } else {
+        lineSeparator();
+        writeMessage("There is no portfolio with that number.\n");
+      }
+    } catch (NumberFormatException e) {
+      lineSeparator();
+      writeMessage("Invalid menu option. Please try again.\n");
     }
   }
 
   private void helpSpecificPortfolioMenu(String userInput, Scanner scanner) {
     switch (userInput) {
       case "1":
-        writeMessage("------------------------------\n");
-        writeMessage("Stocks in current portfolio:\n");
-        for (String stock : currentPortfolio.getStocksWithAmt()) {
-          writeMessage(stock + "\n");
-        }
+        viewStocks();
         break;
       case "2":
-        boolean validDate = false;
-        while (!validDate) {
-          writeMessage("Date (YYYY-MM-DD): ");
-          String date = scanner.next();
-          if (isValidDate(date)) {
-            PortfolioCommand<Double> command = new GetValueCommand(date);
-            try {
-              double value = command.execute(currentPortfolio);
-              writeMessage("------------------------------\n");
-              writeMessage("Portfolio value: " + value + "\n");
-            } catch (IllegalArgumentException e) {
-              writeMessage(e.getMessage() + " Please try again.\n");
-            }
-            validDate = true;
-          } else {
-            writeMessage("------------------------------\n");
-            writeMessage("Invalid date. Please try again.\n");
-          }
-        }
+        portfolioValue(scanner);
         break;
       case "3":
-        boolean validTickerToAdd = false;
-        while (!validTickerToAdd) {
-          writeMessage("Stock Ticker (to be added): ");
-          String addedTicker = scanner.next();
-          boolean validShareCountToAdd = false;
-          while (!validShareCountToAdd) {
-            try {
-              writeMessage("Number of shares to add: ");
-              int addedShareCount = Integer.parseInt(scanner.next());
-              currentPortfolio.addStock(addedTicker, addedShareCount);
-              writeMessage("------------------------------\n");
-              writeMessage("Added " + addedShareCount + " " + addedTicker + " to your portfolio.\n");
-              validShareCountToAdd = true;
-              validTickerToAdd = true;
-            } catch (NumberFormatException e) {
-              writeMessage("------------------------------\n");
-              writeMessage("Invalid stock share amount. Please try again.\n");
-            } catch (IllegalArgumentException e) {
-              writeMessage("------------------------------\n");
-              writeMessage("Invalid ticker or stock share amount. Please try again.\n");
-              break;
-            }
-          }
-        }
+        addStocks(scanner);
         break;
       case "4":
-        boolean validTickerToRemove = false;
-        while (!validTickerToRemove) {
-          writeMessage("Stock Ticker (to be removed): ");
-          String removedTicker = scanner.next();
-          boolean validShareCountToRemove = false;
-          while (!validShareCountToRemove) {
-            try {
-              writeMessage("Number of shares to remove: ");
-              int removedShareCount = Integer.parseInt(scanner.next());
-              int remove = currentPortfolio.removeStock(removedTicker, removedShareCount);
-              writeMessage("------------------------------\n");
-              writeMessage("Removed " + remove + " "
-                      + removedTicker + " from your portfolio.\n");
-              validShareCountToRemove = true;
-              validTickerToRemove = true;
-            } catch (NumberFormatException e) {
-              writeMessage("------------------------------\n");
-              writeMessage("Stock share amount must be a whole number. Please try again.\n");
-            } catch (IllegalArgumentException e) {
-              writeMessage("------------------------------\n");
-              writeMessage(e.getMessage() + " Please try again.\n");
-              break;
-            }
-          }
-        }
+        removeStock(scanner);
         break;
       case "5":
-        userData.removePortfolio(currentPortfolio);
-        writeMessage("------------------------------\n");
-        writeMessage("Portfolio " + currentPortfolio.getName() + " deleted.\n");
-        state = ControllerState.PORTFOLIO_MENU;
+        deletePortfolio();
         break;
       case "r":
       case "return":
@@ -236,13 +187,317 @@ public class StockController {
         state = ControllerState.QUIT;
         break;
       default:
-        writeMessage("------------------------------\n");
+        lineSeparator();
         writeMessage("Invalid input. Please try again.\n");
     }
   }
 
+  private void viewStocks() {
+    lineSeparator();
+    writeMessage("Stocks in current portfolio:\n");
+    for (String stock : currentPortfolio.getStocksWithAmt()) {
+      writeMessage(stock + "\n");
+    }
+  }
+
+  private void portfolioValue(Scanner scanner) {
+    boolean validDate = false;
+    while (!validDate) {
+      writeMessage("Date (YYYY-MM-DD): ");
+      String date = scanner.next();
+      if (isValidDate(date)) {
+        PortfolioCommand<Double> command = new GetValueCommand(date);
+        try {
+          double value = command.execute(currentPortfolio);
+          lineSeparator();
+          writeMessage("Portfolio value: " + value + "\n");
+        } catch (IllegalArgumentException e) {
+          writeMessage(e.getMessage() + " Please try again.\n");
+        }
+        validDate = true;
+      } else {
+        lineSeparator();
+        writeMessage("Invalid date. Please try again.\n");
+      }
+    }
+  }
+
+  private void addStocks(Scanner scanner) {
+    boolean validTickerToAdd = false;
+    while (!validTickerToAdd) {
+      writeMessage("Stock Ticker (to be added): ");
+      String addedTicker = scanner.next();
+      boolean validShareCountToAdd = false;
+      while (!validShareCountToAdd) {
+        try {
+          writeMessage("Number of shares to add: ");
+          int addedShareCount = Integer.parseInt(scanner.next());
+          currentPortfolio.addStock(addedTicker, addedShareCount);
+          lineSeparator();
+          writeMessage("Added " + addedShareCount + " " + addedTicker
+                  + " to your portfolio.\n");
+          validShareCountToAdd = true;
+          validTickerToAdd = true;
+        } catch (NumberFormatException e) {
+          lineSeparator();
+          writeMessage("Invalid stock share amount. Please try again.\n");
+        } catch (IllegalArgumentException e) {
+          lineSeparator();
+          writeMessage("Invalid ticker or stock share amount. Please try again.\n");
+          break;
+        }
+      }
+    }
+  }
+
+  private void removeStock(Scanner scanner) {
+    boolean validTickerToRemove = false;
+    while (!validTickerToRemove) {
+      writeMessage("Stock Ticker (to be removed): ");
+      String removedTicker = scanner.next();
+      boolean validShareCountToRemove = false;
+      while (!validShareCountToRemove) {
+        try {
+          writeMessage("Number of shares to remove: ");
+          int removedShareCount = Integer.parseInt(scanner.next());
+          int remove = currentPortfolio.removeStock(removedTicker, removedShareCount);
+          lineSeparator();
+          writeMessage("Removed " + remove + " "
+                  + removedTicker + " from your portfolio.\n");
+          validShareCountToRemove = true;
+          validTickerToRemove = true;
+        } catch (NumberFormatException e) {
+          lineSeparator();
+          writeMessage("Stock share amount must be a whole number. Please try again.\n");
+        } catch (IllegalArgumentException e) {
+          lineSeparator();
+          writeMessage(e.getMessage() + " Please try again.\n");
+          break;
+        }
+      }
+    }
+  }
+
+  private void deletePortfolio() {
+    userData.removePortfolio(currentPortfolio);
+    lineSeparator();
+    writeMessage("Portfolio " + currentPortfolio.getName() + " deleted.\n");
+    state = ControllerState.PORTFOLIO_MENU;
+  }
+
   private void helpStockMenu(String userInput, Scanner scanner) {
-    
+    switch (userInput) {
+      case "1":
+        lastClosingPrice();
+        break;
+      case "2":
+        closingPrice(scanner);
+        break;
+      case "3":
+        netGain(scanner);
+        break;
+      case "4":
+        xDayMovingAverage(scanner);
+        break;
+      case "5":
+        xDayCrossovers(scanner);
+      case "r":
+      case "return":
+        state = ControllerState.START_MENU;
+        break;
+      case "q":
+      case "quit":
+        state = ControllerState.QUIT;
+        break;
+      default:
+        lineSeparator();
+        writeMessage("Invalid input. Please try again.\n");
+    }
+  }
+
+  private void lastClosingPrice() {
+    lineSeparator();
+    writeMessage("Last Closing Price: "
+            + currentStock.getAllClosingPrices()
+            .get(currentStock.getAllClosingPrices().size() - 1) + "\n");
+  }
+
+  private void closingPrice(Scanner scanner) {
+    String date;
+    boolean validDate = false;
+    while (!validDate) {
+      writeMessage("Date (YYYY-MM-DD): ");
+      date = scanner.next();
+      if (isValidDate(date)) {
+        lineSeparator();
+        writeMessage("Closing Price for " + date + ": "
+                + currentStock.getClosingPrice(date) + "\n");
+        validDate = true;
+      } else {
+        lineSeparator();
+        writeMessage("Invalid date. Please try again.\n");
+      }
+    }
+  }
+
+  private void netGain(Scanner scanner) {
+    String start = "";
+    String end = "";
+    Date startDate;
+    Date endDate;
+    boolean validStart = false;
+    boolean validEnd = false;
+    StockCommand<Double> command;
+    while (!validStart) {
+      writeMessage("Start Date (YYYY-MM-DD): ");
+      start = scanner.next();
+      if (isValidDate(start)) {
+        validStart = true;
+      } else {
+        lineSeparator();
+        writeMessage("Invalid date. Please try again.\n");
+      }
+    }
+    while (!validEnd) {
+      writeMessage("End Date (YYYY-MM-DD): ");
+      end = scanner.next();
+      try {
+        startDate = new Date(start);
+        endDate = new Date(end);
+        if (isValidDate(end) && startDate.isBefore(endDate.toString())) {
+          validEnd = true;
+        } else {
+          lineSeparator();
+          writeMessage("Invalid date. Please try again.\n");
+        }
+      } catch (IllegalArgumentException e) {
+        lineSeparator();
+        writeMessage(e.getMessage() + " Please try again.\n");
+      }
+    }
+    try {
+      command = new NetGainCommand(start, end);
+      double netGain = command.execute(currentStock);
+      lineSeparator();
+      writeMessage("Net Gain from " + start + " to " + end + ": " + netGain + "\n");
+    } catch (IllegalArgumentException e) {
+      lineSeparator();
+      writeMessage(e.getMessage() + " Please try again.\n");
+    }
+  }
+
+  private void xDayMovingAverage(Scanner scanner) {
+    String date = "";
+    String xDays = "";
+    boolean validXDays = false;
+    boolean validDate = false;
+    StockCommand<Double> command;
+    while (!validDate) {
+      writeMessage("Date (YYYY-MM-DD): ");
+      date = scanner.next();
+      if (isValidDate(date)) {
+        validDate = true;
+      } else {
+        lineSeparator();
+        writeMessage("Invalid date. Please try again.\n");
+      }
+    }
+    while (!validXDays) {
+      writeMessage("X-Days: ");
+      xDays = scanner.next();
+      try {
+        int xDaysNum = Integer.parseInt(xDays);
+        if (xDaysNum <= 0) {
+          throw new NumberFormatException();
+        }
+        validXDays = true;
+      } catch (NumberFormatException e) {
+        lineSeparator();
+        writeMessage("X-Days must be a positive integer. Please try again.\n");
+      }
+    }
+    try {
+      command = new MovingAverageCommand(date, Integer.parseInt(xDays));
+      double movingAverage = command.execute(currentStock);
+      lineSeparator();
+      writeMessage("X-Day Moving Average on " + date + " for " + xDays + " days: "
+              + movingAverage + "\n");
+    } catch (IllegalArgumentException e) {
+      lineSeparator();
+      writeMessage(e.getMessage() + " Please try again.\n");
+    }
+  }
+
+  private void xDayCrossovers(Scanner scanner) {
+    String start = "";
+    String end = "";
+    Date startDate;
+    Date endDate;
+    boolean validStart = false;
+    boolean validEnd = false;
+    String xDays = "";
+    boolean validXDays = false;
+    StockCommand<List<String>> command;
+    while (!validStart) {
+      writeMessage("Start Date (YYYY-MM-DD): ");
+      start = scanner.next();
+      if (isValidDate(start)) {
+        validStart = true;
+      } else {
+        lineSeparator();
+        writeMessage("Invalid date. Please try again.\n");
+      }
+    }
+    while (!validEnd) {
+      writeMessage("End Date (YYYY-MM-DD): ");
+      end = scanner.next();
+      try {
+        startDate = new Date(start);
+        endDate = new Date(end);
+        if (isValidDate(end) && startDate.isBefore(endDate.toString())) {
+          validEnd = true;
+        } else {
+          lineSeparator();
+          writeMessage("Invalid date. Please try again.\n");
+        }
+      } catch (IllegalArgumentException e) {
+        lineSeparator();
+        writeMessage(e.getMessage() + " Please try again.\n");
+      }
+    }
+    while (!validXDays) {
+      writeMessage("X-Days: ");
+      xDays = scanner.next();
+      try {
+        int xDaysNum = Integer.parseInt(xDays);
+        if (xDaysNum <= 0) {
+          throw new NumberFormatException();
+        }
+        validXDays = true;
+      } catch (NumberFormatException e) {
+        lineSeparator();
+        writeMessage("X-Days must be a positive integer. Please try again.\n");
+      }
+    }
+    try {
+      command = new CrossoverCommand(start, end, Integer.parseInt(xDays));
+      List<String> crossovers = command.execute(currentStock);
+      lineSeparator();
+      for (int i = 0; i < crossovers.size(); i++) {
+        if (i % 5 == 0) {
+          if (i != 0) {
+            writeMessage("\n");
+          }
+          writeMessage(crossovers.get(i));
+        } else {
+          writeMessage(", " + crossovers.get(i));
+        }
+      }
+      writeMessage("\n");
+    } catch (IllegalArgumentException e) {
+      lineSeparator();
+      writeMessage(e.getMessage() + " Please try again.\n");
+    }
   }
 
   private void writeMessage(String message) throws IllegalStateException {
@@ -273,14 +528,14 @@ public class StockController {
   }
 
   private void printStartMenu() {
-    writeMessage("------------------------------\n");
+    lineSeparator();
     writeMessage("1: View Portfolios\n");
     writeMessage("2: View Stocks\n");
     quitPrompt();
   }
 
   private void printPortfolioMenu() {
-    writeMessage("------------------------------\n");
+    lineSeparator();
     writeMessage("1: Create Portfolio\n");
     int portfolioIndex = 2;
     for (Portfolio portfolio : userData.listPortfolios()) {
@@ -291,7 +546,7 @@ public class StockController {
   }
 
   private void printSpecificPortfolioMenu() {
-    writeMessage("------------------------------\n");
+    lineSeparator();
     writeMessage(currentPortfolio.getName() + "\n");
     writeMessage("1: View Stocks\n");
     writeMessage("2: Portfolio Value\n");
@@ -303,10 +558,17 @@ public class StockController {
   }
 
   private void printStockMenu() {
-    writeMessage("------------------------------\n");
-    writeMessage(currentStock.getTicker() + "\n");
+    lineSeparator();
+    try {
+      writeMessage(currentStock.getTicker() + "\n");
+    } catch (NullPointerException e) {
+      writeMessage("You are not currently viewing a stock. Please try again.\n");
+      state = ControllerState.START_MENU;
+      printStartMenu();
+      return;
+    }
     writeMessage("1: Last Closing Price\n");
-    writeMessage("2: Stock Value\n");
+    writeMessage("2: Closing Price\n");
     writeMessage("3: Net Gain\n");
     writeMessage("4: X-Day Moving Average\n");
     writeMessage("5: X-Day Crossovers\n");
@@ -315,14 +577,14 @@ public class StockController {
   }
 
   private void welcomeMessage() {
-    writeMessage("------------------------------\n");
+    lineSeparator();
     writeMessage("Welcome to the virtual stocks program!\n" +
             "In menus that are numbered, input your number option.\n" +
             "Otherwise, type string input if prompted.\n");
   }
 
   private void farewellMessage() {
-    writeMessage("------------------------------\n");
+    lineSeparator();
     writeMessage("Thanks for using our virtual stocks program!\n");
   }
 
@@ -341,5 +603,9 @@ public class StockController {
     } catch (DateTimeParseException e) {
       return false;
     }
+  }
+  
+  private void lineSeparator() {
+    writeMessage("-------------------------------------------------\n");
   }
 }
