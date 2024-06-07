@@ -25,6 +25,10 @@ public class BasicStock implements Stock {
   private List<Double> prices;
   private final String path;
 
+  /**
+   * Constructs a basic stock object.
+   * @param ticker of the stock
+   */
   public BasicStock(String ticker) {
     this.ticker = ticker;
     this.path = "res/data/" + ticker + ".csv";
