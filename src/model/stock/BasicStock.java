@@ -116,17 +116,6 @@ public class BasicStock implements Stock {
     }
   }
 
-  /**
-   * Executes a given stock command.
-   *
-   * @param cmd stock command
-   * @param <T> return type of the command
-   */
-  @Override
-  public <T> void executeReturn(StockCommand<T> cmd) {
-    cmd.execute(this);
-  }
-
   private void getData() {
     if (!Files.exists(Path.of(path))) {
       getDataFromAPI();

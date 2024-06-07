@@ -1,14 +1,15 @@
-package model.stock;
+package model.user;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import model.Date;
+import model.stock.Stock;
 
 /**
  * Command to get the x-days crossover.
  */
-public class CrossoverCommand implements StockCommand<List<String>> {
+public class StockCrossoverCommand implements Command<List<String>> {
 
   private String start;
   private String end;
@@ -21,7 +22,7 @@ public class CrossoverCommand implements StockCommand<List<String>> {
    * @param end end date
    * @param x x-days
    */
-  public CrossoverCommand(String start, String end, int x) throws IllegalArgumentException {
+  public StockCrossoverCommand(String start, String end, int x) throws IllegalArgumentException {
     if (x < 0) {
       throw new IllegalArgumentException("x-days cannot be negative.");
     }
@@ -31,12 +32,17 @@ public class CrossoverCommand implements StockCommand<List<String>> {
   }
 
   /**
-   * Executes the command onto a {@link Stock} object.
+   * Executes the command onto a {@link UserData} object.
    *
-   * @param stock {@link Stock} object
+   * @param user {@link UserData} object
    */
   @Override
-  public List<String> execute(Stock stock) {
+  public List<String> execute(UserData user) {
+
+    Stock stock = user.getCurrentStock();
+    if (stock == null) {
+      throw new IllegalArgumentException("No current stock set.");
+    }
 
     checkValidDates(start, end, stock);
 
@@ -48,7 +54,7 @@ public class CrossoverCommand implements StockCommand<List<String>> {
 
     for (int i = startI; i > endI - 1; i--) {
       String curr = dates.get(i);
-      if (isCrossover(curr, stock)) {
+      if (isCrossover(curr, user)) {
         temp.add(curr);
       }
     }
@@ -59,9 +65,11 @@ public class CrossoverCommand implements StockCommand<List<String>> {
     return temp;
   }
 
-  private boolean isCrossover(String date, Stock stock) {
-    StockCommand<Double> movingAvg = new MovingAverageCommand(date, x);
-    return stock.getClosingPrice(date) > movingAvg.execute(stock);
+  private boolean isCrossover(String date, UserData user) {
+    Stock stock = user.getCurrentStock();
+
+    Command<Double> movingAvg = new StockMovingAverageCommand(date, x);
+    return stock.getClosingPrice(date) > movingAvg.execute(user);
   }
 
   private void checkValidDates(String start, String end, Stock stock) {

@@ -22,16 +22,6 @@ public class BasicPortfolio implements Portfolio {
   }
 
   /**
-   * Takes in the object of PortfolioCommand and executes it onto a portfolio.
-   *
-   * @param cmd PortfolioCommand to be executed.
-   */
-  @Override
-  public <T> void executeReturn(PortfolioCommand<T> cmd) {
-    cmd.execute(this);
-  }
-
-  /**
    * Gets the name of the portfolio.
    *
    * @return String for the name of the portfolio

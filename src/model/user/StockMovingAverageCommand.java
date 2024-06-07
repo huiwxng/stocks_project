@@ -1,11 +1,14 @@
-package model.stock;
+package model.user;
 
 import java.util.List;
+
+import model.stock.Stock;
+import model.user.UserData;
 
 /**
  * Command to get the x-days moving average.
  */
-public class MovingAverageCommand implements StockCommand<Double> {
+public class StockMovingAverageCommand implements Command<Double> {
 
   private String date;
   private int x;
@@ -17,7 +20,7 @@ public class MovingAverageCommand implements StockCommand<Double> {
    * @param x x-days to go back for the range
    * @throws IllegalArgumentException if x-days is negative
    */
-  public MovingAverageCommand(String date, int x) throws IllegalArgumentException {
+  public StockMovingAverageCommand(String date, int x) throws IllegalArgumentException {
     if (x < 0) {
       throw new IllegalArgumentException("X-Days cannot be negative.");
     }
@@ -26,12 +29,17 @@ public class MovingAverageCommand implements StockCommand<Double> {
   }
 
   /**
-   * Executes the command onto a {@link Stock} object.
+   * Executes the command onto a {@link UserData} object.
    *
-   * @param stock {@link Stock} object
+   * @param user {@link UserData} object
    */
   @Override
-  public Double execute(Stock stock) {
+  public Double execute(UserData user) {
+    Stock stock = user.getCurrentStock();
+    if (stock == null) {
+      throw new IllegalArgumentException("No current stock set.");
+    }
+
     int start = stock.getIndex(date);
     if (start == -1) {
       throw new IllegalArgumentException("No data found on this date.");

@@ -33,20 +33,42 @@ public interface UserData {
   List<Portfolio> listPortfolios();
 
   /**
+   * Sets the current portfolio.
+   *
+   * @param portfolio to set as current portfolio
+   */
+  void setCurrentPortfolio(Portfolio portfolio);
+
+  /**
    * Gets the current portfolio.
    * @return the current portfolio
    */
   Portfolio getCurrentPortfolio();
 
   /**
-   * Sets the current portfolio.
+   * Gets a portfolio from the list given the index.
+   * @param index of the portfolio
+   * @return the portfolio at the index
    */
-  void setCurrentPortfolio(String name);
+  Portfolio getPortfolio(int index);
+
+  /**
+   * Sets the stock that the user is currently viewing.
+   * @param ticker of the stock
+   */
+  void setCurrentStock(String ticker);
 
   /**
    * Gets a stock that the user is currently viewing.
-   * @param ticker of the stock
+   *
    * @return a stock object
    */
-  Stock viewStock(String ticker);
+  Stock getCurrentStock();
+
+  /**
+   * Executes a given command.
+   * @param cmd command
+   * @param <T> return type of the command
+   */
+  <T> T execute(Command<T> cmd);
 }

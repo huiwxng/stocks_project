@@ -1,13 +1,14 @@
-package model.portfolio;
+package model.user;
 
 import java.util.List;
 
+import model.portfolio.Portfolio;
 import model.stock.Stock;
 
 /**
  * Command to get the value of all the stocks in the portfolio.
  */
-public class GetValueCommand implements PortfolioCommand<Double> {
+public class PortfolioGetValueCommand implements Command<Double> {
 
   private String date;
 
@@ -15,17 +16,23 @@ public class GetValueCommand implements PortfolioCommand<Double> {
    * Constructs a command to get the value of the portfolio on a certain date.
    * @param date specified date
    */
-  public GetValueCommand(String date) {
+  public PortfolioGetValueCommand(String date) {
     this.date = date;
   }
 
   /**
-   * Executes the command onto the {@link Portfolio} object.
+   * Executes the command onto the {@link UserData} object.
    *
-   * @param portfolio {@link Portfolio} object
+   * @param user {@link UserData} object
    */
   @Override
-  public Double execute(Portfolio portfolio) {
+  public Double execute(UserData user) {
+    Portfolio portfolio = user.getCurrentPortfolio();
+
+    if (portfolio == null) {
+      throw new IllegalArgumentException("No current portfolio set.");
+    }
+
     if (portfolio.isEmpty()) {
       throw new IllegalArgumentException("No stocks in portfolio.");
     }

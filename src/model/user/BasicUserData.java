@@ -3,8 +3,6 @@ package model.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sound.sampled.Port;
-
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.stock.BasicStock;
@@ -17,6 +15,7 @@ public class BasicUserData implements UserData {
 
   List<Portfolio> portfolios;
   Portfolio currentPortfolio;
+  Stock currentStock;
 
   /**
    * Constructs a user with an empty portfolio list.
@@ -56,6 +55,14 @@ public class BasicUserData implements UserData {
   }
 
   /**
+   * Sets the current portfolio.
+   */
+  @Override
+  public void setCurrentPortfolio(Portfolio portfolio) {
+    currentPortfolio = portfolio;
+  }
+
+  /**
    * Gets the current portfolio.
    *
    * @return the current portfolio
@@ -66,21 +73,44 @@ public class BasicUserData implements UserData {
   }
 
   /**
-   * Sets the current portfolio.
+   * Gets a portfolio from the list given the index.
+   *
+   * @param index of the portfolio
+   * @return the portfolio at the index
    */
   @Override
-  public void setCurrentPortfolio(String name) {
-    currentPortfolio = new BasicPortfolio(name);
+  public Portfolio getPortfolio(int index) {
+    return portfolios.get(index);
   }
 
   /**
-   * Gets a stock that the user is currently viewing.
+   * Sets the stock that the user is currently viewing.
    *
    * @param ticker of the stock
    * @return a stock object
    */
   @Override
-  public Stock viewStock(String ticker) {
-    return new BasicStock(ticker);
+  public void setCurrentStock(String ticker) {
+    currentStock = new BasicStock(ticker);
+  }
+
+  /**
+   * Gets a stock that the user is currently viewing.
+   *
+   * @return a stock object
+   */
+  @Override
+  public Stock getCurrentStock() {
+    return new BasicStock(currentStock.getTicker());
+  }
+
+  /**
+   * Executes a given command.
+   *
+   * @param cmd command
+   */
+  @Override
+  public <T> T execute(Command<T> cmd) {
+    return cmd.execute(this);
   }
 }

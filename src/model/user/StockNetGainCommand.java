@@ -1,9 +1,11 @@
-package model.stock;
+package model.user;
+
+import model.stock.Stock;
 
 /**
  * Command to get the net gain of a stock.
  */
-public class NetGainCommand implements StockCommand<Double> {
+public class StockNetGainCommand implements Command<Double> {
 
   private String start;
   private String end;
@@ -14,18 +16,23 @@ public class NetGainCommand implements StockCommand<Double> {
    * @param start start date
    * @param end end date
    */
-  public NetGainCommand(String start, String end) {
+  public StockNetGainCommand(String start, String end) {
     this.start = start;
     this.end = end;
   }
 
   /**
-   * Executes the command onto a {@link Stock} object.
+   * Executes the command onto a {@link UserData} object.
    *
-   * @param stock {@link Stock} object
+   * @param user {@link UserData} object
    */
   @Override
-  public Double execute(Stock stock) {
+  public Double execute(UserData user) {
+    Stock stock = user.getCurrentStock();
+    if (stock == null) {
+      throw new IllegalArgumentException("No current stock set.");
+    }
+
     int startI = stock.getIndex(start);
     int endI = stock.getIndex(end);
     if (startI == -1 || endI == -1) {

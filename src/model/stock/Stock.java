@@ -44,11 +44,4 @@ public interface Stock {
    * @return the index of the closing prices list
    */
   int getIndex(String date);
-
-  /**
-   * Executes a given stock command.
-   * @param cmd stock command
-   * @param <T> return type of the command
-   */
-  <T> void executeReturn(StockCommand<T> cmd);
 }

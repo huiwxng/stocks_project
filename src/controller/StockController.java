@@ -7,15 +7,13 @@ import java.util.List;
 import java.util.Scanner;
 
 import model.portfolio.BasicPortfolio;
-import model.portfolio.GetValueCommand;
 import model.portfolio.Portfolio;
-import model.portfolio.PortfolioCommand;
-import model.stock.CrossoverCommand;
 import model.Date;
-import model.stock.MovingAverageCommand;
-import model.stock.NetGainCommand;
-import model.stock.Stock;
-import model.stock.StockCommand;
+import model.user.Command;
+import model.user.PortfolioGetValueCommand;
+import model.user.StockCrossoverCommand;
+import model.user.StockMovingAverageCommand;
+import model.user.StockNetGainCommand;
 import model.user.UserData;
 
 /**
@@ -32,8 +30,6 @@ public class StockController {
   private final Readable in;
   private final Appendable out;
   private ControllerState state;
-  private Stock currentStock;
-  private Portfolio currentPortfolio;
 
   /**
    * Create a controller that works with a specified UserData that contains
@@ -96,7 +92,7 @@ public class StockController {
         writeMessage("Stock Ticker (to be viewed): ");
         String ticker = scanner.nextLine().trim();
         try {
-          currentStock = userData.viewStock(ticker);
+          userData.setCurrentStock(ticker);
         } catch (Exception e) {
           lineSeparator();
           writeMessage(e.getMessage() + "\n");
@@ -133,15 +129,14 @@ public class StockController {
   }
 
   private void createPortfolio(Scanner scanner) {
-    scanner.nextLine().trim();
     writeMessage("Name your portfolio: ");
-    String name = scanner.nextLine().trim();
+    String name = scanner.nextLine();
     Portfolio portfolio = new BasicPortfolio(name);
     userData.addPortfolio(portfolio);
     lineSeparator();
     writeMessage(name + " portfolio created.\n");
     state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
-    currentPortfolio = portfolio;
+    userData.setCurrentPortfolio(portfolio);
   }
 
   private void selectPortfolio(String userInput) {
@@ -149,7 +144,7 @@ public class StockController {
     try {
       userInputNum = Integer.parseInt(userInput);
       if (userInputNum >= 2 && userInputNum <= userData.listPortfolios().size() + 1) {
-        currentPortfolio = userData.listPortfolios().get(userInputNum - 2);
+        userData.setCurrentPortfolio(userData.getPortfolio(userInputNum - 2));
         state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
       } else {
         lineSeparator();
@@ -195,7 +190,7 @@ public class StockController {
   private void viewStocks() {
     lineSeparator();
     writeMessage("Stocks in current portfolio:\n");
-    for (String stock : currentPortfolio.getStocksWithAmt()) {
+    for (String stock : userData.getCurrentPortfolio().getStocksWithAmt()) {
       writeMessage(stock + "\n");
     }
   }
@@ -206,9 +201,9 @@ public class StockController {
       writeMessage("Date (YYYY-MM-DD): ");
       String date = scanner.nextLine().trim();
       if (isValidDate(date)) {
-        PortfolioCommand<Double> command = new GetValueCommand(date);
+        Command<Double> command = new PortfolioGetValueCommand(date);
         try {
-          double value = command.execute(currentPortfolio);
+          double value = command.execute(userData);
           lineSeparator();
           writeMessage("Portfolio value: " + value + "\n");
         } catch (IllegalArgumentException e) {
@@ -232,9 +227,9 @@ public class StockController {
         try {
           writeMessage("Number of shares to add: ");
           int addedShareCount = Integer.parseInt(scanner.nextLine().trim());
-          currentPortfolio.addStock(addedTicker, addedShareCount);
+          userData.getCurrentPortfolio().addStock(addedTicker, addedShareCount);
           lineSeparator();
-          writeMessage("Added " + addedShareCount + " " + addedTicker
+          writeMessage("Added " + addedShareCount + " " + addedTicker.toUpperCase()
                   + " to your portfolio.\n");
           validShareCountToAdd = true;
           validTickerToAdd = true;
@@ -260,10 +255,10 @@ public class StockController {
         try {
           writeMessage("Number of shares to remove: ");
           int removedShareCount = Integer.parseInt(scanner.nextLine().trim());
-          int remove = currentPortfolio.removeStock(removedTicker, removedShareCount);
+          int remove = userData.getCurrentPortfolio().removeStock(removedTicker, removedShareCount);
           lineSeparator();
           writeMessage("Removed " + remove + " "
-                  + removedTicker + " from your portfolio.\n");
+                  + removedTicker.toUpperCase() + " from your portfolio.\n");
           validShareCountToRemove = true;
           validTickerToRemove = true;
         } catch (NumberFormatException e) {
@@ -279,9 +274,9 @@ public class StockController {
   }
 
   private void deletePortfolio() {
-    userData.removePortfolio(currentPortfolio);
+    userData.removePortfolio(userData.getCurrentPortfolio());
     lineSeparator();
-    writeMessage("Portfolio " + currentPortfolio.getName() + " deleted.\n");
+    writeMessage("Portfolio " + userData.getCurrentPortfolio().getName() + " deleted.\n");
     state = ControllerState.PORTFOLIO_MENU;
   }
 
@@ -319,8 +314,8 @@ public class StockController {
   private void lastClosingPrice() {
     lineSeparator();
     writeMessage("Last Closing Price: "
-            + currentStock.getAllClosingPrices()
-            .get(currentStock.getAllClosingPrices().size() - 1) + "\n");
+            + userData.getCurrentStock().getAllClosingPrices()
+            .get(userData.getCurrentStock().getAllClosingPrices().size() - 1) + "\n");
   }
 
   private void closingPrice(Scanner scanner) {
@@ -332,7 +327,7 @@ public class StockController {
       if (isValidDate(date)) {
         lineSeparator();
         writeMessage("Closing Price for " + date + ": "
-                + currentStock.getClosingPrice(date) + "\n");
+                + userData.getCurrentStock().getClosingPrice(date) + "\n");
         validDate = true;
       } else {
         lineSeparator();
@@ -345,8 +340,8 @@ public class StockController {
     String start = setStartDate(scanner);
     String end = setEndDate(scanner, start);
     try {
-      StockCommand<Double> command = new NetGainCommand(start, end);
-      double netGain = command.execute(currentStock);
+      Command<Double> command = new StockNetGainCommand(start, end);
+      double netGain = command.execute(userData);
       lineSeparator();
       writeMessage("Net Gain from " + start + " to " + end + ": " + netGain + "\n");
     } catch (IllegalArgumentException e) {
@@ -356,7 +351,7 @@ public class StockController {
   }
 
   private void xDayMovingAverage(Scanner scanner) {
-    String date = "";;
+    String date = "";
     boolean validDate = false;
     while (!validDate) {
       writeMessage("Date (YYYY-MM-DD): ");
@@ -370,8 +365,8 @@ public class StockController {
     }
     String xDays = setXDays(scanner);
     try {
-      StockCommand<Double> command = new MovingAverageCommand(date, Integer.parseInt(xDays));
-      double movingAverage = command.execute(currentStock);
+      Command<Double> command = new StockMovingAverageCommand(date, Integer.parseInt(xDays));
+      double movingAverage = command.execute(userData);
       lineSeparator();
       writeMessage("X-Day Moving Average on " + date + " for " + xDays + " days: "
               + movingAverage + "\n");
@@ -386,9 +381,9 @@ public class StockController {
     String end = setEndDate(scanner, start);
     String xDays = setXDays(scanner);
     try {
-      StockCommand<List<String>> command
-              = new CrossoverCommand(start, end, Integer.parseInt(xDays));
-      List<String> crossovers = command.execute(currentStock);
+      Command<List<String>> command
+              = new StockCrossoverCommand(start, end, Integer.parseInt(xDays));
+      List<String> crossovers = command.execute(userData);
       lineSeparator();
       for (int i = 0; i < crossovers.size(); i++) {
         if (i % 5 == 0) {
@@ -512,7 +507,7 @@ public class StockController {
 
   private void printSpecificPortfolioMenu() {
     lineSeparator();
-    writeMessage(currentPortfolio.getName() + "\n");
+    writeMessage(userData.getCurrentPortfolio().getName() + "\n");
     writeMessage("1: View Stocks\n");
     writeMessage("2: Portfolio Value\n");
     writeMessage("3: Buy Stock(s)\n");
@@ -525,7 +520,7 @@ public class StockController {
   private void printStockMenu() {
     lineSeparator();
     try {
-      String ticker = currentStock.getTicker();
+      String ticker = userData.getCurrentStock().getTicker();
       writeMessage(ticker + "\n");
     } catch (NullPointerException e) {
       writeMessage("You are not currently viewing a stock. Please try again.\n");
