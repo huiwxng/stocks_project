@@ -37,7 +37,7 @@ public class BasicStock implements Stock {
    */
   @Override
   public String getTicker() {
-    return ticker;
+    return ticker.toUpperCase();
   }
 
   /**
@@ -86,6 +86,7 @@ public class BasicStock implements Stock {
 
   /**
    * Gets the index of the closing prices list given the date.
+   *
    * @param date specified date
    * @return the index of the closing prices list
    */
@@ -117,6 +118,7 @@ public class BasicStock implements Stock {
 
   /**
    * Executes a given stock command.
+   *
    * @param cmd stock command
    * @param <T> return type of the command
    */
@@ -160,7 +162,7 @@ public class BasicStock implements Stock {
       // Check if the API returned an error
       String response = output.toString();
 
-      if (response.contains("Error Message")) {
+      if (response.contains("Error Message") || response.contains("Information")) {
         throw new IllegalArgumentException("The ticker '" + ticker
                 + "' is not available on Alpha Vantage API or you have ran out of API requests.");
       }

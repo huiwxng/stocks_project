@@ -561,7 +561,7 @@ public class StockController {
   private void printStockMenu() {
     lineSeparator();
     try {
-      String ticker = currentStock.getTicker().toUpperCase();
+      String ticker = currentStock.getTicker();
       writeMessage(ticker + "\n");
     } catch (NullPointerException e) {
       writeMessage("You are not currently viewing a stock. Please try again.\n");
