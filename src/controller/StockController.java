@@ -321,10 +321,15 @@ public class StockController implements IController {
       writeMessage("Date (YYYY-MM-DD): ");
       date = scanner.nextLine().trim();
       if (isValidDate(date)) {
-        lineSeparator();
-        writeMessage("Closing Price for " + date + ": "
-                + userData.getCurrentStock().getClosingPrice(date) + "\n");
-        validDate = true;
+        try {
+          lineSeparator();
+          writeMessage("Closing Price for " + date + ": "
+                  + userData.getCurrentStock().getClosingPrice(date) + "\n");
+          validDate = true;
+        } catch (IllegalArgumentException e) {
+          writeMessage(e.getMessage() + " Please try again.\n");
+          lineSeparator();
+        }
       } else {
         lineSeparator();
         writeMessage("Invalid date. Please try again.\n");

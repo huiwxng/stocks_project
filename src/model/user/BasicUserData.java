@@ -68,6 +68,9 @@ public class BasicUserData implements UserData {
    */
   @Override
   public void setCurrentPortfolio(Portfolio portfolio) {
+    if (!listPortfolios().contains(portfolio)) {
+      throw new IllegalArgumentException("This portfolio is not available.");
+    }
     currentPortfolio = portfolio;
   }
 
@@ -109,6 +112,9 @@ public class BasicUserData implements UserData {
    */
   @Override
   public Stock getCurrentStock() {
+    if (currentStock == null) {
+      throw new IllegalArgumentException("Not currently viewing a stock.");
+    }
     return new BasicStock(currentStock.getTicker());
   }
 

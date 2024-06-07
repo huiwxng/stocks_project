@@ -10,16 +10,7 @@ import static org.junit.Assert.assertThrows;
 /**
  * Test class to test the implementations of the {@link Stock} interface.
  */
-public class StockTest1 {
-
-  // tests to write:
-  // maybe (they arent public):
-  // tests for creating a stock that doesn't exist
-  // tests for creating a stock already here locally
-  // tests for creating a stock using the API
-
-  // tests get ticker
-  // tests for get closing price on a certain date
+public class StockTest {
 
   Stock Apple;
   Stock Google;
@@ -87,5 +78,18 @@ public class StockTest1 {
     assertEquals(336.15, HomeDepot.getClosingPrice("2024-05-21"), 0.01);
     assertEquals(153.67, TSM.getClosingPrice("2024-05-21"), 0.01);
     assertEquals(65.15, Walmart.getClosingPrice("2024-05-21"), 0.01);
+  }
+
+  @Test
+  public void testInvalidDates() {
+    // out of range of the csv data (older than the oldest date)
+    assertThrows(IllegalArgumentException.class, () -> {
+      Apple.getClosingPrice("1999-01-10");
+    });
+
+    // out of range of the csv data (in the future)
+    assertThrows(IllegalArgumentException.class, () -> {
+      Apple.getClosingPrice("2024-10-10");
+    });
   }
 }

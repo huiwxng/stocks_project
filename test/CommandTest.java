@@ -54,6 +54,10 @@ public class CommandTest {
     netGain = new StockNetGainCommand("2020-05-20", "2024-06-04");
     assertEquals(-124.88, user.execute(netGain), 0.01);
 
+    // same day net gain
+    netGain = new StockNetGainCommand("2024-06-04", "2024-06-04");
+    assertEquals(0.0, user.execute(netGain), 0.01);
+
     assertThrows(IllegalArgumentException.class, () -> {
       // tests for exception when the start date is later than the end date
       Command<Double> testThrow = new StockNetGainCommand("2024-06-04", "2020-05-20");
@@ -73,6 +77,9 @@ public class CommandTest {
 
     movingAvg = new StockMovingAverageCommand("2020-06-04", 30);
     assertEquals(306.45, user.execute(movingAvg), 0.01);
+
+    movingAvg = new StockMovingAverageCommand("2020-06-04", 100);
+    assertEquals(293.31, user.execute(movingAvg), 0.01);
 
     assertThrows(IllegalArgumentException.class, () -> {
       // tests for exception when x-days value is negative

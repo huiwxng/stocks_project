@@ -6,6 +6,7 @@ import java.util.List;
 
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
+import model.stock.BasicStock;
 import model.stock.Stock;
 
 import static org.junit.Assert.assertEquals;
@@ -17,25 +18,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * Test class to test the implementations of the {@link Portfolio} interface.
  */
-public class PortfolioTest1 {
-
-  // tests to write:
-  // run getters at every step
-  // test for an empty portfolio:
-      // running removeStock should throw error
-
-  // test for adding a stock to portfolio:
-      // test for adding to existing stock
-      // test for adding to non-existing stock
-
-  // test for removing a stock:
-      // test for removing existing stock:
-          // with enough shares
-          // with not enough shares:
-              // amount more than the existing shares
-              // amount the same as the existing shares
-    // test for removing non-existing stock should throw error
-
+public class PortfolioTest {
   Portfolio p;
   Portfolio p1;
   Portfolio p2;
@@ -53,20 +36,39 @@ public class PortfolioTest1 {
   }
 
   @Test
-  public void getName() {
+  public void testGetName() {
     assertEquals("empty portfolio", p.getName());
     assertEquals("portfolio 1", p1.getName());
     assertEquals("portfolio 2", p2.getName());
   }
 
   @Test
-  public void getStocks() {
-    List<Stock> expected = new ArrayList<>();
-    assertEquals(expected, p.getStocks());
+  public void testGetStocksAndShares() {
+    List<Stock> expectedStocks = new ArrayList<>();
+    List<Integer> expectedShares = new ArrayList<>();
+
+    assertEquals(expectedStocks, p.getStocks());
+    assertEquals(expectedShares, p.getShares());
+
+    p.addStock("GOOG", 10);
+    expectedStocks.add(new BasicStock("GOOG"));
+    expectedShares.add(10);
+    for (int i = 0; i < p.getStocks().size(); i++) {
+      assertEquals(expectedStocks.get(i).getTicker(), p.getStocks().get(i).getTicker());
+      assertEquals(expectedShares.get(i), p.getShares().get(i));
+    }
+
+    p.addStock("AAPL", 20);
+    expectedStocks.add(new BasicStock("AAPL"));
+    expectedShares.add(20);
+    for (int i = 0; i < p.getStocks().size(); i++) {
+      assertEquals(expectedStocks.get(i).getTicker(), p.getStocks().get(i).getTicker());
+      assertEquals(expectedShares.get(i), p.getShares().get(i));
+    }
   }
 
   @Test
-  public void getStocksWithAmt() {
+  public void testGetStocksWithAmt() {
     // test getStocksWithAmt with empty portfolio
     List<String> expected = new ArrayList<>();
     assertEquals(expected, p.getStocksWithAmt());
@@ -84,7 +86,7 @@ public class PortfolioTest1 {
   }
 
   @Test
-  public void addStock() {
+  public void testAddStock() {
     // tests for adding to empty portfolio
     List<String> expected = new ArrayList<>();
     assertEquals(expected, p.getStocksWithAmt());
@@ -115,7 +117,7 @@ public class PortfolioTest1 {
   }
 
   @Test
-  public void removeStock() {
+  public void testRemoveStock() {
     List<String> expected = new ArrayList<>();
     assertEquals(expected, p.getStocksWithAmt());
 
@@ -145,7 +147,7 @@ public class PortfolioTest1 {
   }
 
   @Test
-  public void isEmpty() {
+  public void testIsEmpty() {
     assertTrue(p.isEmpty());
     p.addStock("AAPL", 10);
     assertFalse(p.isEmpty());

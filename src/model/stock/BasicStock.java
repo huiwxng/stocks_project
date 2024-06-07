@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +78,12 @@ public class BasicStock implements Stock {
    */
   @Override
   public double getClosingPrice(String date) throws IllegalArgumentException {
+    LocalDate todayDate = LocalDate.now();
+    String today = todayDate.toString();
+    Date current = new Date(today);
+    if (current.isBefore(date)) {
+      throw new IllegalArgumentException("We cannot predict future stock price.");
+    }
     int i = getIndex(date);
     if (i == -1) {
       throw new IllegalArgumentException("No data on this date.");
