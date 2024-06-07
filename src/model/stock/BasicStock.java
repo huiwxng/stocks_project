@@ -19,10 +19,10 @@ import model.Date;
  */
 public class BasicStock implements Stock {
 
-  private String ticker; // stock symbol / ticker
+  private final String ticker; // stock symbol / ticker
   private List<String> dates;
   private List<Double> prices;
-  private String path;
+  private final String path;
 
   public BasicStock(String ticker) {
     this.ticker = ticker;
