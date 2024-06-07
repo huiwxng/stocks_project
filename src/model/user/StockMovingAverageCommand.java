@@ -57,4 +57,9 @@ public class StockMovingAverageCommand implements Command<Double> {
     String str = String.format("%.2f", movingAvg);
     return Double.valueOf(str);
   }
+
+  @Override
+  public String getName() {
+    return "moving average";
+  }
 }

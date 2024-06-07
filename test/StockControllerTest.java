@@ -7,21 +7,23 @@ import controller.Interaction;
 import controller.StockController;
 import model.portfolio.Portfolio;
 import model.user.BasicUserData;
+import model.user.MockUserData;
 import model.user.UserData;
 
 import static controller.Interaction.inputs;
 import static controller.Interaction.prints;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class is for testing the StockController.
  */
 public class StockControllerTest {
-  private UserData model;
+  private MockUserData model;
 
   @Before
   public void setup() {
-    model = new BasicUserData();
+    model = new MockUserData(new StringBuilder());
   }
 
   @Test
@@ -45,14 +47,19 @@ public class StockControllerTest {
   }
 
   @Test
-  public void testStartMenuInput2() throws InterruptedException {
-    // test valid stock ticker
+  public void testStartMenuInput2ValidTicker() throws InterruptedException {
     run(model, prints(welcomeMessage()), prints(startMenu())
             , inputs("2"), prints(viewStocksPrompt())
             , inputs("AMZN"), prints(stockMenu("AMZN"))
             , inputs("q"), prints(farewellMessage()));
+  }
 
-    // test invalid stock ticker
+  @Test
+  public void testStartMenuInput2InvalidTicker() throws InterruptedException {
+    run(model, prints(welcomeMessage()), prints(startMenu())
+            , inputs("2"), prints(viewStocksPrompt())
+            ,inputs("invalid input"), prints(invalidTickerMessage("invalid input"))
+            ,prints(startMenu()), inputs("q"), prints(farewellMessage()));
   }
 
   private void run(UserData model, Interaction... interactions)
@@ -135,6 +142,12 @@ public class StockControllerTest {
 
   private String invalidInputMessage() {
     return lineSeparator() + "Invalid input. Please try again.\n";
+  }
+
+  private String invalidTickerMessage(String ticker) {
+    return lineSeparator() + "The ticker '" + ticker
+            + "' is not available on Alpha Vantage API or you have ran out of API requests.\n"
+            + lineSeparator() + "You are not currently viewing a stock. Please try again.\n";
   }
 
   private String lineSeparator() {

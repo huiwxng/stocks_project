@@ -55,4 +55,9 @@ public class PortfolioGetValueCommand implements Command<Double> {
     String str = String.format("%.2f", value);
     return Double.valueOf(str);
   }
+
+  @Override
+  public String getName() {
+    return "portfolio value";
+  }
 }

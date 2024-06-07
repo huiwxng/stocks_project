@@ -47,4 +47,9 @@ public class StockNetGainCommand implements Command<Double> {
     String str = String.format("%.2f", netGain);
     return Double.valueOf(str);
   }
+
+  @Override
+  public String getName() {
+    return "net gain";
+  }
 }

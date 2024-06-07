@@ -11,4 +11,10 @@ public interface Command<T> {
    * @return a value given the command
    */
   T execute(UserData user);
+
+  /**
+   * Gets the name of the command being executed.
+   * @return the String for the name of the command.
+   */
+  String getName();
 }

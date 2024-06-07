@@ -65,6 +65,11 @@ public class StockCrossoverCommand implements Command<List<String>> {
     return temp;
   }
 
+  @Override
+  public String getName() {
+    return "crossover";
+  }
+
   private boolean isCrossover(String date, UserData user) {
     Stock stock = user.getCurrentStock();
 

@@ -1,26 +1,16 @@
 package model.user;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.portfolio.Portfolio;
-import model.stock.BasicStock;
 import model.stock.Stock;
 
-/**
- * Basic implementation of the {@link UserData} interface.
- */
-public class BasicUserData implements UserData {
+public class MockUserData extends BasicUserData {
+  private final StringBuilder log;
 
-  List<Portfolio> portfolios;
-  Portfolio currentPortfolio;
-  Stock currentStock;
-
-  /**
-   * Constructs a user with an empty portfolio list.
-   */
-  public BasicUserData() {
-    portfolios = new ArrayList<>();
+  public MockUserData(StringBuilder log) {
+    super();
+    this.log = log;
   }
 
   /**
@@ -30,7 +20,8 @@ public class BasicUserData implements UserData {
    */
   @Override
   public void addPortfolio(Portfolio portfolio) {
-    portfolios.add(portfolio);
+    super.addPortfolio(portfolio);
+    log.append("add portfolio: ").append(portfolio.getName()).append("\n");
   }
 
   /**
@@ -40,7 +31,8 @@ public class BasicUserData implements UserData {
    */
   @Override
   public void removePortfolio(Portfolio portfolio) {
-    portfolios.remove(portfolio);
+    super.removePortfolio(portfolio);
+    log.append("remove portfolio: ").append(portfolio.getName()).append("\n");
   }
 
   /**
@@ -50,7 +42,8 @@ public class BasicUserData implements UserData {
    */
   @Override
   public List<Portfolio> listPortfolios() {
-    return new ArrayList<>(portfolios);
+    log.append("view portfolios: ").append("\n");
+    return super.listPortfolios();
   }
 
   /**
@@ -58,7 +51,8 @@ public class BasicUserData implements UserData {
    */
   @Override
   public void setCurrentPortfolio(Portfolio portfolio) {
-    currentPortfolio = portfolio;
+    super.setCurrentPortfolio(portfolio);
+    log.append("view specific portfolio: ").append(portfolio.getName()).append("\n");
   }
 
   /**
@@ -68,7 +62,7 @@ public class BasicUserData implements UserData {
    */
   @Override
   public Portfolio getCurrentPortfolio() {
-    return currentPortfolio;
+    return super.getCurrentPortfolio();
   }
 
   /**
@@ -79,7 +73,7 @@ public class BasicUserData implements UserData {
    */
   @Override
   public Portfolio getPortfolio(int index) {
-    return portfolios.get(index);
+    return super.getPortfolio(index);
   }
 
   /**
@@ -89,7 +83,8 @@ public class BasicUserData implements UserData {
    */
   @Override
   public void setCurrentStock(String ticker) {
-    currentStock = new BasicStock(ticker);
+    super.setCurrentStock(ticker);
+    log.append("view stock: ").append(ticker).append("\n");
   }
 
   /**
@@ -99,7 +94,7 @@ public class BasicUserData implements UserData {
    */
   @Override
   public Stock getCurrentStock() {
-    return new BasicStock(currentStock.getTicker());
+    return super.getCurrentStock();
   }
 
   /**
@@ -109,6 +104,16 @@ public class BasicUserData implements UserData {
    */
   @Override
   public <T> T execute(Command<T> cmd) {
-    return cmd.execute(this);
+    log.append(cmd.getName()).append(": \n");
+    return super.execute(cmd);
+  }
+
+  /**
+   * Gets the log as a string.
+   *
+   * @return a string of the log
+   */
+  public String getLog() {
+    return log.toString();
   }
 }

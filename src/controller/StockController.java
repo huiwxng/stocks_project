@@ -25,7 +25,7 @@ import model.user.UserData;
  * any Appendable to transmit output. There is no official "view", so this
  * controller just uses an Appendable object.
  */
-public class StockController {
+public class StockController implements IController {
   private final UserData userData;
   private final Readable in;
   private final Appendable out;
@@ -49,11 +49,7 @@ public class StockController {
     this.state = ControllerState.START_MENU;
   }
 
-  /**
-   * The main method that relinquishes control of the application to the controller.
-   *
-   * @throws IllegalStateException if the controller is unable to transmit output
-   */
+  @Override
   public void control() throws IllegalStateException, InterruptedException {
     Scanner scanner = new Scanner(in);
     this.welcomeMessage();
