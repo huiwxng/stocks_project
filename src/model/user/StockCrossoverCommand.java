@@ -69,7 +69,7 @@ public class StockCrossoverCommand implements Command<List<String>> {
     Stock stock = user.getCurrentStock();
 
     Command<Double> movingAvg = new StockMovingAverageCommand(date, x);
-    return stock.getClosingPrice(date) > movingAvg.execute(user);
+    return stock.getClosingPrice(date) > user.execute(movingAvg);
   }
 
   private void checkValidDates(String start, String end, Stock stock) {

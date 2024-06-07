@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * This class is for testing the StockController.
  */
-public class StockControllerOutputTest {
+public class StockControllerTest {
   private UserData model;
 
   @Before
@@ -49,7 +49,7 @@ public class StockControllerOutputTest {
     // test valid stock ticker
     run(model, prints(welcomeMessage()), prints(startMenu())
             , inputs("2"), prints(viewStocksPrompt())
-            , inputs("AMZN"), prints(stockMenu())
+            , inputs("AMZN"), prints(stockMenu("AMZN"))
             , inputs("q"), prints(farewellMessage()));
 
     // test invalid stock ticker
@@ -84,9 +84,9 @@ public class StockControllerOutputTest {
     return portfolioMenu.toString();
   }
 
-  private String specificPortfolioMenu() {
+  private String specificPortfolioMenu(String portfolioName) {
     return lineSeparator() +
-            model.getCurrentPortfolio() + "\n" +
+            portfolioName + "\n" +
             "1: View Stocks\n" +
             "2: Portfolio Value\n" +
             "3: Buy Stock(s)\n" +
@@ -98,13 +98,13 @@ public class StockControllerOutputTest {
 
   }
 
-  private String stockMenu() {
-    return lineSeparator() +
-            // append stock name
-            "1: Last Closing Price\n" + "2: Closing Price\n" +
-            "3: Net Gain\n" + "4: X-Day Moving Average\n" +
-            "5: X-Day Crossovers\n" + returnMessage() +
-            quitMessage() + selectMenuOptionPrompt();
+  private String stockMenu(String ticker) {
+    return lineSeparator()
+            + ticker + "\n"
+            + "1: Last Closing Price\n" + "2: Closing Price\n"
+            + "3: Net Gain\n" + "4: X-Day Moving Average\n"
+            + "5: X-Day Crossovers\n" + returnMessage()
+            + quitMessage() + selectMenuOptionPrompt();
   }
 
   private String welcomeMessage() {
