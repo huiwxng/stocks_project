@@ -203,7 +203,7 @@ public class StockController {
       if (isValidDate(date)) {
         Command<Double> command = new PortfolioGetValueCommand(date);
         try {
-          double value = command.execute(userData);
+          double value = userData.execute(command);
           lineSeparator();
           writeMessage("Portfolio value: " + value + "\n");
         } catch (IllegalArgumentException e) {
@@ -341,7 +341,7 @@ public class StockController {
     String end = setEndDate(scanner, start);
     try {
       Command<Double> command = new StockNetGainCommand(start, end);
-      double netGain = command.execute(userData);
+      double netGain = userData.execute(command);
       lineSeparator();
       writeMessage("Net Gain from " + start + " to " + end + ": " + netGain + "\n");
     } catch (IllegalArgumentException e) {
@@ -366,7 +366,7 @@ public class StockController {
     String xDays = setXDays(scanner);
     try {
       Command<Double> command = new StockMovingAverageCommand(date, Integer.parseInt(xDays));
-      double movingAverage = command.execute(userData);
+      double movingAverage = userData.execute(command);
       lineSeparator();
       writeMessage("X-Day Moving Average on " + date + " for " + xDays + " days: "
               + movingAverage + "\n");
@@ -383,7 +383,7 @@ public class StockController {
     try {
       Command<List<String>> command
               = new StockCrossoverCommand(start, end, Integer.parseInt(xDays));
-      List<String> crossovers = command.execute(userData);
+      List<String> crossovers = userData.execute(command);
       lineSeparator();
       for (int i = 0; i < crossovers.size(); i++) {
         if (i % 5 == 0) {
