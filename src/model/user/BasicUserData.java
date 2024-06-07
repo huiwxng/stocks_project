@@ -3,7 +3,6 @@ package model.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.stock.BasicStock;
 import model.stock.Stock;
@@ -87,7 +86,6 @@ public class BasicUserData implements UserData {
    * Sets the stock that the user is currently viewing.
    *
    * @param ticker of the stock
-   * @return a stock object
    */
   @Override
   public void setCurrentStock(String ticker) {

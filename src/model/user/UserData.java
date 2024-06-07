@@ -69,6 +69,7 @@ public interface UserData {
    * Executes a given command.
    * @param cmd command
    * @param <T> return type of the command
+   * @return the value from the command
    */
   <T> T execute(Command<T> cmd);
 }
