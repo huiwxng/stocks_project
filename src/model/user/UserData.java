@@ -2,6 +2,8 @@ package model.user;
 
 import java.util.List;
 
+import javax.sound.sampled.Port;
+
 import model.portfolio.Portfolio;
 import model.stock.Stock;
 
@@ -29,6 +31,17 @@ public interface UserData {
    * @return a list of {@link Portfolio} objects that the user holds.
    */
   List<Portfolio> listPortfolios();
+
+  /**
+   * Gets the current portfolio.
+   * @return the current portfolio
+   */
+  Portfolio getCurrentPortfolio();
+
+  /**
+   * Sets the current portfolio.
+   */
+  void setCurrentPortfolio(String name);
 
   /**
    * Gets a stock that the user is currently viewing.
