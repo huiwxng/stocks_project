@@ -5,9 +5,16 @@ import java.util.List;
 import model.portfolio.Portfolio;
 import model.stock.Stock;
 
+/**
+ * Mock class for testing {@link BasicUserData}.
+ */
 public class MockUserData extends BasicUserData {
   private final StringBuilder log;
 
+  /**
+   * Constructs a mock user data with a log.
+   * @param log to append to
+   */
   public MockUserData(StringBuilder log) {
     super();
     this.log = log;

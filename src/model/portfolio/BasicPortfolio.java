@@ -15,6 +15,10 @@ public class BasicPortfolio implements Portfolio {
   private final List<Stock> stocks;
   private final List<Integer> shares;
 
+  /**
+   * Constructs a new portfolio object.
+   * @param name of the portfolio
+   */
   public BasicPortfolio(String name) {
     this.name = name;
     stocks = new ArrayList<>();
@@ -148,47 +152,5 @@ public class BasicPortfolio implements Portfolio {
       }
     }
     return -1;
-  }
-
-  public static void main(String[] args) {
-    // tests to write:
-    // run getters at every step
-    // test for an empty portfolio:
-        // running removeStock should throw error
-
-    // test for adding a stock to portfolio:
-        // test for adding to existing stock
-        // test for adding to non-existing stock
-
-    // test for removing a stock:
-        // test for removing existing stock:
-            // with enough shares
-            // with not enough shares:
-                // amount more than the existing shares
-                // amount the same as the existing shares
-        // test for removing non-existing stock should throw error
-
-    Portfolio p = new BasicPortfolio("1");
-    System.out.println(p.getName());
-    System.out.println(p.getStocks().toString());
-    System.out.println(p.getStocksWithAmt());
-//    p.removeStock("AAPL", 10);
-    p.addStock("AAPL", 10);
-    System.out.println(p.getStocks().toString());
-    System.out.println(p.getStocksWithAmt());
-    p.addStock("AAPL", 2);
-    System.out.println(p.getStocksWithAmt());
-    p.removeStock("AAPL", 2);
-    System.out.println(p.getStocksWithAmt());
-    p.removeStock("AAPL", 9);
-    System.out.println(p.getStocksWithAmt());
-    p.removeStock("AAPL", 1);
-    System.out.println(p.getStocksWithAmt());
-    p.addStock("AAPL", 2);
-    System.out.println(p.getStocksWithAmt());
-    p.addStock("GOOG", 2);
-    System.out.println(p.getStocksWithAmt());
-    p.removeStock("AAPL", 3);
-    System.out.println(p.getStocksWithAmt());
   }
 }

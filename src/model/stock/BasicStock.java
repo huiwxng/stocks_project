@@ -42,19 +42,9 @@ public class BasicStock implements Stock {
   }
 
   /**
-   * Gets a list of all the closing prices with the corresponding dates.
-   *
-   * @return a list of the closing prices.
+   * Gets a list of all the closing prices.
+   * @return a list of the closing prices
    */
-  @Override
-  public List<String> getAllClosingPricesWithDates() {
-    List<String> res = new ArrayList<>();
-    for (int i = 0; i < prices.size(); i++) {
-      res.add(String.format("%s: %.2f", dates.get(i), prices.get(i)));
-    }
-    return res;
-  }
-
   @Override
   public List<Double> getAllClosingPrices() {
     return new ArrayList<>(prices);
@@ -230,36 +220,5 @@ public class BasicStock implements Stock {
       }
     }
     return -1;
-  }
-
-  public static void main(String[] args) {
-//    Stock stock = new BasicStock("asdfasdf");
-
-    Stock Apple = new BasicStock("AAPL");
-    Stock Google = new BasicStock("GOOG");
-    Stock Nvidia = new BasicStock("NVDA");
-    Stock Amazon = new BasicStock("AMZN");
-    Stock Tesla = new BasicStock("TSLA");
-    Stock Meta = new BasicStock("META");
-    Stock Microsoft = new BasicStock("MSFT");
-    Stock JPMorgan = new BasicStock("JPM");
-    Stock HomeDepot = new BasicStock("HD");
-    Stock TSM = new BasicStock("TSM");
-    Stock Walmart = new BasicStock("WMT");
-    for (int i = 0; i < 10; i++) {
-      System.out.println(Apple.getAllClosingPricesWithDates().get(i));
-    }
-    System.out.println(Apple.getClosingPrice("2002-01-10"));
-    System.out.println(Apple.getClosingPrice("2024-06-01"));
-    System.out.println(Google.getClosingPrice("2024-05-21"));
-    System.out.println(Nvidia.getClosingPrice("2024-05-20"));
-    System.out.println(Amazon.getClosingPrice("2024-05-20"));
-    System.out.println(Tesla.getClosingPrice("2023-04-21"));
-    System.out.println(Meta.getClosingPrice("2023-04-21"));
-    System.out.println(Microsoft.getClosingPrice("2020-01-23"));
-    System.out.println(JPMorgan.getClosingPrice("2024-05-21"));
-    System.out.println(HomeDepot.getClosingPrice("2024-05-21"));
-    System.out.println(TSM.getClosingPrice("2024-05-21"));
-    System.out.println(Walmart.getClosingPrice("2024-05-21"));
   }
 }

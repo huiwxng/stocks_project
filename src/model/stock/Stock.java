@@ -14,12 +14,6 @@ public interface Stock {
   String getTicker();
 
   /**
-   * Gets a list of all the closing prices with the corresponding dates.
-   * @return a list of the closing prices
-   */
-  List<String> getAllClosingPricesWithDates();
-
-  /**
    * Gets a list of all the closing prices.
    * @return a list of the closing prices
    */

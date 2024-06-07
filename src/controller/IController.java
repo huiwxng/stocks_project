@@ -1,5 +1,8 @@
 package controller;
 
+/**
+ * Interface for the controller.
+ */
 public interface IController {
   /**
    * The main method that relinquishes control of the application to the controller.
