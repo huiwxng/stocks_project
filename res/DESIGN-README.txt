@@ -1,0 +1,22 @@
+DESIGN
+- Model/View/Controller using Command Design Pattern
+	- (MODEL) A UserData interface that represents the user and acts as our main Model
+		- BasicUserData implements the methods in the UserData interface
+			- Executes on our commands
+	- (CONTROLLER/VIEW) IController interface that represents the controller
+		- StockController implements the methods in the IController interface
+			- Takes in a model, input, and output
+			- The implementation also acts as our view by appending to our Appendable output
+
+	- Commands:
+		- We had a command for each of the functions that we needed
+			- PortfolioGetValueCommand loops through the stocks in the current portfolio and returns the value
+			- StockNetGainCommand gets the difference between the closing prices of two days
+			- StockMovingAverageCommand gets the average of the last x-days
+			- StockCrossoverCommand gets the list of days where an x-days crossover exists
+	- Objects:
+		- A Stock interface that represents an individual stock
+			- BasicStock implements the methods in Stock interface
+				- Gets data from local files if possible, if not, then it grabs the data from the API
+		- A Portfolio interface that represents a single portfolio
+			- BasicPortfolio implements the methods in Portfolio interface
