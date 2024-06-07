@@ -1,0 +1,179 @@
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+
+import model.portfolio.BasicPortfolio;
+import model.portfolio.Portfolio;
+import model.user.BasicUserData;
+import model.user.PortfolioGetValueCommand;
+import model.user.StockCrossoverCommand;
+import model.user.StockMovingAverageCommand;
+import model.user.StockNetGainCommand;
+import model.user.UserData;
+import model.user.Command;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
+/**
+ * Test class for all commands.
+ */
+public class CommandTest {
+  UserData user;
+  Portfolio p;
+  Portfolio p1;
+  Portfolio p2;
+
+  @Before
+  public void setUp() throws Exception {
+    user = new BasicUserData();
+    user.setCurrentStock("AAPL");
+
+    p = new BasicPortfolio("empty portfolio");
+
+    p1 = new BasicPortfolio("portfolio 1");
+    p1.addStock("AAPL", 10);
+
+    p2 = new BasicPortfolio("portfolio 2");
+    p2.addStock("AAPL", 10);
+    p2.addStock("GOOG", 10);
+
+    user.addPortfolio(p);
+    user.addPortfolio(p1);
+    user.addPortfolio(p2);
+  }
+
+  @Test
+  public void testStockNetGainCommand() {
+    Command<Double> netGain;
+
+    netGain = new StockNetGainCommand("2024-05-20", "2024-06-04");
+    assertEquals(3.31, user.execute(netGain), 0.01);
+
+    netGain = new StockNetGainCommand("2020-05-20", "2024-06-04");
+    assertEquals(-124.88, user.execute(netGain), 0.01);
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      // tests for exception when the start date is later than the end date
+      Command<Double> testThrow = new StockNetGainCommand("2024-06-04", "2020-05-20");
+      user.execute(testThrow);
+    });
+  }
+
+  @Test
+  public void testStockMovingAverageCommand() {
+    Command<Double> movingAvg;
+
+    movingAvg = new StockMovingAverageCommand("2024-06-04", 5);
+    assertEquals(192.44, user.execute(movingAvg), 0.01);
+
+    movingAvg = new StockMovingAverageCommand("2024-06-04", 30);
+    assertEquals(183.52, user.execute(movingAvg), 0.01);
+
+    movingAvg = new StockMovingAverageCommand("2020-06-04", 30);
+    assertEquals(306.45, user.execute(movingAvg), 0.01);
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      // tests for exception when x-days value is negative
+      Command<Double> testThrow = new StockMovingAverageCommand("2024-06-04", -1);
+      user.execute(testThrow);
+    });
+  }
+
+  @Test
+  public void testStockCrossoverCommand() {
+    Command<List<String>> crossover;
+    List<String> expected;
+    List<String> emptyExpected = List.of("No x-day crossovers.");
+
+    // tests for normal behavior
+
+    // tests for periods where there are 5-day crossovers
+    expected = List.of("2024-05-20", "2024-05-21", "2024-05-22", "2024-05-29", "2024-05-30",
+            "2024-05-31", "2024-06-03", "2024-06-04");
+    crossover = new StockCrossoverCommand("2024-05-20", "2024-06-04", 5);
+    assertEquals(expected, user.execute(crossover));
+
+    // tests for periods where there are 7-day crossovers
+    expected = List.of("2024-05-20", "2024-05-21", "2024-05-22", "2024-05-29", "2024-05-30",
+            "2024-05-31", "2024-06-03", "2024-06-04");
+    crossover = new StockCrossoverCommand("2024-05-20", "2024-06-04", 7);
+    assertEquals(expected, user.execute(crossover));
+
+    // tests for periods where there are 30-day crossovers
+    expected = List.of("2024-05-20", "2024-05-21", "2024-05-22", "2024-05-23", "2024-05-24",
+            "2024-05-28", "2024-05-29", "2024-05-30", "2024-05-31", "2024-06-03", "2024-06-04");
+    crossover = new StockCrossoverCommand("2024-05-20", "2024-06-04", 30);
+    assertEquals(expected, user.execute(crossover));
+
+    // tests for periods where there are no x-day crossovers
+    crossover = new StockCrossoverCommand("2022-05-23", "2022-06-02", 30);
+    assertEquals(emptyExpected, user.execute(crossover));
+
+    // test for same day at the oldest data of the csv
+    crossover = new StockCrossoverCommand("1999-11-01", "1999-11-01", 30);
+    assertEquals(emptyExpected, user.execute(crossover));
+
+    // test for range at the oldest data of the csv
+    expected = List.of("1999-11-02");
+    crossover = new StockCrossoverCommand("1999-11-01", "1999-11-02", 30);
+    assertEquals(expected, user.execute(crossover));
+
+    // test for range that starts before the oldest date of the csv
+    expected = List.of("1999-11-02");
+    crossover = new StockCrossoverCommand("1999-10-31", "1999-11-02", 30);
+    assertEquals(expected, user.execute(crossover));
+
+    // test for range that ends after the most recent date of the csv
+    expected = List.of("2024-06-03", "2024-06-04");
+    crossover = new StockCrossoverCommand("2024-06-03", "2024-11-10", 30);
+    assertEquals(expected, user.execute(crossover));
+
+    // errors
+
+    // test for exception when the start date is later than the end date
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<List<String>> testThrow = new StockCrossoverCommand("2024-06-04", "2020-05-20", 30);
+      user.execute(testThrow);
+    });
+
+    // test for exception when x-days value is negative
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<List<String>> testThrow = new StockCrossoverCommand("2022-05-23", "2022-06-02", -1);
+      user.execute(testThrow);
+    });
+
+    // test for exception when the end date is before the oldest date in the csv
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<List<String>> testThrow = new StockCrossoverCommand("1999-02-01", "1999-03-25", 30);
+      user.execute(testThrow);
+    });
+
+    // test for exception when the start date is after the most recent date in the csv
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<List<String>> testThrow = new StockCrossoverCommand("2024-07-01", "2024-07-02", 30);
+      user.execute(testThrow);
+    });
+  }
+
+  @Test
+  public void testPortfolioGetValueCommand() {
+    Command<Double> getValue;
+
+    user.setCurrentPortfolio(p1);
+    getValue = new PortfolioGetValueCommand("2024-06-04");
+    assertEquals(1943.50, user.execute(getValue), 0.01);
+
+    user.setCurrentPortfolio(p2);
+    getValue = new PortfolioGetValueCommand("2024-06-04");
+    assertEquals(3694.80, user.execute(getValue), 0.01);
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      // tests for exception when the portfolio is empty
+      user.setCurrentPortfolio(p);
+      Command<Double> testThrow = new PortfolioGetValueCommand("2024-06-04");
+      user.execute(testThrow);
+    });
+  }
+}

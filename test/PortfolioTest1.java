@@ -17,7 +17,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * Test class to test the implementations of the {@link Portfolio} interface.
  */
-public class PortfolioTest {
+public class PortfolioTest1 {
 
   // tests to write:
   // run getters at every step

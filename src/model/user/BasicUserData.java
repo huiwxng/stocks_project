@@ -54,6 +54,16 @@ public class BasicUserData implements UserData {
   }
 
   /**
+   * Gets the number of portfolios the user holds.
+   *
+   * @return the number of portfolios
+   */
+  @Override
+  public int getNumPortfolios() {
+    return listPortfolios().size();
+  }
+
+  /**
    * Sets the current portfolio.
    */
   @Override

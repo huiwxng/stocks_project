@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThrows;
 /**
  * Test class to test the implementations of the {@link Stock} interface.
  */
-public class StockTest {
+public class StockTest1 {
 
   // tests to write:
   // maybe (they arent public):
