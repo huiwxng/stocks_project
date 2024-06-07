@@ -1,0 +1,143 @@
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.StringReader;
+
+import controller.Interaction;
+import controller.StockController;
+import model.portfolio.Portfolio;
+import model.user.BasicUserData;
+import model.user.UserData;
+
+import static controller.Interaction.inputs;
+import static controller.Interaction.prints;
+import static org.junit.Assert.assertEquals;
+
+/**
+ * This class is for testing the StockController.
+ */
+public class StockControllerOutputTest {
+  private UserData model;
+
+  @Before
+  public void setup() {
+    model = new BasicUserData();
+  }
+
+  @Test
+  public void testStartMenuQuit() throws InterruptedException {
+    run(model, prints(welcomeMessage()), prints(startMenu())
+            , inputs("q"), prints(farewellMessage()));
+  }
+
+  @Test
+  public void testStartMenuInvalidInput() throws InterruptedException {
+    run(model, prints(welcomeMessage()), prints(startMenu())
+            , inputs("invalid input"), prints(invalidInputMessage())
+            , prints(startMenu()), inputs("q"), prints(farewellMessage()));
+  }
+
+  @Test
+  public void testStartMenuInput1() throws InterruptedException {
+    run(model, prints(welcomeMessage()), prints(startMenu())
+            , inputs("1"), prints(portfolioMenu())
+            , inputs("q"), prints(farewellMessage()));
+  }
+
+  @Test
+  public void testStartMenuInput2() throws InterruptedException {
+    // test valid stock ticker
+    run(model, prints(welcomeMessage()), prints(startMenu())
+            , inputs("2"), prints(viewStocksPrompt())
+            , inputs("AMZN"), prints(stockMenu())
+            , inputs("q"), prints(farewellMessage()));
+
+    // test invalid stock ticker
+  }
+
+  private void run(UserData model, Interaction... interactions)
+          throws InterruptedException {
+    StringBuilder userInput = new StringBuilder();
+    StringBuilder expected = new StringBuilder();
+    for (Interaction interaction : interactions) {
+      interaction.apply(userInput, expected);
+    }
+    StringReader in = new StringReader(userInput.toString());
+    StringBuilder out = new StringBuilder();
+    StockController controller = new StockController(model, in, out);
+    controller.control();
+    assertEquals(expected.toString(), out.toString());
+  }
+
+  private String startMenu() {
+    return lineSeparator() + "1: View Portfolios\n" + "2: View Stocks\n"
+            + quitMessage() + selectMenuOptionPrompt();
+  }
+
+  private String portfolioMenu() {
+    StringBuilder portfolioMenu = new StringBuilder(lineSeparator() + "1: Create Portfolio\n");
+    int portfolioIndex = 2;
+    for (Portfolio portfolio : model.listPortfolios()) {
+      portfolioMenu.append(portfolioIndex++).append(": ").append(portfolio.getName()).append("\n");
+    }
+    portfolioMenu.append(returnMessage()).append(quitMessage()).append(selectMenuOptionPrompt());
+    return portfolioMenu.toString();
+  }
+
+  private String specificPortfolioMenu() {
+    return lineSeparator() +
+            model.getCurrentPortfolio() + "\n" +
+            "1: View Stocks\n" +
+            "2: Portfolio Value\n" +
+            "3: Buy Stock(s)\n" +
+            "4: Sell Stock(s)\n" +
+            "5: Delete Portfolio\n" +
+            returnMessage() +
+            quitMessage() +
+            selectMenuOptionPrompt();
+
+  }
+
+  private String stockMenu() {
+    return lineSeparator() +
+            // append stock name
+            "1: Last Closing Price\n" + "2: Closing Price\n" +
+            "3: Net Gain\n" + "4: X-Day Moving Average\n" +
+            "5: X-Day Crossovers\n" + returnMessage() +
+            quitMessage() + selectMenuOptionPrompt();
+  }
+
+  private String welcomeMessage() {
+    return lineSeparator() + "Welcome to the virtual stocks program!\n"
+            + "In menus that are numbered, input your number option.\n"
+            + "Otherwise, type string input if prompted.\n";
+  }
+
+  private String farewellMessage() {
+    return lineSeparator() + "Thanks for using our virtual stocks program!\n";
+  }
+
+  private String returnMessage() {
+    return "(r or return to go back)\n";
+  }
+
+  private String quitMessage() {
+    return "(q or quit to quit)\n";
+  }
+
+  private String viewStocksPrompt() {
+    return "Stock Ticker (to be viewed): ";
+  }
+
+  private String selectMenuOptionPrompt() {
+    return "Select menu option: ";
+  }
+
+  private String invalidInputMessage() {
+    return lineSeparator() + "Invalid input. Please try again.\n";
+  }
+
+  private String lineSeparator() {
+    return "-------------------------------------------------\n";
+  }
+}
