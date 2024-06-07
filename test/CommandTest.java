@@ -182,5 +182,12 @@ public class CommandTest {
       Command<Double> testThrow = new PortfolioGetValueCommand("2024-06-04");
       user.execute(testThrow);
     });
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      // tests for exception when an invalid date is provided
+      user.setCurrentPortfolio(p);
+      Command<Double> testThrow = new PortfolioGetValueCommand("2024-10-14");
+      user.execute(testThrow);
+    });
   }
 }
