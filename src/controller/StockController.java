@@ -133,8 +133,9 @@ public class StockController {
   }
 
   private void createPortfolio(Scanner scanner) {
+    scanner.nextLine();
     writeMessage("Name your portfolio: ");
-    String name = scanner.next();
+    String name = scanner.nextLine();
     Portfolio portfolio = new BasicPortfolio(name);
     userData.addPortfolio(portfolio);
     lineSeparator();
@@ -560,7 +561,8 @@ public class StockController {
   private void printStockMenu() {
     lineSeparator();
     try {
-      writeMessage(currentStock.getTicker() + "\n");
+      String ticker = currentStock.getTicker().toUpperCase();
+      writeMessage(ticker + "\n");
     } catch (NullPointerException e) {
       writeMessage("You are not currently viewing a stock. Please try again.\n");
       state = ControllerState.START_MENU;
