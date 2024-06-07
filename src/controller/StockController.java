@@ -55,7 +55,7 @@ public class StockController implements IController {
     this.welcomeMessage();
     while (this.state != ControllerState.QUIT) {
       printCurrentMenu();
-      writeMessage("Select menu option: ");
+      writeMessage("Select menu option (number): ");
       String userInput = scanner.nextLine().trim();
       processCommand(userInput, scanner);
     }
@@ -139,7 +139,7 @@ public class StockController implements IController {
     int userInputNum;
     try {
       userInputNum = Integer.parseInt(userInput);
-      if (userInputNum >= 2 && userInputNum <= userData.listPortfolios().size() + 1) {
+      if (userInputNum >= 2 && userInputNum <= userData.getNumPortfolios() + 1) {
         userData.setCurrentPortfolio(userData.getPortfolio(userInputNum - 2));
         state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
       } else {
@@ -148,7 +148,7 @@ public class StockController implements IController {
       }
     } catch (NumberFormatException e) {
       lineSeparator();
-      writeMessage("Invalid menu option. Please try again.\n");
+      writeMessage("Invalid input. Please try again.\n");
     }
   }
 
@@ -494,8 +494,8 @@ public class StockController implements IController {
     lineSeparator();
     writeMessage("1: Create Portfolio\n");
     int portfolioIndex = 2;
-    for (Portfolio portfolio : userData.listPortfolios()) {
-      writeMessage(portfolioIndex++ + ": " + portfolio.getName() + "\n");
+    for (int i = 0; i < userData.getNumPortfolios(); i++) {
+      writeMessage(portfolioIndex++ + ": " + userData.getPortfolio(i).getName() + "\n");
     }
     returnPrompt();
     quitPrompt();

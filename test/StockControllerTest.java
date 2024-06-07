@@ -5,15 +5,14 @@ import java.io.StringReader;
 
 import controller.Interaction;
 import controller.StockController;
+import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
-import model.user.BasicUserData;
 import model.user.MockUserData;
 import model.user.UserData;
 
 import static controller.Interaction.inputs;
 import static controller.Interaction.prints;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * This class is for testing the StockController.
@@ -27,39 +26,53 @@ public class StockControllerTest {
   }
 
   @Test
-  public void testStartMenuQuit() throws InterruptedException {
+  public void testStartMenu() throws InterruptedException {
     run(model, prints(welcomeMessage()), prints(startMenu())
+            // test invalid input for start menu
+            , inputs("invalid input"), prints(invalidInputMessage())
+            , prints(startMenu())
+            // test quit for start menu
             , inputs("q"), prints(farewellMessage()));
   }
 
   @Test
-  public void testStartMenuInvalidInput() throws InterruptedException {
-    run(model, prints(welcomeMessage()), prints(startMenu())
-            , inputs("invalid input"), prints(invalidInputMessage())
-            , prints(startMenu()), inputs("q"), prints(farewellMessage()));
-  }
-
-  @Test
-  public void testStartMenuInput1() throws InterruptedException {
+  public void testViewPortfolios() throws InterruptedException {
     run(model, prints(welcomeMessage()), prints(startMenu())
             , inputs("1"), prints(portfolioMenu())
+            // test return for portfolio menu
+            , inputs("r"), prints(startMenu())
+            , inputs("1"), prints(portfolioMenu())
+            // test invalid input for portfolio menu
+            , inputs("invalid input"), prints(invalidInputMessage())
+            , prints(portfolioMenu())
+            // test create portfolio
+            , inputs("1"), prints(namePortfolioPrompt())
+            , inputs("portfolio 1"), prints(createdPortfolioMessage("portfolio 1"))
+            , prints(specificPortfolioMenu("portfolio 1"))
+            // test return for specific portfolio menu
+            , inputs("r"), prints(portfolioMenu()), inputs("2")
+            , prints(specificPortfolioMenu("portfolio 1"))
+            // test invalid input for specific portfolio menu
+            , inputs("invalid input"), prints(invalidInputMessage())
+            , prints(specificPortfolioMenu("portfolio 1"))
+            // test view stocks for specific portfolio menu
+            , inputs("1"), prints(viewStocksInPortfolioMessage("portfolio 1"))
+            , prints(specificPortfolioMenu("portfolio 1"))
             , inputs("q"), prints(farewellMessage()));
+    String expectedLog = "add portfolio: portfolio 1\n";
+    assertEquals(expectedLog, model.getLog());
   }
 
   @Test
-  public void testStartMenuInput2ValidTicker() throws InterruptedException {
+  public void testViewStocks() throws InterruptedException {
     run(model, prints(welcomeMessage()), prints(startMenu())
             , inputs("2"), prints(viewStocksPrompt())
+            // test invalid ticker
+            , inputs("invalid input"), prints(invalidTickerMessage("invalid input"))
+            , prints(startMenu()), inputs("2"), prints(viewStocksPrompt())
+            // test valid ticker
             , inputs("AMZN"), prints(stockMenu("AMZN"))
             , inputs("q"), prints(farewellMessage()));
-  }
-
-  @Test
-  public void testStartMenuInput2InvalidTicker() throws InterruptedException {
-    run(model, prints(welcomeMessage()), prints(startMenu())
-            , inputs("2"), prints(viewStocksPrompt())
-            ,inputs("invalid input"), prints(invalidTickerMessage("invalid input"))
-            ,prints(startMenu()), inputs("q"), prints(farewellMessage()));
   }
 
   private void run(UserData model, Interaction... interactions)
@@ -102,7 +115,6 @@ public class StockControllerTest {
             returnMessage() +
             quitMessage() +
             selectMenuOptionPrompt();
-
   }
 
   private String stockMenu(String ticker) {
@@ -132,12 +144,29 @@ public class StockControllerTest {
     return "(q or quit to quit)\n";
   }
 
+  private String selectMenuOptionPrompt() {
+    return "Select menu option (number): ";
+  }
+
   private String viewStocksPrompt() {
     return "Stock Ticker (to be viewed): ";
   }
 
-  private String selectMenuOptionPrompt() {
-    return "Select menu option: ";
+  private String namePortfolioPrompt() {
+    return "Name your portfolio: ";
+  }
+
+  private String viewStocksInPortfolioMessage(String currentPortfolio) {
+    model.setCurrentPortfolio(new BasicPortfolio(currentPortfolio));
+    StringBuilder stocksList = new StringBuilder(lineSeparator() + "Stocks in current portfolio:\n");
+    for (String stock : model.getCurrentPortfolio().getStocksWithAmt()) {
+      stocksList.append(stock).append("\n");
+    }
+    return stocksList.toString();
+  }
+
+  private String createdPortfolioMessage(String portfolioName) {
+    return lineSeparator() + portfolioName + " portfolio created.\n";
   }
 
   private String invalidInputMessage() {

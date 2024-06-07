@@ -32,7 +32,6 @@ public class MockUserData extends BasicUserData {
   @Override
   public void removePortfolio(Portfolio portfolio) {
     super.removePortfolio(portfolio);
-    log.append("remove portfolio: ").append(portfolio.getName()).append("\n");
   }
 
   /**
@@ -42,7 +41,6 @@ public class MockUserData extends BasicUserData {
    */
   @Override
   public List<Portfolio> listPortfolios() {
-    log.append("view portfolios: ").append("\n");
     return super.listPortfolios();
   }
 
@@ -52,7 +50,6 @@ public class MockUserData extends BasicUserData {
   @Override
   public void setCurrentPortfolio(Portfolio portfolio) {
     super.setCurrentPortfolio(portfolio);
-    log.append("view specific portfolio: ").append(portfolio.getName()).append("\n");
   }
 
   /**
