@@ -31,7 +31,7 @@ public class BasicStock implements Stock {
    */
   public BasicStock(String ticker) {
     this.ticker = ticker;
-    this.path = "res/data/" + ticker + ".csv";
+    this.path = "data/" + ticker + ".csv";
     this.getData();
   }
 
@@ -200,7 +200,7 @@ public class BasicStock implements Stock {
 
   private String getAPIKey() {
     String apiKey = null;
-    String path = "res/apikey.txt";  // Adjust this path as needed
+    String path = "apikey.txt";  // Adjust this path as needed
 
     try (BufferedReader br = new BufferedReader(new FileReader(path))) {
       apiKey = br.readLine().trim();
