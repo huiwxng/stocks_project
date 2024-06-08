@@ -12,32 +12,32 @@ import static org.junit.Assert.assertThrows;
  */
 public class StockTest {
 
-  Stock Apple;
-  Stock Google;
-  Stock Nvidia;
-  Stock Amazon;
-  Stock Tesla;
-  Stock Meta;
-  Stock Microsoft;
-  Stock JPMorgan;
-  Stock HomeDepot;
-  Stock TSM;
-  Stock Walmart;
+  Stock apple;
+  Stock google;
+  Stock nvidia;
+  Stock amazon;
+  Stock tesla;
+  Stock meta;
+  Stock microsoft;
+  Stock jpmorgan;
+  Stock homeDepot;
+  Stock tsm;
+  Stock walmart;
 
   @Before
   public void setUp() throws Exception {
     try {
-      Apple = new BasicStock("AAPL");
-      Google = new BasicStock("GOOG");
-      Nvidia = new BasicStock("NVDA");
-      Amazon = new BasicStock("AMZN");
-      Tesla = new BasicStock("TSLA");
-      Meta = new BasicStock("META");
-      Microsoft = new BasicStock("MSFT");
-      JPMorgan = new BasicStock("JPM");
-      HomeDepot = new BasicStock("HD");
-      TSM = new BasicStock("TSM");
-      Walmart = new BasicStock("WMT");
+      apple = new BasicStock("AAPL");
+      google = new BasicStock("GOOG");
+      nvidia = new BasicStock("NVDA");
+      amazon = new BasicStock("AMZN");
+      tesla = new BasicStock("TSLA");
+      meta = new BasicStock("meta");
+      microsoft = new BasicStock("MSFT");
+      jpmorgan = new BasicStock("JPM");
+      homeDepot = new BasicStock("HD");
+      tsm = new BasicStock("tsm");
+      walmart = new BasicStock("WMT");
     } catch (Exception e) {
       System.err.println("Error creating stock: " + e.getMessage());
     }
@@ -52,44 +52,44 @@ public class StockTest {
 
   @Test
   public void testGetTicker() {
-    assertEquals("AAPL", Apple.getTicker());
-    assertEquals("GOOG", Google.getTicker());
-    assertEquals("NVDA", Nvidia.getTicker());
-    assertEquals("AMZN", Amazon.getTicker());
-    assertEquals("TSLA", Tesla.getTicker());
-    assertEquals("META", Meta.getTicker());
-    assertEquals("MSFT", Microsoft.getTicker());
-    assertEquals("JPM", JPMorgan.getTicker());
-    assertEquals("HD", HomeDepot.getTicker());
-    assertEquals("TSM", TSM.getTicker());
-    assertEquals("WMT", Walmart.getTicker());
+    assertEquals("AAPL", apple.getTicker());
+    assertEquals("GOOG", google.getTicker());
+    assertEquals("NVDA", nvidia.getTicker());
+    assertEquals("AMZN", amazon.getTicker());
+    assertEquals("TSLA", tesla.getTicker());
+    assertEquals("meta", meta.getTicker());
+    assertEquals("MSFT", microsoft.getTicker());
+    assertEquals("JPM", jpmorgan.getTicker());
+    assertEquals("HD", homeDepot.getTicker());
+    assertEquals("tsm", tsm.getTicker());
+    assertEquals("WMT", walmart.getTicker());
   }
 
   @Test
   public void testGetClosingPrice() {
-    assertEquals(21.23, Apple.getClosingPrice("2002-01-10"), 0.01);
-    assertEquals(179.54, Google.getClosingPrice("2024-05-21"), 0.01);
-    assertEquals(947.8, Nvidia.getClosingPrice("2024-05-20"), 0.01);
-    assertEquals(183.54, Amazon.getClosingPrice("2024-05-20"), 0.01);
-    assertEquals(165.08, Tesla.getClosingPrice("2023-04-21"), 0.01);
-    assertEquals(212.89, Meta.getClosingPrice("2023-04-21"), 0.01);
-    assertEquals(166.72, Microsoft.getClosingPrice("2020-01-23"), 0.01);
-    assertEquals(199.52, JPMorgan.getClosingPrice("2024-05-21"), 0.01);
-    assertEquals(336.15, HomeDepot.getClosingPrice("2024-05-21"), 0.01);
-    assertEquals(153.67, TSM.getClosingPrice("2024-05-21"), 0.01);
-    assertEquals(65.15, Walmart.getClosingPrice("2024-05-21"), 0.01);
+    assertEquals(21.23, apple.getClosingPrice("2002-01-10"), 0.01);
+    assertEquals(179.54, google.getClosingPrice("2024-05-21"), 0.01);
+    assertEquals(947.8, nvidia.getClosingPrice("2024-05-20"), 0.01);
+    assertEquals(183.54, amazon.getClosingPrice("2024-05-20"), 0.01);
+    assertEquals(165.08, tesla.getClosingPrice("2023-04-21"), 0.01);
+    assertEquals(212.89, meta.getClosingPrice("2023-04-21"), 0.01);
+    assertEquals(166.72, microsoft.getClosingPrice("2020-01-23"), 0.01);
+    assertEquals(199.52, jpmorgan.getClosingPrice("2024-05-21"), 0.01);
+    assertEquals(336.15, homeDepot.getClosingPrice("2024-05-21"), 0.01);
+    assertEquals(153.67, tsm.getClosingPrice("2024-05-21"), 0.01);
+    assertEquals(65.15, walmart.getClosingPrice("2024-05-21"), 0.01);
   }
 
   @Test
   public void testInvalidDates() {
     // out of range of the csv data (older than the oldest date)
     assertThrows(IllegalArgumentException.class, () -> {
-      Apple.getClosingPrice("1999-01-10");
+      apple.getClosingPrice("1999-01-10");
     });
 
     // out of range of the csv data (in the future)
     assertThrows(IllegalArgumentException.class, () -> {
-      Apple.getClosingPrice("2024-10-10");
+      apple.getClosingPrice("2024-10-10");
     });
   }
 }

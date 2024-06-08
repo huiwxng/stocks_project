@@ -76,6 +76,8 @@ public class StockController implements IController {
       case STOCK_MENU:
         helpStockMenu(userInput, scanner);
         break;
+      default:
+        break;
     }
   }
 
@@ -484,6 +486,8 @@ public class StockController implements IController {
       case STOCK_MENU:
         Thread.sleep(500);
         printStockMenu();
+        break;
+      default:
         break;
     }
   }

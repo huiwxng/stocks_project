@@ -206,7 +206,8 @@ public class BasicStock implements Stock {
       apiKey = br.readLine().trim();
     } catch (IOException e) {
       System.err.println("Error reading API key file: " + e.getMessage());
-      System.err.println("Please ensure that the file '" + path + "' exists and contains a valid API key.");
+      System.err.println("Please ensure that the file '" + path
+              + "' exists and contains a valid API key.");
       throw new RuntimeException("Failed to read API key", e);
     }
 

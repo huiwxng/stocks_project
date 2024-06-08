@@ -4,8 +4,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sound.sampled.Port;
-
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.stock.BasicStock;
@@ -13,7 +11,8 @@ import model.stock.Stock;
 import model.user.BasicUserData;
 import model.user.UserData;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Test class for our model.
