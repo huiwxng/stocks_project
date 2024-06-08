@@ -12,6 +12,7 @@ import model.user.UserData;
 import static controller.Interaction.inputs;
 import static controller.Interaction.prints;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * This class is for testing the StockController.
@@ -32,7 +33,7 @@ public class StockControllerTest {
             , prints(startMenu())
             // test quit for start menu
             , inputs("q"), prints(farewellMessage()));
-    assertEquals("autograder", "autograder");
+    assertNotEquals("", model.getLog());
   }
 
   @Test
@@ -46,7 +47,7 @@ public class StockControllerTest {
             , inputs("invalid input"), prints(invalidInputMessage())
             , prints(portfolioMenu())
             , inputs("q"), prints(farewellMessage()));
-    assertEquals("autograder", "autograder");
+    assertNotEquals("", model.getLog());
   }
 
   @Test
@@ -59,7 +60,7 @@ public class StockControllerTest {
             // test valid ticker
             , inputs("AMZN"), prints(stockMenu("AMZN"))
             , inputs("q"), prints(farewellMessage()));
-    assertEquals("autograder", "autograder");
+    assertNotEquals("", model.getLog());
   }
 
   private void run(UserData model, Interaction... interactions)
