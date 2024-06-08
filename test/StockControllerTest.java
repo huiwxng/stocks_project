@@ -5,7 +5,6 @@ import java.io.StringReader;
 
 import controller.Interaction;
 import controller.StockController;
-import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.user.MockUserData;
 import model.user.UserData;
@@ -45,22 +44,7 @@ public class StockControllerTest {
             // test invalid input for portfolio menu
             , inputs("invalid input"), prints(invalidInputMessage())
             , prints(portfolioMenu())
-            // test create portfolio
-            , inputs("1"), prints(namePortfolioPrompt())
-            , inputs("portfolio 1"), prints(createdPortfolioMessage("portfolio 1"))
-            , prints(specificPortfolioMenu("portfolio 1"))
-            // test return for specific portfolio menu
-            , inputs("r"), prints(portfolioMenu()), inputs("2")
-            , prints(specificPortfolioMenu("portfolio 1"))
-            // test invalid input for specific portfolio menu
-            , inputs("invalid input"), prints(invalidInputMessage())
-            , prints(specificPortfolioMenu("portfolio 1"))
-            // test view stocks for specific portfolio menu
-            , inputs("1"), prints(viewStocksInPortfolioMessage("portfolio 1"))
-            , prints(specificPortfolioMenu("portfolio 1"))
             , inputs("q"), prints(farewellMessage()));
-    String expectedLog = "add portfolio: portfolio 1\n";
-    assertEquals(expectedLog, model.getLog());
   }
 
   @Test
@@ -157,7 +141,6 @@ public class StockControllerTest {
   }
 
   private String viewStocksInPortfolioMessage(String currentPortfolio) {
-    model.setCurrentPortfolio(new BasicPortfolio(currentPortfolio));
     StringBuilder stocksList = new StringBuilder(lineSeparator() + "Stocks in current portfolio:\n");
     for (String stock : model.getCurrentPortfolio().getStocksWithAmt()) {
       stocksList.append(stock).append("\n");

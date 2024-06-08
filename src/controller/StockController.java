@@ -523,7 +523,7 @@ public class StockController implements IController {
     try {
       String ticker = userData.getCurrentStock().getTicker();
       writeMessage(ticker + "\n");
-    } catch (NullPointerException e) {
+    } catch (IllegalArgumentException e) {
       writeMessage("You are not currently viewing a stock. Please try again.\n");
       state = ControllerState.START_MENU;
       printStartMenu();
