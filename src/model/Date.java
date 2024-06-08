@@ -52,6 +52,11 @@ public class Date {
     return res;
   }
 
+  /**
+   * Checks if a date is before another date.
+   * @param date Date to be compared to.
+   * @return true or false depending if before or not.
+   */
   public boolean isBefore(String date) {
     List<Integer> curr = parseDate(date);
     int currYear = curr.get(0);
