@@ -325,7 +325,12 @@ public class StockController implements IController {
       if (isValidDate(date)) {
         try {
           lineSeparator();
-          writeMessage("Closing Price for " + date + ": "
+          String[] arr = date.split("-");
+          Integer[] intArr = new Integer[3];
+          for (int i = 0; i < arr.length; i++) {
+            intArr[i] = Integer.parseInt(arr[i]);
+          }
+          writeMessage("Closing Price for " + String.format("%d-%02d-%02d", intArr[0], intArr[1], intArr[2]) + ": "
                   + userData.getCurrentStock().getClosingPrice(date) + "\n");
           validDate = true;
         } catch (IllegalArgumentException e) {
@@ -564,7 +569,7 @@ public class StockController implements IController {
 
   private boolean isValidDate(String date) {
     try {
-      LocalDate.parse(date);
+      Date valid = new Date(date);
       return true;
     } catch (DateTimeParseException e) {
       return false;
