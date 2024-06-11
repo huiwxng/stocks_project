@@ -325,12 +325,7 @@ public class StockController implements IController {
       if (isValidDate(date)) {
         try {
           lineSeparator();
-          String[] arr = date.split("-");
-          Integer[] intArr = new Integer[3];
-          for (int i = 0; i < arr.length; i++) {
-            intArr[i] = Integer.parseInt(arr[i]);
-          }
-          writeMessage("Closing Price for " + String.format("%d-%02d-%02d", intArr[0], intArr[1], intArr[2]) + ": "
+          writeMessage("Closing Price for " + formatDate(date) + ": "
                   + userData.getCurrentStock().getClosingPrice(date) + "\n");
           validDate = true;
         } catch (IllegalArgumentException e) {
@@ -376,7 +371,7 @@ public class StockController implements IController {
       Command<Double> command = new StockMovingAverageCommand(date, Integer.parseInt(xDays));
       double movingAverage = userData.execute(command);
       lineSeparator();
-      writeMessage("X-Day Moving Average on " + date + " for " + xDays + " days: "
+      writeMessage("X-Day Moving Average on " + formatDate(date) + " for " + xDays + " days: "
               + movingAverage + "\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
@@ -571,9 +566,18 @@ public class StockController implements IController {
     try {
       Date valid = new Date(date);
       return true;
-    } catch (DateTimeParseException e) {
+    } catch (IllegalArgumentException e) {
       return false;
     }
+  }
+
+  private String formatDate(String date) {
+    String[] arr = date.split("-");
+    Integer[] intArr = new Integer[3];
+    for (int i = 0; i < arr.length; i++) {
+      intArr[i] = Integer.parseInt(arr[i]);
+    }
+    return String.format("%d-%02d-%02d", intArr[0], intArr[1], intArr[2]);
   }
 
   private void lineSeparator() {
