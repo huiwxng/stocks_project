@@ -6,6 +6,7 @@ import java.util.List;
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.user.BasicUserData;
+import model.user.LoadPortfolioCommand;
 import model.user.PortfolioGetValueCommand;
 import model.user.StockCrossoverCommand;
 import model.user.StockMovingAverageCommand;
@@ -189,6 +190,16 @@ public class CommandTest {
       user.setCurrentPortfolio(p);
       Command<Double> testThrow = new PortfolioGetValueCommand("2024-10-14");
       user.execute(testThrow);
+    });
+  }
+
+  @Test
+  public void testLoadPortfolioCommand() {
+    Command<String> loadPF;
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      // tests for missing file
+      Command<String> test = new LoadPortfolioCommand("hui");
     });
   }
 }

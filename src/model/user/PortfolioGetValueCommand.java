@@ -2,7 +2,6 @@ package model.user;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
 import model.Date;
 import model.portfolio.Portfolio;

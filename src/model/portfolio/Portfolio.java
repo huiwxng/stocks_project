@@ -62,4 +62,10 @@ public interface Portfolio {
    * @return true if there are stocks within, false otherwise
    */
   boolean isEmpty(String date);
+
+  /**
+   * Saves the current portfolio to the designated directory
+   * @return a string for success of portfolio creation
+   */
+  String save();
 }

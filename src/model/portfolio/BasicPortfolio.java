@@ -1,8 +1,9 @@
 package model.portfolio;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.math.BigDecimal;
 
@@ -121,6 +122,27 @@ public class BasicPortfolio implements Portfolio {
   @Override
   public boolean isEmpty(String date) {
     return getStocks(date).isEmpty();
+  }
+
+  /**
+   * Saves the current portfolio to the designated directory
+   *
+   * @return a string for success of portfolio creation
+   */
+  @Override
+  public String save() {
+    String dirPath = "res/portfolios/";
+    String ext = ".csv";
+    String path = dirPath + getName() + ext;
+
+    try (FileWriter writer = new FileWriter(path)) {
+      writer.write("Date,Type,Ticker,Amount\n");
+      for (Transaction transaction : transactions) {
+
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving the portfolio: " + e.getMessage());
+    }
   }
 
   // loops through and gets the index of the stock with the same ticker,
