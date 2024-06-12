@@ -2,6 +2,8 @@ package model.portfolio;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -133,6 +135,13 @@ public class BasicPortfolio implements Portfolio {
     String dirPath = "res/portfolios/";
     String ext = ".csv";
     String path = dirPath + getName() + ext;
+    String msg;
+
+    if (Files.exists(Path.of(path))) {
+      msg = "Portfolio [" + getName() + "] overwritten successfully and saved to " + path;
+    } else {
+      msg = "Portfolio [" + getName() + "] successfully saved to " + path;
+    }
 
     try (FileWriter writer = new FileWriter(path)) {
       // write the header
@@ -155,7 +164,7 @@ public class BasicPortfolio implements Portfolio {
       System.err.println("Error saving the portfolio: " + e.getMessage());
     }
 
-    return "Portfolio [" + getName() + "] successfully  saved to " + path;
+    return msg;
   }
 
   // loops through and gets the index of the stock with the same ticker,
