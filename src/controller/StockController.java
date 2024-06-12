@@ -304,7 +304,8 @@ public class StockController implements IController {
   }
 
   private void savePortfolio() {
-    userData.getCurrentPortfolio().save();
+    lineSeparator();
+    writeMessage(userData.getCurrentPortfolio().save() + "\n");
   }
 
   private void helpStockMenu(String userInput, Scanner scanner) {
