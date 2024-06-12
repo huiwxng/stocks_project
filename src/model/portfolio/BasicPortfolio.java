@@ -71,7 +71,7 @@ public class BasicPortfolio implements Portfolio {
     processTransactions(date);
     List<String> res = new ArrayList<>();
     for (int i = 0; i < stocks.size(); i++) {
-      res.add(String.format("%s: %f shares", stocks.get(i).getTicker(), shares.get(i)));
+      res.add(String.format("%s: %f share(s)", stocks.get(i).getTicker(), shares.get(i)));
     }
     return res;
   }
@@ -82,7 +82,7 @@ public class BasicPortfolio implements Portfolio {
    * @param ticker of the stock
    */
   @Override
-  public void buyStock(String ticker, int amount, String date) {
+  public void buyStock(String ticker, double amount, String date) {
     processTransactions(date);
     addToTransaction(true, ticker, amount, date);
   }
@@ -93,7 +93,7 @@ public class BasicPortfolio implements Portfolio {
    * @param ticker of the stock
    */
   @Override
-  public void sellStock(String ticker, int amount, String date) throws IllegalArgumentException {
+  public void sellStock(String ticker, double amount, String date) throws IllegalArgumentException {
     processTransactions(date);
     addToTransaction(false, ticker, amount, date);
   }
@@ -175,7 +175,7 @@ public class BasicPortfolio implements Portfolio {
     }
   }
 
-  private void addToTransaction(boolean type, String ticker, int amount, String date) {
+  private void addToTransaction(boolean type, String ticker, double amount, String date) {
     Transaction transaction;
     try {
       transaction = new Transaction(type, ticker, amount, date);

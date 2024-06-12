@@ -44,7 +44,7 @@ public interface Portfolio {
    * @param amount of shares to add
    * @param date the date to add the stock
    */
-  void buyStock(String ticker, int amount, String date);
+  void buyStock(String ticker, double amount, String date);
 
   /**
    * Removes a stock from the portfolio.
@@ -53,7 +53,7 @@ public interface Portfolio {
    * @param amount of shares to remove
    * @param date the date to remove the stock
    */
-  void sellStock(String ticker, int amount, String date);
+  void sellStock(String ticker, double amount, String date);
 
   /**
    * Checks if the portfolio has stocks inside.
