@@ -58,7 +58,8 @@ public interface Portfolio {
   /**
    * Checks if the portfolio has stocks inside.
    *
+   * @param date of the portfolio to check
    * @return true if there are stocks within, false otherwise
    */
-  boolean isEmpty();
+  boolean isEmpty(String date);
 }

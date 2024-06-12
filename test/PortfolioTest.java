@@ -86,7 +86,7 @@ public class PortfolioTest {
   }
 
   @Test
-  public void testAddStock() {
+  public void testBuyStock() {
     // tests for adding to empty portfolio
     List<String> expected = new ArrayList<>();
     assertEquals(expected, p.getComposition("2024-06-04"));
@@ -122,7 +122,7 @@ public class PortfolioTest {
   }
 
   @Test
-  public void testRemoveStock() {
+  public void testSellStock() {
     List<String> expected = new ArrayList<>();
     assertEquals(expected, p.getComposition("2024-06-04"));
 
@@ -174,9 +174,9 @@ public class PortfolioTest {
 
   @Test
   public void testIsEmpty() {
-    assertTrue(p.isEmpty());
+    assertTrue(p.isEmpty("2024-06-04"));
     p.buyStock("AAPL", 10.0, "2024-06-04");
-    assertFalse(p.isEmpty());
+    assertFalse(p.isEmpty("2024-06-04"));
   }
 
   @Test

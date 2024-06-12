@@ -40,10 +40,6 @@ public class PortfolioGetValueCommand implements Command<Double> {
       throw new IllegalArgumentException("No current portfolio set.");
     }
 
-//    if (portfolio.isEmpty()) {
-//      return 0.0;
-//    }
-
     double value = 0.0;
 
     List<Stock> stocks = portfolio.getStocks(date);

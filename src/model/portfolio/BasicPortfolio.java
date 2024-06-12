@@ -1,6 +1,7 @@
 package model.portfolio;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.math.BigDecimal;
@@ -102,6 +103,9 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void sellStock(String ticker, double amount, String date) throws IllegalArgumentException {
+    if (isEmpty(date)) {
+      throw new IllegalArgumentException("There are no stocks in the portfolio.");
+    }
     addToTransaction(false, ticker, amount, date);
     try {
       processTransactions(date);
@@ -115,8 +119,8 @@ public class BasicPortfolio implements Portfolio {
    * @return true if there are stocks within, false otherwise
    */
   @Override
-  public boolean isEmpty() {
-    return stocks.isEmpty();
+  public boolean isEmpty(String date) {
+    return getStocks(date).isEmpty();
   }
 
   // loops through and gets the index of the stock with the same ticker,
@@ -133,7 +137,10 @@ public class BasicPortfolio implements Portfolio {
   private void processTransactions(String date) {
     stocks = new ArrayList<>();
     shares = new ArrayList<>();
-    transactions.sort(DATE_COMPARATOR);
+    Collections.sort(transactions);
+    for (int i = 0; i < transactions.size(); i++) {
+      transactions.get(i).setIndex(i);
+    }
     for (Transaction transaction : transactions) {
       if (transaction.getDate().isBefore(date) || transaction.getDate().sameDay(date)) {
         if (transaction.getType()) {
@@ -166,11 +173,6 @@ public class BasicPortfolio implements Portfolio {
   }
 
   private void sellStockHelper(String ticker, double amount) {
-    // checks if the portfolio is empty
-    if (isEmpty()) {
-      throw new IllegalArgumentException("There are no stocks in the portfolio.");
-    }
-
     // checks if the portfolio contains the specified stock
     int i = getIndex(ticker);
     if (i == -1) {
@@ -190,20 +192,10 @@ public class BasicPortfolio implements Portfolio {
   private void addToTransaction(boolean type, String ticker, double amount, String date) {
     Transaction transaction;
     try {
-      transaction = new Transaction(type, ticker, amount, date);
+      transaction = new Transaction(type, ticker, amount, date, transactions.size());
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException("Invalid transaction. " + e.getMessage());
     }
     transactions.add(transaction);
   }
-
-  private final Comparator<Transaction> DATE_COMPARATOR = (t1, t2) -> {
-    if (t1.getDate().isBefore(t2.getDate().toString())) {
-      return -1;
-    } else if (t1.getDate().sameDay(t2.getDate().toString())) {
-      return 0;
-    } else {
-      return 1;
-    }
-  };
 }
