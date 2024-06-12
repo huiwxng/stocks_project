@@ -1,1 +1,1 @@
-# hw04_stocks
+# Stocks Project
