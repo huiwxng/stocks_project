@@ -68,7 +68,7 @@ public class PortfolioTest {
   }
 
   @Test
-  public void testGetStocksWithAmt() {
+  public void testGetComposition() {
     // test getComposition with empty portfolio
     List<String> expected = new ArrayList<>();
     assertEquals(expected, p.getComposition("2024-06-04"));
@@ -114,6 +114,11 @@ public class PortfolioTest {
     p2.buyStock("AMZN", 10, "2024-06-04");
     expected.add("AMZN: 10 share(s)");
     assertEquals(expected, p2.getComposition("2024-06-04"));
+
+    // test for date before the add
+    expected = new ArrayList<>();
+    assertEquals(expected, p2.getComposition("2024-06-03"));
+
   }
 
   @Test
@@ -151,5 +156,10 @@ public class PortfolioTest {
     assertTrue(p.isEmpty());
     p.buyStock("AAPL", 10.0, "2024-06-04");
     assertFalse(p.isEmpty());
+  }
+
+  @Test
+  public void testDates() {
+    
   }
 }
