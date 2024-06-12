@@ -53,15 +53,15 @@ public class PortfolioTest {
     p.buyStock("GOOG", 10.0, "2024-06-04");
     expectedStocks.add(new BasicStock("GOOG"));
     expectedShares.add(10.0);
-    for (int i = 0; i < p.getStocks().size(); i++) {
+    for (int i = 0; i < p.getStocks("2024-06-04").size(); i++) {
       assertEquals(expectedStocks.get(i).getTicker(), p.getStocks("2024-06-04").get(i).getTicker());
       assertEquals(expectedShares.get(i), p.getShares("2024-06-04").get(i));
     }
 
-    p.buyStock("AAPL", 20);
+    p.buyStock("AAPL", 20.0, "2024-06-04");
     expectedStocks.add(new BasicStock("AAPL"));
     expectedShares.add(20.0);
-    for (int i = 0; i < p.getStocks().size(); i++) {
+    for (int i = 0; i < p.getStocks("2024-06-04").size(); i++) {
       assertEquals(expectedStocks.get(i).getTicker(), p.getStocks("2024-06-04").get(i).getTicker());
       assertEquals(expectedShares.get(i), p.getShares("2024-06-04").get(i));
     }
@@ -113,7 +113,7 @@ public class PortfolioTest {
 
     p2.buyStock("AMZN", 10, "2024-06-04");
     expected.add("AMZN: 10 share(s)");
-    assertEquals(expected, p2.getComposition());
+    assertEquals(expected, p2.getComposition("2024-06-04"));
   }
 
   @Test
@@ -140,16 +140,16 @@ public class PortfolioTest {
     p2.sellStock("AAPL", 5, "2024-06-04");
     expected.add("AAPL: 5 share(s)");
     expected.add("GOOG: 10 share(s)");
-    assertEquals(expected, p2.getComposition());
-    p2.sellStock("AAPL", 10);
+    assertEquals(expected, p2.getComposition("2024-06-04"));
+    p2.sellStock("AAPL", 10.0, "2024-06-04");
     expected.remove(0);
-    assertEquals(expected, p2.getComposition());
+    assertEquals(expected, p2.getComposition("2024-06-04"));
   }
 
   @Test
   public void testIsEmpty() {
     assertTrue(p.isEmpty());
-    p.buyStock("AAPL", 10);
+    p.buyStock("AAPL", 10.0, "2024-06-04");
     assertFalse(p.isEmpty());
   }
 }

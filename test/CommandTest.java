@@ -33,11 +33,11 @@ public class CommandTest {
     p = new BasicPortfolio("empty portfolio");
 
     p1 = new BasicPortfolio("portfolio 1");
-    p1.addStock("AAPL", 10);
+    p1.buyStock("AAPL", 10.0, "2024-06-04");
 
     p2 = new BasicPortfolio("portfolio 2");
-    p2.addStock("AAPL", 10);
-    p2.addStock("GOOG", 10);
+    p2.buyStock("AAPL", 10.0, "2024-06-04");
+    p2.buyStock("GOOG", 10.0, "2024-06-04");
 
     user.addPortfolio(p);
     user.addPortfolio(p1);
