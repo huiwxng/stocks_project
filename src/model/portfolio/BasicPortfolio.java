@@ -74,8 +74,7 @@ public class BasicPortfolio implements Portfolio {
     processTransactions(date);
     List<String> res = new ArrayList<>();
     for (int i = 0; i < stocks.size(); i++) {
-      BigDecimal decimal = new BigDecimal(Double.toString(shares.get(i)));
-      String decimalString = decimal.stripTrailingZeros().toPlainString();
+      String decimalString = formatDouble(shares.get(i));
       res.add(String.format("%s: %s share(s)", stocks.get(i).getTicker(),
               decimalString));
     }
@@ -136,13 +135,27 @@ public class BasicPortfolio implements Portfolio {
     String path = dirPath + getName() + ext;
 
     try (FileWriter writer = new FileWriter(path)) {
+      // write the header
       writer.write("Date,Type,Ticker,Amount\n");
-      for (Transaction transaction : transactions) {
 
+      // write the contents
+      for (Transaction transaction : transactions) {
+        String date = transaction.getDate().toString();
+        String type;
+        if (transaction.getType()) {
+          type = "true";
+        } else {
+          type = "false";
+        }
+        String ticker = transaction.getTicker();
+        String amount = formatDouble(transaction.getShares());
+        writer.write(String.format("%s,%s,%s,%s\n", date, type, ticker, amount));
       }
     } catch (IOException e) {
       System.err.println("Error saving the portfolio: " + e.getMessage());
     }
+
+    return "Portfolio [" + getName() + "] successfully  saved to " + path;
   }
 
   // loops through and gets the index of the stock with the same ticker,
@@ -219,5 +232,10 @@ public class BasicPortfolio implements Portfolio {
       throw new IllegalArgumentException("Invalid transaction. " + e.getMessage());
     }
     transactions.add(transaction);
+  }
+
+  private String formatDouble(double num) {
+    BigDecimal decimal = new BigDecimal(Double.toString(num));
+    return decimal.stripTrailingZeros().toPlainString();
   }
 }
