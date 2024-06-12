@@ -152,9 +152,9 @@ public class BasicPortfolio implements Portfolio {
         String date = transaction.getDate().toString();
         String type;
         if (transaction.getType()) {
-          type = "true";
+          type = "BUY";
         } else {
-          type = "false";
+          type = "SELL";
         }
         String ticker = transaction.getTicker();
         String amount = formatDouble(transaction.getShares());
