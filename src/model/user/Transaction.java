@@ -96,11 +96,9 @@ public class Transaction implements Comparable<Transaction> {
       throw new IllegalArgumentException("Cannot compare null objects.");
     }
 
-    String otherDate = o.getDate().toString();
-
-    if (getDate().isBefore(otherDate)) {
+    if (isBefore(o)) {
       return -1;
-    } else if (getDate().sameDay(otherDate)) {
+    } else if (sameDay(o)) {
       return Integer.compare(getIndex(), o.getIndex());
     } else {
       return 1;
