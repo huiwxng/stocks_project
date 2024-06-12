@@ -1,8 +1,7 @@
 package controller;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -194,24 +193,14 @@ public class StockController implements IController {
   }
 
   private void portfolioValue(Scanner scanner) {
-    boolean validDate = false;
-    while (!validDate) {
-      writeMessage("Date (YYYY-MM-DD): ");
-      String date = scanner.nextLine().trim();
-      if (isValidDate(date)) {
-        Command<Double> command = new PortfolioGetValueCommand(date);
-        try {
-          double value = userData.execute(command);
-          lineSeparator();
-          writeMessage("Portfolio value: " + value + "\n");
-        } catch (IllegalArgumentException e) {
-          writeMessage(e.getMessage() + " Please try again.\n");
-        }
-        validDate = true;
-      } else {
-        lineSeparator();
-        writeMessage("Invalid date. Please try again.\n");
-      }
+    String date = setDate(scanner);
+    Command<Double> command = new PortfolioGetValueCommand(date);
+    try {
+      double value = userData.execute(command);
+      lineSeparator();
+      writeMessage("Portfolio value: $" + value + "\n");
+    } catch (IllegalArgumentException e) {
+      writeMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
@@ -311,31 +300,20 @@ public class StockController implements IController {
 
   private void lastClosingPrice() {
     lineSeparator();
-    writeMessage("Last Closing Price: "
+    writeMessage("Last Closing Price: $"
             + userData.getCurrentStock().getAllClosingPrices()
             .get(userData.getCurrentStock().getAllClosingPrices().size() - 1) + "\n");
   }
 
   private void closingPrice(Scanner scanner) {
-    String date;
-    boolean validDate = false;
-    while (!validDate) {
-      writeMessage("Date (YYYY-MM-DD): ");
-      date = scanner.nextLine().trim();
-      if (isValidDate(date)) {
-        try {
-          lineSeparator();
-          writeMessage("Closing Price for " + formatDate(date) + ": "
-                  + userData.getCurrentStock().getClosingPrice(date) + "\n");
-          validDate = true;
-        } catch (IllegalArgumentException e) {
-          writeMessage(e.getMessage() + " Please try again.\n");
-          lineSeparator();
-        }
-      } else {
-        lineSeparator();
-        writeMessage("Invalid date. Please try again.\n");
-      }
+    String date = setDate(scanner);
+    try {
+      lineSeparator();
+      writeMessage("Closing Price for " + formatDate(date) + ": $"
+              + userData.getCurrentStock().getClosingPrice(date) + "\n");
+    } catch (IllegalArgumentException e) {
+      writeMessage(e.getMessage() + " Please try again.\n");
+      lineSeparator();
     }
   }
 
@@ -346,7 +324,7 @@ public class StockController implements IController {
       Command<Double> command = new StockNetGainCommand(start, end);
       double netGain = userData.execute(command);
       lineSeparator();
-      writeMessage("Net Gain from " + start + " to " + end + ": " + netGain + "\n");
+      writeMessage("Net Gain from " + start + " to " + end + ": $" + netGain + "\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
       writeMessage(e.getMessage() + " Please try again.\n");
@@ -354,24 +332,13 @@ public class StockController implements IController {
   }
 
   private void xDayMovingAverage(Scanner scanner) {
-    String date = "";
-    boolean validDate = false;
-    while (!validDate) {
-      writeMessage("Date (YYYY-MM-DD): ");
-      date = scanner.nextLine().trim();
-      if (isValidDate(date)) {
-        validDate = true;
-      } else {
-        lineSeparator();
-        writeMessage("Invalid date. Please try again.\n");
-      }
-    }
+    String date = setDate(scanner);
     String xDays = setXDays(scanner);
     try {
       Command<Double> command = new StockMovingAverageCommand(date, Integer.parseInt(xDays));
       double movingAverage = userData.execute(command);
       lineSeparator();
-      writeMessage("X-Day Moving Average on " + formatDate(date) + " for " + xDays + " days: "
+      writeMessage("X-Day Moving Average on " + formatDate(date) + " for " + xDays + " days: $"
               + movingAverage + "\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
@@ -405,42 +372,74 @@ public class StockController implements IController {
     }
   }
 
-  private String setStartDate(Scanner scanner) {
-    String date = "";
+  private String setDate(Scanner scanner) {
+    StringBuilder date = new StringBuilder();
+    String year;
+    String month;
+    String day;
+    boolean validYear = false;
+    boolean validMonth = false;
+    boolean validDay = false;
     boolean validDate = false;
     while (!validDate) {
-      writeMessage("Start Date (YYYY-MM-DD): ");
-      date = scanner.nextLine();
-      if (isValidDate(date)) {
+      lineSeparator();
+      writeMessage("Date: \n");
+      while (!validYear) {
+        writeMessage("Year: ");
+        year = scanner.nextLine().trim();
+        if (isValidYear(year)) {
+          validYear = true;
+          date.append(year);
+        } else {
+          lineSeparator();
+          writeMessage("Invalid year. Please try again.\n");
+          lineSeparator();
+        }
+      }
+      while (!validMonth) {
+        writeMessage("Month: ");
+        month = scanner.nextLine().trim();
+        if (isValidMonth(month)) {
+          validMonth = true;
+          date.append('-').append(month);
+        } else {
+          lineSeparator();
+          writeMessage("Invalid month. Please try again.\n");
+          lineSeparator();
+        }
+      }
+      while (!validDay) {
+        writeMessage("Day: ");
+        day = scanner.nextLine().trim();
+        if (isValidDay(day)) {
+          validDay = true;
+          date.append('-').append(day);
+        } else {
+          lineSeparator();
+          writeMessage("Invalid day. Please try again.\n");
+          lineSeparator();
+        }
+      }
+      if (isValidDate(date.toString())) {
         validDate = true;
       } else {
         lineSeparator();
         writeMessage("Invalid date. Please try again.\n");
       }
     }
-    return date;
+    return date.toString();
+  }
+
+  private String setStartDate(Scanner scanner) {
+    lineSeparator();
+    writeMessage("Start Date: \n");
+    return setDate(scanner);
   }
 
   private String setEndDate(Scanner scanner, String startDateString) {
-    String date = "";
-    boolean validDate = false;
-    while (!validDate) {
-      writeMessage("End Date (YYYY-MM-DD): ");
-      date = scanner.nextLine();
-      try {
-        Date startDate = new Date(startDateString);
-        if (isValidDate(date) && (startDate.isBefore(date) || startDate.sameDay(date))) {
-          validDate = true;
-        } else {
-          lineSeparator();
-          writeMessage("Invalid date. Please try again.\n");
-        }
-      } catch (IllegalArgumentException e) {
-        lineSeparator();
-        writeMessage(e.getMessage() + " Please try again.\n");
-      }
-    }
-    return date;
+    lineSeparator();
+    writeMessage("End Date: \n");
+    return setDate(scanner);
   }
 
   private String setXDays(Scanner scanner) {
@@ -578,6 +577,42 @@ public class StockController implements IController {
       intArr[i] = Integer.parseInt(arr[i]);
     }
     return String.format("%d-%02d-%02d", intArr[0], intArr[1], intArr[2]);
+  }
+
+  private boolean isValidYear(String year) {
+    try {
+      int yearNum = Integer.parseInt(year);
+      if (yearNum > 0) {
+        return true;
+      }
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return false;
+  }
+
+  private boolean isValidMonth(String month) {
+    try {
+      int monthNum = Integer.parseInt(month);
+      if (monthNum > 0 && monthNum < 13) {
+        return true;
+      }
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return false;
+  }
+
+  private boolean isValidDay(String day) {
+    try {
+      int dayNum = Integer.parseInt(day);
+      if (dayNum > 0 && dayNum < 31) {
+        return true;
+      }
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return false;
   }
 
   private void lineSeparator() {
