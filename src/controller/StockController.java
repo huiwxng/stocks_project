@@ -187,7 +187,7 @@ public class StockController implements IController {
   private void viewStocks() {
     lineSeparator();
     writeMessage("Stocks in current portfolio:\n");
-    for (String stock : userData.getCurrentPortfolio().getStocksWithAmt()) {
+    for (String stock : userData.getCurrentPortfolio().getComposition()) {
       writeMessage(stock + "\n");
     }
   }

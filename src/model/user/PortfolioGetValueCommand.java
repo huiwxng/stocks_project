@@ -39,8 +39,8 @@ public class PortfolioGetValueCommand implements Command<Double> {
 
     double value = 0.0;
 
-    List<Stock> stocks = portfolio.getStocks();
-    List<Integer> shares = portfolio.getShares();
+    List<Stock> stocks = portfolio.getStocks(date);
+    List<Double> shares = portfolio.getShares(date);
     for (int i = 0; i < stocks.size(); i++) {
       Stock stock = stocks.get(i);
       int index = stock.getIndex(date);
@@ -48,7 +48,7 @@ public class PortfolioGetValueCommand implements Command<Double> {
         throw new IllegalArgumentException("No data found on this date.");
       }
       double price = stock.getClosingPrice(date);
-      int share = shares.get(i);
+      double share = shares.get(i);
       value += price * share;
     }
 

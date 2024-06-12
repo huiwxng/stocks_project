@@ -28,11 +28,11 @@ public class PortfolioTest {
     p = new BasicPortfolio("empty portfolio");
 
     p1 = new BasicPortfolio("portfolio 1");
-    p1.addStock("AAPL", 10);
+    p1.buyStock("AAPL", 10);
 
     p2 = new BasicPortfolio("portfolio 2");
-    p2.addStock("AAPL", 10);
-    p2.addStock("GOOG", 10);
+    p2.buyStock("AAPL", 10);
+    p2.buyStock("GOOG", 10);
   }
 
   @Test
@@ -50,7 +50,7 @@ public class PortfolioTest {
     assertEquals(expectedStocks, p.getStocks());
     assertEquals(expectedShares, p.getShares());
 
-    p.addStock("GOOG", 10);
+    p.buyStock("GOOG", 10);
     expectedStocks.add(new BasicStock("GOOG"));
     expectedShares.add(10);
     for (int i = 0; i < p.getStocks().size(); i++) {
@@ -58,7 +58,7 @@ public class PortfolioTest {
       assertEquals(expectedShares.get(i), p.getShares().get(i));
     }
 
-    p.addStock("AAPL", 20);
+    p.buyStock("AAPL", 20);
     expectedStocks.add(new BasicStock("AAPL"));
     expectedShares.add(20);
     for (int i = 0; i < p.getStocks().size(); i++) {
@@ -69,87 +69,87 @@ public class PortfolioTest {
 
   @Test
   public void testGetStocksWithAmt() {
-    // test getStocksWithAmt with empty portfolio
+    // test getComposition with empty portfolio
     List<String> expected = new ArrayList<>();
-    assertEquals(expected, p.getStocksWithAmt());
+    assertEquals(expected, p.getComposition());
 
-    // test getStocksWithAmt with portfolio with one stock
+    // test getComposition with portfolio with one stock
     expected = new ArrayList<>();
     expected.add("AAPL: 10");
-    assertEquals(expected, p1.getStocksWithAmt());
+    assertEquals(expected, p1.getComposition());
 
-    // test getStocksWithAmt with portfolio with two stocks
+    // test getComposition with portfolio with two stocks
     expected = new ArrayList<>();
     expected.add("AAPL: 10");
     expected.add("GOOG: 10");
-    assertEquals(expected, p2.getStocksWithAmt());
+    assertEquals(expected, p2.getComposition());
   }
 
   @Test
   public void testAddStock() {
     // tests for adding to empty portfolio
     List<String> expected = new ArrayList<>();
-    assertEquals(expected, p.getStocksWithAmt());
-    p.addStock("AAPL", 10);
+    assertEquals(expected, p.getComposition());
+    p.buyStock("AAPL", 10);
     expected.add("AAPL: 10");
-    assertEquals(expected, p.getStocksWithAmt());
+    assertEquals(expected, p.getComposition());
 
     // tests for adding to portfolio with one stock
     expected = new ArrayList<>();
-    p1.addStock("AAPL", 10);
+    p1.buyStock("AAPL", 10);
     expected.add("AAPL: 20");
-    assertEquals(expected, p1.getStocksWithAmt());
+    assertEquals(expected, p1.getComposition());
 
-    p1.addStock("GOOG", 10);
+    p1.buyStock("GOOG", 10);
     expected.add("GOOG: 10");
-    assertEquals(expected, p1.getStocksWithAmt());
+    assertEquals(expected, p1.getComposition());
 
     // tests for adding to portfolio with two stocks
     expected = new ArrayList<>();
-    p2.addStock("AAPL", 10);
+    p2.buyStock("AAPL", 10);
     expected.add("AAPL: 20");
     expected.add("GOOG: 10");
-    assertEquals(expected, p2.getStocksWithAmt());
+    assertEquals(expected, p2.getComposition());
 
-    p2.addStock("AMZN", 10);
+    p2.buyStock("AMZN", 10);
     expected.add("AMZN: 10");
-    assertEquals(expected, p2.getStocksWithAmt());
+    assertEquals(expected, p2.getComposition());
   }
 
   @Test
   public void testRemoveStock() {
     List<String> expected = new ArrayList<>();
-    assertEquals(expected, p.getStocksWithAmt());
+    assertEquals(expected, p.getComposition());
 
     // tests for error when removing from empty portfolio
     assertThrows(IllegalArgumentException.class, () -> {
-      p.removeStock("AAPL", 10);
+      p.sellStock("AAPL", 10);
     });
 
     // tests for removing from portfolio with one stock
     expected = new ArrayList<>();
-    p1.removeStock("AAPL", 5);
+    p1.sellStock("AAPL", 5);
     expected.add("AAPL: 5");
-    assertEquals(expected, p1.getStocksWithAmt());
-    p1.removeStock("AAPL", 5);
+    assertEquals(expected, p1.getComposition());
+    p1.sellStock("AAPL", 5);
     expected = new ArrayList<>();
-    assertEquals(expected, p1.getStocksWithAmt());
+    assertEquals(expected, p1.getComposition());
 
     // tests for removing from portfolio with two stocks
     expected = new ArrayList<>();
-    p2.removeStock("AAPL", 5);
+    p2.sellStock("AAPL", 5);
     expected.add("AAPL: 5");
     expected.add("GOOG: 10");
-    assertEquals(expected, p2.getStocksWithAmt());
-    p2.removeStock("AAPL", 10);
+    assertEquals(expected, p2.getComposition());
+    p2.sellStock("AAPL", 10);
     expected.remove(0);
-    assertEquals(expected, p2.getStocksWithAmt());
+    assertEquals(expected, p2.getComposition());
   }
 
   @Test
   public void testIsEmpty() {
     assertTrue(p.isEmpty());
-    p.addStock("AAPL", 10);
+    p.buyStock("AAPL", 10);
     assertFalse(p.isEmpty());
   }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import model.stock.BasicStock;
 import model.stock.Stock;
+import model.user.Transaction;
 
 /**
  * Basic implementation of the {@link Portfolio} interface.
@@ -12,8 +13,9 @@ import model.stock.Stock;
 public class BasicPortfolio implements Portfolio {
 
   private final String name;
-  private final List<Stock> stocks;
-  private final List<Integer> shares;
+  private List<Stock> stocks;
+  private List<Double> shares;
+  private final List<Transaction> transactions;
 
   /**
    * Constructs a new portfolio object.
@@ -21,8 +23,9 @@ public class BasicPortfolio implements Portfolio {
    */
   public BasicPortfolio(String name) {
     this.name = name;
-    stocks = new ArrayList<>();
-    shares = new ArrayList<>();
+    this.stocks = new ArrayList<>();
+    this.shares = new ArrayList<>();
+    this.transactions = new ArrayList<>();
   }
 
   /**
@@ -41,7 +44,8 @@ public class BasicPortfolio implements Portfolio {
    * @return a list of Stocks inside the portfolio
    */
   @Override
-  public List<Stock> getStocks() {
+  public List<Stock> getStocks(String date) {
+    processTransactions(date);
     return new ArrayList<>(stocks);
   }
 
@@ -51,7 +55,8 @@ public class BasicPortfolio implements Portfolio {
    * @return a list of share amounts inside the portfolio
    */
   @Override
-  public List<Integer> getShares() {
+  public List<Double> getShares(String date) {
+    processTransactions(date);
     return new ArrayList<>(shares);
   }
 
@@ -61,10 +66,11 @@ public class BasicPortfolio implements Portfolio {
    * @return a list of Strings representing the stocks and the shares
    */
   @Override
-  public List<String> getStocksWithAmt() {
+  public List<String> getComposition(String date) {
+    processTransactions(date);
     List<String> res = new ArrayList<>();
     for (int i = 0; i < stocks.size(); i++) {
-      res.add(String.format("%s: %d", stocks.get(i).getTicker(), shares.get(i)));
+      res.add(String.format("%s: %f shares", stocks.get(i).getTicker(), shares.get(i)));
     }
     return res;
   }
@@ -75,28 +81,8 @@ public class BasicPortfolio implements Portfolio {
    * @param ticker of the stock
    */
   @Override
-  public void addStock(String ticker, int shareAmt) {
-    if (shareAmt < 0) {
-      throw new IllegalArgumentException("Share amount cannot be negative.");
-    }
-
-    // gets the index of the stock
-    int i = getIndex(ticker);
-
-    // if the stock does not exist already in the portfolio, add the stock and the
-    // share amount, otherwise, add to the existing share amount
-    if (i == -1) {
-      Stock stock;
-      try {
-        stock = new BasicStock(ticker);
-      } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("A stock with this ticker does not exist.");
-      }
-      stocks.add(stock);
-      shares.add(shareAmt);
-    } else {
-      shares.set(i, shares.get(i) + shareAmt);
-    }
+  public void buyStock(String ticker, int amount, String date) {
+    addToTransaction(true, ticker, amount, date);
   }
 
   /**
@@ -105,33 +91,8 @@ public class BasicPortfolio implements Portfolio {
    * @param ticker of the stock
    */
   @Override
-  public int removeStock(String ticker, int shareAmt) throws IllegalArgumentException {
-
-    int removed = 0;
-
-    // checks if the portfolio is empty
-    if (isEmpty()) {
-      throw new IllegalArgumentException("There are no stocks in the portfolio.");
-    }
-
-    // checks if the portfolio contains the specified stock
-    int i = getIndex(ticker);
-    if (i == -1) {
-      throw new IllegalArgumentException("There is no such stock in the portfolio.");
-    }
-
-    // if the current stock shares amount is greater than the remove amount, remove
-    // the amount from the current, otherwise, remove the stock completely
-    if (shareAmt < shares.get(i)) {
-      shares.set(i, shares.get(i) - shareAmt);
-      removed = shareAmt;
-    } else {
-      removed = shares.get(i);
-      stocks.remove(i);
-      shares.remove(i);
-    }
-
-    return removed;
+  public void sellStock(String ticker, int amount, String date) throws IllegalArgumentException {
+    addToTransaction(false, ticker, amount, date);
   }
 
   /**
@@ -152,5 +113,71 @@ public class BasicPortfolio implements Portfolio {
       }
     }
     return -1;
+  }
+
+  private void processTransactions(String date) {
+    stocks = new ArrayList<>();
+    shares = new ArrayList<>();
+    for (Transaction transaction : transactions) {
+      if (transaction.getDate().isBefore(date) || transaction.getDate().sameDay(date)) {
+        if (transaction.getType()) {
+          buyStockHelper(transaction.getTicker(), transaction.getShares());
+        } else {
+          sellStockHelper(transaction.getTicker(), transaction.getShares());
+        }
+      }
+    }
+  }
+
+  private void buyStockHelper(String ticker, double amount) {
+    // gets the index of the stock
+    int i = getIndex(ticker);
+
+    // if the stock does not exist already in the portfolio, add the stock and the
+    // share amount, otherwise, add to the existing share amount
+    if (i == -1) {
+      Stock stock;
+      try {
+        stock = new BasicStock(ticker);
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("A stock with this ticker does not exist.");
+      }
+      stocks.add(stock);
+      shares.add(amount);
+    } else {
+      shares.set(i, shares.get(i) + amount);
+    }
+  }
+
+  private void sellStockHelper(String ticker, double amount) {
+    // checks if the portfolio is empty
+    if (isEmpty()) {
+      throw new IllegalArgumentException("There are no stocks in the portfolio.");
+    }
+
+    // checks if the portfolio contains the specified stock
+    int i = getIndex(ticker);
+    if (i == -1) {
+      throw new IllegalArgumentException("There is no such stock in the portfolio.");
+    }
+
+    // if the current stock shares amount is greater than the remove amount, remove
+    // the amount from the current, otherwise, remove the stock completely
+    if (amount < shares.get(i)) {
+      shares.set(i, shares.get(i) - amount);
+    } else {
+      stocks.remove(i);
+      shares.remove(i);
+    }
+  }
+
+  private void addToTransaction(boolean type, String ticker, int amount, String date) {
+    Transaction transaction;
+    try {
+      transaction = new Transaction(type, ticker, amount, date);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid transaction. " + e.getMessage());
+    }
+    transactions.add(transaction);
   }
 }
