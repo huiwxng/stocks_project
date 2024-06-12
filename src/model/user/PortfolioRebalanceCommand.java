@@ -1,10 +1,13 @@
 package model.user;
 
 public class PortfolioRebalanceCommand implements Command<String> {
-  public PortfolioRebalanceCommand(int... weights) {
+  public PortfolioRebalanceCommand(String date, int... weights) {
     int sum = 0;
     for (int weight : weights) {
-      
+      sum += weight;
+    }
+    if (sum != 100) {
+      throw new IllegalArgumentException("Weights must add up to 100.");
     }
   }
 
