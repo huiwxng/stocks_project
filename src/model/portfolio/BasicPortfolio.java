@@ -3,6 +3,7 @@ package model.portfolio;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.math.BigDecimal;
 
 import model.stock.BasicStock;
 import model.stock.Stock;
@@ -71,7 +72,10 @@ public class BasicPortfolio implements Portfolio {
     processTransactions(date);
     List<String> res = new ArrayList<>();
     for (int i = 0; i < stocks.size(); i++) {
-      res.add(String.format("%s: %f share(s)", stocks.get(i).getTicker(), shares.get(i)));
+      BigDecimal decimal = new BigDecimal(Double.toString(shares.get(i)));
+      String decimalString = decimal.stripTrailingZeros().toPlainString();
+      res.add(String.format("%s: %s share(s)", stocks.get(i).getTicker(),
+              decimalString));
     }
     return res;
   }
@@ -83,8 +87,12 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void buyStock(String ticker, double amount, String date) {
-    processTransactions(date);
     addToTransaction(true, ticker, amount, date);
+    try {
+      processTransactions(date);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /**
@@ -94,8 +102,12 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void sellStock(String ticker, double amount, String date) throws IllegalArgumentException {
-    processTransactions(date);
     addToTransaction(false, ticker, amount, date);
+    try {
+      processTransactions(date);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /**

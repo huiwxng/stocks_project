@@ -75,13 +75,13 @@ public class PortfolioTest {
 
     // test getComposition with portfolio with one stock
     expected = new ArrayList<>();
-    expected.add("AAPL: 10");
+    expected.add("AAPL: 10 share(s)");
     assertEquals(expected, p1.getComposition("2024-06-04"));
 
     // test getComposition with portfolio with two stocks
     expected = new ArrayList<>();
-    expected.add("AAPL: 10");
-    expected.add("GOOG: 10");
+    expected.add("AAPL: 10 share(s)");
+    expected.add("GOOG: 10 share(s)");
     assertEquals(expected, p2.getComposition("2024-06-04"));
   }
 
