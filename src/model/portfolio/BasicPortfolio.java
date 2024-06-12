@@ -82,6 +82,7 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void buyStock(String ticker, int amount, String date) {
+    processTransactions(date);
     addToTransaction(true, ticker, amount, date);
   }
 
@@ -92,6 +93,7 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void sellStock(String ticker, int amount, String date) throws IllegalArgumentException {
+    processTransactions(date);
     addToTransaction(false, ticker, amount, date);
   }
 

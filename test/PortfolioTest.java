@@ -28,11 +28,11 @@ public class PortfolioTest {
     p = new BasicPortfolio("empty portfolio");
 
     p1 = new BasicPortfolio("portfolio 1");
-    p1.buyStock("AAPL", 10);
+    p1.buyStock("AAPL", 10, "2024-06-04");
 
     p2 = new BasicPortfolio("portfolio 2");
-    p2.buyStock("AAPL", 10);
-    p2.buyStock("GOOG", 10);
+    p2.buyStock("AAPL", 10, "2024-06-04");
+    p2.buyStock("GOOG", 10, "2024-06-04");
   }
 
   @Test
@@ -47,23 +47,23 @@ public class PortfolioTest {
     List<Stock> expectedStocks = new ArrayList<>();
     List<Integer> expectedShares = new ArrayList<>();
 
-    assertEquals(expectedStocks, p.getStocks());
-    assertEquals(expectedShares, p.getShares());
+    assertEquals(expectedStocks, p.getStocks("2024-06-04"));
+    assertEquals(expectedShares, p.getShares("2024-06-04"));
 
     p.buyStock("GOOG", 10);
     expectedStocks.add(new BasicStock("GOOG"));
     expectedShares.add(10);
     for (int i = 0; i < p.getStocks().size(); i++) {
       assertEquals(expectedStocks.get(i).getTicker(), p.getStocks().get(i).getTicker());
-      assertEquals(expectedShares.get(i), p.getShares().get(i));
+      assertEquals(expectedShares.get(i), p.getShares("2024-06-04").get(i));
     }
 
     p.buyStock("AAPL", 20);
     expectedStocks.add(new BasicStock("AAPL"));
     expectedShares.add(20);
     for (int i = 0; i < p.getStocks().size(); i++) {
-      assertEquals(expectedStocks.get(i).getTicker(), p.getStocks().get(i).getTicker());
-      assertEquals(expectedShares.get(i), p.getShares().get(i));
+      assertEquals(expectedStocks.get(i).getTicker(), p.getStocks("2024-06-04").get(i).getTicker());
+      assertEquals(expectedShares.get(i), p.getShares("2024-06-04").get(i));
     }
   }
 
