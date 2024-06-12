@@ -1,6 +1,7 @@
 package model.portfolio;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import model.stock.BasicStock;
@@ -120,6 +121,7 @@ public class BasicPortfolio implements Portfolio {
   private void processTransactions(String date) {
     stocks = new ArrayList<>();
     shares = new ArrayList<>();
+    transactions.sort(DATE_COMPARATOR);
     for (Transaction transaction : transactions) {
       if (transaction.getDate().isBefore(date) || transaction.getDate().sameDay(date)) {
         if (transaction.getType()) {
@@ -182,4 +184,14 @@ public class BasicPortfolio implements Portfolio {
     }
     transactions.add(transaction);
   }
+
+  private final Comparator<Transaction> DATE_COMPARATOR = (t1, t2) -> {
+    if (t1.getDate().isBefore(t2.getDate().toString())) {
+      return -1;
+    } else if (t1.getDate().sameDay(t2.getDate().toString())) {
+      return 0;
+    } else {
+      return 1;
+    }
+  };
 }
