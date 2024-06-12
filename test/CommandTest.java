@@ -169,19 +169,20 @@ public class CommandTest {
     Command<Double> getValue;
 
     user.setCurrentPortfolio(p1);
+    // value is 0 if the date is before any adds
+    getValue = new PortfolioGetValueCommand("2024-06-03");
+    assertEquals(0, user.execute(getValue), 0.01);
+
     getValue = new PortfolioGetValueCommand("2024-06-04");
     assertEquals(1943.50, user.execute(getValue), 0.01);
 
     user.setCurrentPortfolio(p2);
+    // value is 0 if the date is before any adds
+    getValue = new PortfolioGetValueCommand("2024-06-03");
+    assertEquals(0, user.execute(getValue), 0.01);
+
     getValue = new PortfolioGetValueCommand("2024-06-04");
     assertEquals(3694.80, user.execute(getValue), 0.01);
-
-    assertThrows(IllegalArgumentException.class, () -> {
-      // tests for exception when the portfolio is empty
-      user.setCurrentPortfolio(p);
-      Command<Double> testThrow = new PortfolioGetValueCommand("2024-06-04");
-      user.execute(testThrow);
-    });
 
     assertThrows(IllegalArgumentException.class, () -> {
       // tests for exception when an invalid date is provided

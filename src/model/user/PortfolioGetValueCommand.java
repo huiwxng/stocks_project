@@ -1,7 +1,10 @@
 package model.user;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
+import model.Date;
 import model.portfolio.Portfolio;
 import model.stock.Stock;
 
@@ -18,6 +21,10 @@ public class PortfolioGetValueCommand implements Command<Double> {
    */
   public PortfolioGetValueCommand(String date) {
     this.date = date;
+    Date today = new Date(LocalDate.now().toString());
+    if (today.isBefore(date)) {
+      throw new IllegalArgumentException("The program cannot predict future stock prices.");
+    }
   }
 
   /**
@@ -33,9 +40,9 @@ public class PortfolioGetValueCommand implements Command<Double> {
       throw new IllegalArgumentException("No current portfolio set.");
     }
 
-    if (portfolio.isEmpty()) {
-      throw new IllegalArgumentException("No stocks in portfolio.");
-    }
+//    if (portfolio.isEmpty()) {
+//      return 0.0;
+//    }
 
     double value = 0.0;
 
