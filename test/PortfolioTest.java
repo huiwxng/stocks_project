@@ -149,6 +149,27 @@ public class PortfolioTest {
     p2.sellStock("AAPL", 10.0, "2024-06-04");
     expected.remove(0);
     assertEquals(expected, p2.getComposition("2024-06-04"));
+
+    // tests for removing from portfolio with not enough shares of a stock
+    assertThrows(IllegalArgumentException.class, () -> {
+      p1.sellStock("AAPL", 10, "2024-06-04");
+    });
+
+    // tests that removing a stock on a later day doesn't affect earlier days
+    p1.buyStock("AAPL", 10, "2024-06-04");
+    expected = new ArrayList<>();
+    expected.add("AAPL: 10 share(s)");
+    p1.sellStock("AAPL", 5, "2024-06-05");
+    List<String> laterExpected = new ArrayList<>();
+    laterExpected.add("AAPL: 5 share(s)");
+    assertEquals(expected, p1.getComposition("2024-06-04"));
+    assertEquals(laterExpected, p1.getComposition("2024-06-05"));
+
+    // tests that removing a stock on an earlier day affects later days
+    p1.sellStock("AAPL", 2, "2024-06-04");
+    expected = new ArrayList<>();
+    expected.add("AAPL: 3 share(s)");
+    assertEquals(expected, p1.getComposition("2024-06-05"));
   }
 
   @Test
@@ -160,6 +181,6 @@ public class PortfolioTest {
 
   @Test
   public void testDates() {
-    
+
   }
 }
