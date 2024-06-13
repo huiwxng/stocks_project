@@ -220,6 +220,7 @@ public class StockController implements IController {
   private void portfolioValue(Scanner scanner) {
     String date = formatDate(setDate(scanner));
     List<String> distribution = userData.getCurrentPortfolio().getDistribution(date);
+    lineSeparator();
     writeMessage("Portfolio Distribution:\n");
     for (String str : distribution) {
       writeMessage(str + "\n");
