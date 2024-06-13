@@ -229,7 +229,7 @@ public class StockController implements IController {
     try {
       double value = userData.execute(command);
       lineSeparator();
-      writeMessage("Portfolio value: $" + value + "\n");
+      writeMessage("Portfolio value: $" + formatDouble(value) + "\n");
     } catch (IllegalArgumentException e) {
       writeMessage(e.getMessage() + " Please try again.\n");
     }
@@ -714,5 +714,9 @@ public class StockController implements IController {
 
   private void lineSeparator() {
     writeMessage("-------------------------------------------------\n");
+  }
+
+  private String formatDouble(double num) {
+    return String.format("%.2f", num);
   }
 }
