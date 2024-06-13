@@ -101,10 +101,16 @@ public class PortfolioPerformanceCommand implements Command<String> {
         timescale = "DAYS";
       } else if (weeks <= 30) {
         timescale = "WEEKS";
+      } else if (weeks <= 90) {
+        timescale = "3-WEEKS";
       } else if (months <= 30) {
         timescale = "MONTHS";
+      } else if (months <= 90) {
+        timescale = "3-MONTHS";
       } else if (years <= 30) {
         timescale = "YEARS";
+      } else if (years <= 90) {
+        timescale = "3-YEARS";
       } else if (decades <= 30) {
         timescale = "DECADES";
       } else {
@@ -112,31 +118,12 @@ public class PortfolioPerformanceCommand implements Command<String> {
       }
     }
 
-    double max = 0.0;
-    switch (timescale) {
-      case "DAYS":
-        max = getMaxValue(days);
-        break;
-      case "WEEKS":
-        max = getMaxValue(weeks);
-        break;
-      case "MONTHS":
-        max = getMaxValue(months);
-        break;
-      case "YEARS":
-        max = getMaxValue(years);
-        break;
-      case "DECADES":
-        max = getMaxValue(decades);
-        break;
-      default:
-        break;
-    }
+    max = getMaxValue();
 
     return max / 50;
   }
 
-  private double getMaxValue(int num) {
+  private double getMaxValue() {
     Command<Double> getValue;
     max = 0.0;
     double value = 0.0;
@@ -149,13 +136,33 @@ public class PortfolioPerformanceCommand implements Command<String> {
       } else {
         date = date.with(lastDayOfMonth());
       }
+    } else if (timescale.equalsIgnoreCase("3-MONTHS")) {
+      value = getValue(date);
+      addToArrays(date, value);
+      if (date.isEqual(date.with(lastDayOfMonth()))) {
+        date = date.plusMonths(3);
+      } else {
+        date = date.with(lastDayOfMonth());
+      }
     } else if (timescale.equalsIgnoreCase("YEARS")) {
       value = getValue(date);
       addToArrays(date, value);
-      date = date.with(lastDayOfYear());
+      if (date.isEqual(date.with(lastDayOfYear()))) {
+        date = date.plusYears(1);
+      } else {
+        date = date.with(lastDayOfYear());
+      }
+    } else if (timescale.equalsIgnoreCase("3-YEARS")) {
+      value = getValue(date);
+      addToArrays(date, value);
+      if (date.isEqual(date.with(lastDayOfYear()))) {
+        date = date.plusYears(3);
+      } else {
+        date = date.with(lastDayOfYear());
+      }
     }
 
-    for (int i = 0; i < num && date.isBefore(endDate); i++) {
+    while(date.isBefore(endDate)) {
       value = getValue(date);
       switch (timescale) {
         case "DAYS":
@@ -166,13 +173,25 @@ public class PortfolioPerformanceCommand implements Command<String> {
           addToArrays(date, value);
           date = date.plusWeeks(1);
           break;
+        case "3-WEEKS":
+          addToArrays(date, value);
+          date = date.plusWeeks(3);
+          break;
         case "MONTHS":
           addToArrays(date, value);
           date = date.plusMonths(1);
           break;
+        case "3-MONTHS":
+          addToArrays(date, value);
+          date = date.plusMonths(3);
+          break;
         case "YEARS":
           addToArrays(date, value);
           date = date.plusYears(1);
+          break;
+        case "3-YEARS":
+          addToArrays(date, value);
+          date = date.plusYears(3);
           break;
         case "DECADES":
           addToArrays(date, value);
@@ -218,10 +237,13 @@ public class PortfolioPerformanceCommand implements Command<String> {
       switch (timescale) {
         case "DAYS":
         case "WEEKS":
+        case "3-WEEKS":
         case "MONTHS":
+        case "3-MONTHS":
           graph.append(String.format("%s %02d %d: %s\n", month, day, year, bar));
           break;
         case "YEARS":
+        case "3-YEARS":
           graph.append(String.format("%s %d: %s\n", month, year, bar));
           break;
         default:
