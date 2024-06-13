@@ -479,7 +479,6 @@ public class StockController implements IController {
     boolean validYear = false;
     boolean validMonth = false;
     boolean validDay = false;
-
     while (!validYear || !validMonth || !validDay) {
       if (!validYear) {
         lineSeparator();
@@ -512,7 +511,6 @@ public class StockController implements IController {
         }
       }
     }
-
     date.append(year).append('-')
             .append(String.format("%02d", Integer.parseInt(month))).append('-')
             .append(String.format("%02d", Integer.parseInt(day)));
@@ -522,10 +520,8 @@ public class StockController implements IController {
       writeMessage("Invalid date. Please try again.\n");
       return setDate(scanner);
     }
-
     return date.toString();
   }
-
 
   private String setStartDate(Scanner scanner) {
     lineSeparator();
