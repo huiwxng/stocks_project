@@ -1,6 +1,7 @@
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.portfolio.BasicPortfolio;
@@ -198,6 +199,7 @@ public class CommandTest {
   public void testPortfolioRebalanceCommand() {
     Command<Double> getValue;
     Command<String> rebalance;
+    List<String> expected;
 
     user.setCurrentPortfolio(p);
     assertThrows(IllegalArgumentException.class, () -> {
@@ -210,17 +212,24 @@ public class CommandTest {
       user.execute(test);
     });
 
+    expected = new ArrayList<>();
     user.setCurrentPortfolio(p1);
     rebalance = new PortfolioRebalanceCommand("2024-06-04", 100);
+    user.execute(rebalance);
     getValue = new PortfolioGetValueCommand("2024-06-04");
     assertEquals(1943.50, user.execute(getValue), 0.01);
+    expected.add("AAPL: 10 share(s)");
+    assertEquals(expected, user.getCurrentPortfolio().getComposition("2024-06-04"));
 
+    expected = new ArrayList<>();
     user.setCurrentPortfolio(p2);
     rebalance = new PortfolioRebalanceCommand("2024-06-04", 80, 20);
     user.execute(rebalance);
     getValue = new PortfolioGetValueCommand("2024-06-04");
     assertEquals(3694.80, user.execute(getValue), 0.01);
-    System.out.println(user.getCurrentPortfolio().getComposition("2024-06-04"));
+    expected.add("AAPL: 15.208850012863392 share(s)");
+    expected.add("GOOG: 4.219494090104494 share(s)");
+    assertEquals(expected, user.getCurrentPortfolio().getComposition("2024-06-04"));
   }
 
   @Test
