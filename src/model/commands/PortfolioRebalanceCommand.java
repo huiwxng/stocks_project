@@ -6,10 +6,19 @@ import model.portfolio.Portfolio;
 import model.stock.Stock;
 import model.user.UserData;
 
+/**
+ * Command to properly rebalance the stocks in a portfolio given
+ * desired weights.
+ */
 public class PortfolioRebalanceCommand implements Command<String> {
   private final String date;
   private final int[] weights;
 
+  /**
+   *
+   * @param date specified date
+   * @param weights weights for the dates
+   */
   public PortfolioRebalanceCommand(String date, int... weights) {
     this.date = date;
     this.weights = weights;
