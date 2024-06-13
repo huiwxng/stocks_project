@@ -209,9 +209,9 @@ public class PortfolioPerformanceCommand implements Command<String> {
       switch (timescale) {
         case "DAYS":
         case "WEEKS":
+        case "MONTHS":
           graph.append(String.format("%s %02d %d: %s\n", month, day, year, bar));
           break;
-        case "MONTHS":
         case "YEARS":
           graph.append(String.format("%s %d: %s\n", month, year, bar));
           break;
