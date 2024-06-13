@@ -38,6 +38,15 @@ public interface Portfolio {
   List<String> getComposition(String date);
 
   /**
+   * Gets the distribution of {@link Stock} objects, meaning all stocks along with their values
+   * in the portfolio.
+   *
+   * @param date date of the distribution
+   * @return a list of Strings representing the stocks and their values
+   */
+  List<String> getDistribution(String date);
+
+  /**
    * Adds a stock to the portfolio.
    *
    * @param ticker of the stock
