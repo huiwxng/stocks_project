@@ -136,7 +136,11 @@ public class PortfolioPerformanceCommand implements Command<String> {
     if (timescale.equalsIgnoreCase("MONTHS")) {
       value = getValue(date);
       addToArrays(date, value);
-      date = date.with(lastDayOfMonth());
+      if (date.isEqual(date.with(lastDayOfMonth()))) {
+        date = date.plusMonths(1);
+      } else {
+        date = date.with(lastDayOfMonth());
+      }
     } else if (timescale.equalsIgnoreCase("YEARS")) {
       value = getValue(date);
       addToArrays(date, value);
@@ -170,11 +174,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
       }
     }
     if (date.isAfter(endDate)) {
-      getValue = new PortfolioGetValueCommand(endDate.toString());
-      value = user.execute(getValue);
-      if (value > max) {
-        max = value;
-      }
+      value = getValue(endDate);
       addToArrays(endDate, value);
     }
     return max;
