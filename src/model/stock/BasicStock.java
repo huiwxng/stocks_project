@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Basic implementation of the {@link Stock} interface.
+ * Basic implementation of the {@link Stock} interface. In this implementation,
+ * stocks are represented by their ticker, a list of dates, and prices correlated to
+ * those dates.
  */
 public class BasicStock implements Stock {
 

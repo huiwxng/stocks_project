@@ -9,7 +9,9 @@ import model.stock.BasicStock;
 import model.stock.Stock;
 
 /**
- * Basic implementation of the {@link UserData} interface.
+ * Basic implementation of the {@link UserData} interface. In this implementation,
+ * users have their own list of portfolios that they can manipulate and current
+ * stocks and portfolios they can manipulate.
  */
 public class BasicUserData implements UserData {
 

@@ -6,7 +6,8 @@ import model.stock.Stock;
 import model.user.UserData;
 
 /**
- * Command to get the x-days moving average.
+ * Command to get the x-days moving average, which is the average of the closing
+ * prices of the last x-days.
  */
 public class StockMovingAverageCommand implements Command<Double> {
 

@@ -15,6 +15,10 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
+/**
+ * Class that represent a command that creates a graph of the performance of a portfolio
+ * over a certain period over of time.
+ */
 public class PortfolioPerformanceCommand implements Command<String> {
   private LocalDate startDate;
   private LocalDate endDate;
@@ -26,6 +30,11 @@ public class PortfolioPerformanceCommand implements Command<String> {
   private UserData user;
   private double max;
 
+  /**
+   * Constructs a command that gets the graph that serves as a performance visualizer.
+   *
+   * @param start the start date of the performance * @param end the end date of the performance
+   */
   public PortfolioPerformanceCommand(String start, String end) {
     this.graph = new StringBuilder();
     this.timescale = "DAYS";
@@ -58,7 +67,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
 
     String name = portfolio.getName();
     graph.append(String.format("Performance of portfolio %s from %s to %s\n\n", portfolio.getName(),
-                    startDate.toString(), endDate.toString()));
+            startDate.toString(), endDate.toString()));
 
     scale = getScale();
     draw();
@@ -98,8 +107,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
         timescale = "YEARS";
       } else if (decades <= 30) {
         timescale = "DECADES";
-      }
-      else {
+      } else {
         throw new IllegalArgumentException("Cannot calculate the performance for over 30 decades");
       }
     }
@@ -169,6 +177,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
         case "DECADES":
           addToArrays(date, value);
           date = date.plusYears(10);
+          break;
         default:
           break;
       }

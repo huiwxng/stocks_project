@@ -15,7 +15,10 @@ import model.stock.Stock;
 import model.user.Transaction;
 
 /**
- * Basic implementation of the {@link Portfolio} interface.
+ * Basic implementation of the {@link Portfolio} interface. In this implementation,
+ * users can have a portfolio that they name. They can also see the value of the
+ * portfolio on certain dates, buy stocks, sell stocks, rebalance stocks, and
+ * see a performance graph.
  */
 public class BasicPortfolio implements Portfolio {
 
