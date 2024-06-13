@@ -86,6 +86,24 @@ public class PortfolioTest {
   }
 
   @Test
+  public void testGetDistribution() {
+    // test getComposition with empty portfolio
+    List<String> expected = new ArrayList<>();
+    assertEquals(expected, p.getDistribution("2024-06-04"));
+
+    // test getComposition with portfolio with one stock
+    expected = new ArrayList<>();
+    expected.add("AAPL: $1943.50");
+    assertEquals(expected, p1.getDistribution("2024-06-04"));
+
+    // test getComposition with portfolio with two stocks
+    expected = new ArrayList<>();
+    expected.add("AAPL: $1943.50");
+    expected.add("GOOG: $1751.30");
+    assertEquals(expected, p2.getDistribution("2024-06-04"));
+  }
+
+  @Test
   public void testBuyStock() {
     // tests for adding to empty portfolio
     List<String> expected = new ArrayList<>();

@@ -94,8 +94,9 @@ public class BasicPortfolio implements Portfolio {
   public List<String> getDistribution(String date) {
     List<String> res = new ArrayList<>();
     for (int i = 0; i < stocks.size(); i++) {
-      String str = stocks.get(i).getTicker() + ": $"
-              + (shares.get(i) * stocks.get(i).getClosingPrice(date));
+      double price = shares.get(i) * stocks.get(i).getClosingPrice(date);
+      String ticker = stocks.get(i).getTicker();
+      String str = String.format("%s: $%.2f", ticker, price);
       res.add(str);
     }
     return res;
