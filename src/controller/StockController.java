@@ -209,7 +209,7 @@ public class StockController implements IController {
   }
 
   private void viewStocks(Scanner scanner) {
-    String date = setDate(scanner);
+    String date = formatDate(setDate(scanner));
     lineSeparator();
     writeMessage("Stocks in " + userData.getCurrentPortfolio().getName() + " on " + date + ":\n");
     for (String stock : userData.getCurrentPortfolio().getComposition(date)) {
@@ -218,7 +218,7 @@ public class StockController implements IController {
   }
 
   private void portfolioValue(Scanner scanner) {
-    String date = setDate(scanner);
+    String date = formatDate(setDate(scanner));
     Command<Double> command = new PortfolioGetValueCommand(date);
     try {
       double value = userData.execute(command);
@@ -241,7 +241,7 @@ public class StockController implements IController {
         try {
           writeMessage("Number of shares to add: ");
           addedShareCount = Integer.parseInt(scanner.nextLine().trim());
-          String date = setDate(scanner);
+          String date = formatDate(setDate(scanner));
           try {
             userData.getCurrentPortfolio().buyStock(addedTicker, addedShareCount, date);
             lineSeparator();
@@ -249,7 +249,7 @@ public class StockController implements IController {
                     + " to " + userData.getCurrentPortfolio().getName() + "\n");
           } catch (Exception e) {
             lineSeparator();
-            writeMessage(e.getMessage() + "Please try again.\n");
+            writeMessage(e.getMessage() + " Please try again.\n");
           }
           validShareCountToAdd = true;
           validTickerToAdd = true;
@@ -277,7 +277,7 @@ public class StockController implements IController {
         try {
           writeMessage("Number of shares to remove: ");
           removedShareCount = Integer.parseInt(scanner.nextLine().trim());
-          String date = setDate(scanner);
+          String date = formatDate(setDate(scanner));
           try {
             userData.getCurrentPortfolio().sellStock(removedTicker, removedShareCount, date);
             lineSeparator();
@@ -302,7 +302,7 @@ public class StockController implements IController {
   }
 
   private void rebalancePortfolio(Scanner scanner) {
-    String date = setDate(scanner);
+    String date = formatDate(setDate(scanner));
     List<Stock> currentStocks = userData.getCurrentPortfolio().getStocks(date);
     int[] weights = new int[currentStocks.size()];
     for (int i = 0; i < currentStocks.size(); i++) {
@@ -381,7 +381,7 @@ public class StockController implements IController {
   }
 
   private void closingPrice(Scanner scanner) {
-    String date = setDate(scanner);
+    String date = formatDate(setDate(scanner));
     try {
       lineSeparator();
       writeMessage("Closing Price for " + formatDate(date) + ": $"
@@ -407,7 +407,7 @@ public class StockController implements IController {
   }
 
   private void xDayMovingAverage(Scanner scanner) {
-    String date = setDate(scanner);
+    String date = formatDate(setDate(scanner));
     String xDays = setXDays(scanner);
     try {
       Command<Double> command = new StockMovingAverageCommand(date, Integer.parseInt(xDays));
