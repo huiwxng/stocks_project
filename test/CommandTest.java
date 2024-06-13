@@ -4,6 +4,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.commands.PortfolioPerformanceCommand;
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.user.BasicUserData;
@@ -256,5 +257,14 @@ public class CommandTest {
     assertThrows(IllegalArgumentException.class, () -> {
       Command<String> loadPF3 = new LoadPortfolioCommand("notCSV");
     });
+  }
+
+  @Test
+  public void testPortfolioPerformanceCommand() {
+    user.setCurrentPortfolio(p2);
+    Command<String> visualize;
+    visualize = new PortfolioPerformanceCommand("2024-06-04", "2024-06-04");
+    System.out.println(user.execute(visualize));
+
   }
 }
