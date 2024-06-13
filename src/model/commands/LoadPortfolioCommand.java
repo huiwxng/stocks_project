@@ -11,7 +11,8 @@ import model.portfolio.Portfolio;
 import model.user.UserData;
 
 /**
- * Command to load a properly formatted CSV file as a portfolio.
+ * Command to load a properly formatted CSV file as a portfolio that the user
+ * can manipulate in the program.
  */
 public class LoadPortfolioCommand implements Command<String> {
   private final String dirPath = "res/portfolios/";
@@ -20,7 +21,7 @@ public class LoadPortfolioCommand implements Command<String> {
   private final String path;
 
   /**
-   * Constructs a command that loads the CSV file.
+   * Constructs a command that loads the CSV file that represents the portfolio.
    * @param filename name of the CSV file without the .csv extension
    */
   public LoadPortfolioCommand(String filename) {

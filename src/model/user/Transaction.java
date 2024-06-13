@@ -5,6 +5,10 @@ import java.time.LocalDate;
 import model.stock.BasicStock;
 import model.stock.Stock;
 
+/**
+ * This class represents transactions on a portfolio that the user does, such as
+ * buying stocks or selling stocks.
+ */
 public class Transaction implements Comparable<Transaction> {
   private final boolean buy;
   private final String ticker;
@@ -13,6 +17,16 @@ public class Transaction implements Comparable<Transaction> {
   private final LocalDate date;
   private int index;
 
+  /**
+   * Constructs a Transaction on a portfolio that is either for
+   * buying or selling stocks.
+   *
+   * @param buy boolean to determine if the transaction is for buying or selling
+   * @param ticker ticker of the stock that the transaction is being completed with
+   * @param shares number of shares of the stock that the transaction is being completed with
+   * @param date date of the transaction
+   * @param index index of the transaction in the log of transactions
+   */
   public Transaction(boolean buy, String ticker, double shares, String date, int index) {
     try {
       this.ticker = ticker.toUpperCase();

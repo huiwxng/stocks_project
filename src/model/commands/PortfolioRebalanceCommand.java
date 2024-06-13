@@ -15,6 +15,8 @@ public class PortfolioRebalanceCommand implements Command<String> {
   private final int[] weights;
 
   /**
+   * Constructs a command that rebalances the portfolio on a certain date given
+   * desired weights of each stock.
    *
    * @param date specified date
    * @param weights weights for the dates

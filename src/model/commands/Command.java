@@ -3,7 +3,8 @@ package model.commands;
 import model.user.UserData;
 
 /**
- * Interface for commands.
+ * Interface for commands, ranging from commands conducted on portfolios, stocks,
+ * or anything else to be implemented in the program.
  */
 public interface Command<T> {
 

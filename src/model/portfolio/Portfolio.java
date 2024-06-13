@@ -73,7 +73,7 @@ public interface Portfolio {
   boolean isEmpty(String date);
 
   /**
-   * Saves the current portfolio to the designated directory
+   * Saves the current portfolio to the designated directory.
    * @return a string for success of portfolio creation
    */
   String save();

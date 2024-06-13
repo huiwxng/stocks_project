@@ -146,7 +146,7 @@ public class BasicPortfolio implements Portfolio {
   }
 
   /**
-   * Saves the current portfolio to the designated directory
+   * Saves the current portfolio to the designated directory.
    *
    * @return a string for success of portfolio creation
    */

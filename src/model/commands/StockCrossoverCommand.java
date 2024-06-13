@@ -8,7 +8,8 @@ import model.stock.Stock;
 import model.user.UserData;
 
 /**
- * Command to get the x-days crossover.
+ * Command to get the x-days crossover, which are days when the closing price is greater
+ * than the x-day moving average for that day.
  */
 public class StockCrossoverCommand implements Command<List<String>> {
 

@@ -8,7 +8,8 @@ import model.stock.Stock;
 import model.user.UserData;
 
 /**
- * Command to get the value of all the stocks in the portfolio.
+ * Command to get the value of the portfolio, meaning the sum of
+ * the value of every stock.
  */
 public class PortfolioGetValueCommand implements Command<Double> {
 
