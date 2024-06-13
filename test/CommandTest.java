@@ -201,5 +201,21 @@ public class CommandTest {
       // tests for missing file
       Command<String> test = new LoadPortfolioCommand("hui");
     });
+
+    // tests that a CSV file that is formatted properly is loaded
+    loadPF = new LoadPortfolioCommand("test");
+    loadPF.execute(user);
+    assertEquals(4, user.getNumPortfolios());
+
+    // tests that a CSV file that is not formatted properly isn't loaded
+    Command<String> loadPF2 = new LoadPortfolioCommand("badFormat");
+    assertThrows(IllegalArgumentException.class, () -> {
+      loadPF2.execute(user);
+    });
+
+    // tests that a file that isn't a CSV file can't be loaded
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<String> loadPF3 = new LoadPortfolioCommand("notCSV");
+    });
   }
 }

@@ -181,11 +181,28 @@ public class PortfolioTest {
 
   @Test
   public void testSave() {
+    // test saving empty portfolio
     String expected = "Portfolio [empty portfolio] successfully saved to " +
             "res/portfolios/empty portfolio.csv";
     assertEquals(expected, p.save());
     expected = "Portfolio [empty portfolio] overwritten successfully and saved to " +
             "res/portfolios/empty portfolio.csv";
     assertEquals(expected, p.save());
+
+    // test save portfolio with one interaction
+    expected = "Portfolio [portfolio 1] successfully saved to " +
+            "res/portfolios/portfolio 1.csv";
+    assertEquals(expected, p1.save());
+    expected = "Portfolio [portfolio 1] overwritten successfully and saved to " +
+            "res/portfolios/portfolio 1.csv";
+    assertEquals(expected, p1.save());
+
+    // test
+    expected = "Portfolio [portfolio 2] successfully saved to " +
+            "res/portfolios/portfolio 2.csv";
+    assertEquals(expected, p2.save());
+    expected = "Portfolio [portfolio 2] overwritten successfully and saved to " +
+            "res/portfolios/portfolio 2.csv";
+    assertEquals(expected, p2.save());
   }
 }
