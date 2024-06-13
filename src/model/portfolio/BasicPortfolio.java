@@ -207,7 +207,7 @@ public class BasicPortfolio implements Portfolio {
       transactions.get(i).setIndex(i);
     }
     for (Transaction transaction : transactions) {
-      if (transaction.getDate().isBefore(curr) || transaction.getDate().equals(curr)) {
+      if (transaction.getDate().isBefore(curr) || transaction.getDate().isEqual(curr)) {
         if (transaction.getType()) {
           buyStockHelper(transaction.getTicker(), transaction.getShares());
         } else {

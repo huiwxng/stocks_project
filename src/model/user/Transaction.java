@@ -82,7 +82,7 @@ public class Transaction implements Comparable<Transaction> {
     if (other == null) {
       throw new IllegalArgumentException("The compared object is null");
     }
-    return getDate().equals(other.getDate());
+    return getDate().isEqual(other.getDate());
   }
 
   /**

@@ -83,17 +83,21 @@ public class PortfolioPerformanceCommand implements Command<String> {
     int months = (int) MONTHS.between(startDate, endDate.plusMonths(1));
     int years = (int) YEARS.between(startDate, endDate.plusYears(1));
 
-    if (startDate.equals(endDate)) {
+    graph.append("weeks: ").append(weeks);
+    graph.append("months: ").append(months);
+    graph.append("years: ").append(years);
+
+    if (startDate.isEqual(endDate)) {
       days = 1;
     } else {
       days = (int) DAYS.between(startDate, endDate.plusDays(1));
       if (days <= 30) {
         timescale = "DAYS";
-      } else if (weeks <= 30) {
+      } else if (days <= 210) {
         timescale = "WEEKS";
-      } else if (months <= 30) {
+      } else if (days <= 900) {
         timescale = "MONTHS";
-      } else if (years <= 30) {
+      } else if (years <= 10950) {
         timescale = "YEARS";
       } else {
         throw new IllegalArgumentException("Cannot calculate the performance for over 30 years");
@@ -124,16 +128,17 @@ public class PortfolioPerformanceCommand implements Command<String> {
   private double getMaxValue(int num, UserData user) {
     Command<Double> getValue;
     double max = 0.0;
+    double value = 0.0;
     if (timescale.equalsIgnoreCase("MONTH")) {
       startDate = startDate.with(lastDayOfMonth());
     } else if (timescale.equalsIgnoreCase("YEAR")) {
       startDate = startDate.with(lastDayOfYear());
     }
 
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < num && startDate.isBefore(endDate); i++) {
       String date = startDate.toString();
       getValue = new PortfolioGetValueCommand(date);
-      double value = user.execute(getValue);
+      value = user.execute(getValue);
       if (value > max) {
         max = value;
       }
@@ -157,6 +162,14 @@ public class PortfolioPerformanceCommand implements Command<String> {
         default:
           break;
       }
+    }
+    if (startDate.isAfter(endDate)) {
+      getValue = new PortfolioGetValueCommand(endDate.toString());
+      value = user.execute(getValue);
+      if (value > max) {
+        max = value;
+      }
+      addToArrays(endDate, value);
     }
     return max;
   }
@@ -184,10 +197,8 @@ public class PortfolioPerformanceCommand implements Command<String> {
           graph.append(String.format("%s %02d %d: %s\n", month, day, year, bar));
           break;
         case "MONTHS":
-          graph.append(String.format("%s %d: %s\n", month, year, bar));
-          break;
         case "YEARS":
-          graph.append(String.format("%d: %s\n", year, bar));
+          graph.append(String.format("%s %d: %s\n", month, year, bar));
           break;
         default:
           break;
