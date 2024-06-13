@@ -492,7 +492,7 @@ public class StockController implements IController {
       }
       if (!validMonth) {
         lineSeparator();
-        writeMessage("Month: ");
+        writeMessage("Month (number): ");
         month = scanner.nextLine().trim();
         if (isValidMonth(month)) {
           validMonth = true;
