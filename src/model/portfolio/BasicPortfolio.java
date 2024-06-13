@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -200,12 +201,13 @@ public class BasicPortfolio implements Portfolio {
   private void processTransactions(String date) {
     stocks = new ArrayList<>();
     shares = new ArrayList<>();
+    LocalDate curr = LocalDate.parse(date);
     Collections.sort(transactions);
     for (int i = 0; i < transactions.size(); i++) {
       transactions.get(i).setIndex(i);
     }
     for (Transaction transaction : transactions) {
-      if (transaction.getDate().isBefore(date) || transaction.getDate().sameDay(date)) {
+      if (transaction.getDate().isBefore(curr) || transaction.getDate().equals(curr)) {
         if (transaction.getType()) {
           buyStockHelper(transaction.getTicker(), transaction.getShares());
         } else {

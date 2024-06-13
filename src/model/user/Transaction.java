@@ -1,6 +1,7 @@
 package model.user;
 
-import model.Date;
+import java.time.LocalDate;
+
 import model.stock.BasicStock;
 import model.stock.Stock;
 
@@ -9,7 +10,7 @@ public class Transaction implements Comparable<Transaction> {
   private final String ticker;
   private final Stock stock;
   private final double shares;
-  private final Date date;
+  private final LocalDate date;
   private int index;
 
   public Transaction(boolean buy, String ticker, double shares, String date, int index) {
@@ -20,7 +21,7 @@ public class Transaction implements Comparable<Transaction> {
       throw new IllegalArgumentException("A stock with this ticker does not exist.");
     }
     try {
-      this.date = new Date(date);
+      this.date = LocalDate.parse(date);
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException("This is not a valid date.");
     }
@@ -44,7 +45,7 @@ public class Transaction implements Comparable<Transaction> {
     return shares;
   }
 
-  public Date getDate() {
+  public LocalDate getDate() {
     return date;
   }
 
@@ -69,7 +70,7 @@ public class Transaction implements Comparable<Transaction> {
     if (other == null) {
       throw new IllegalArgumentException("The compared object is null");
     }
-    return getDate().isBefore(other.getDate().toString());
+    return getDate().isBefore(other.getDate());
   }
 
   /**
@@ -81,7 +82,7 @@ public class Transaction implements Comparable<Transaction> {
     if (other == null) {
       throw new IllegalArgumentException("The compared object is null");
     }
-    return getDate().sameDay(other.getDate().toString());
+    return getDate().equals(other.getDate());
   }
 
   /**

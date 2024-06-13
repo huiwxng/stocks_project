@@ -3,7 +3,6 @@ package model.commands;
 import java.time.LocalDate;
 import java.util.List;
 
-import model.Date;
 import model.portfolio.Portfolio;
 import model.stock.Stock;
 import model.user.UserData;
@@ -21,8 +20,8 @@ public class PortfolioGetValueCommand implements Command<Double> {
    */
   public PortfolioGetValueCommand(String date) {
     this.date = date;
-    Date today = new Date(LocalDate.now().toString());
-    if (today.isBefore(date)) {
+    LocalDate today = LocalDate.now();
+    if (today.isBefore(LocalDate.parse(date))) {
       throw new IllegalArgumentException("The program cannot predict future stock prices.");
     }
   }

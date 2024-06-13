@@ -13,8 +13,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Date;
-
 /**
  * Basic implementation of the {@link Stock} interface.
  */
@@ -74,8 +72,8 @@ public class BasicStock implements Stock {
   public double getClosingPrice(String date) throws IllegalArgumentException {
     LocalDate todayDate = LocalDate.now();
     String today = todayDate.toString();
-    Date current = new Date(today);
-    if (current.isBefore(date)) {
+    LocalDate current = LocalDate.now();
+    if (current.isBefore(LocalDate.parse(date))) {
       throw new IllegalArgumentException("We cannot predict future stock price.");
     }
     int i = getIndex(date);
@@ -102,17 +100,17 @@ public class BasicStock implements Stock {
   }
 
   private boolean outOfRange(String date) {
-    Date current = new Date(date);
+    LocalDate current = LocalDate.now();
     String oldest = dates.get(dates.size() - 1);
-    return current.isBefore(oldest);
+    return current.isBefore(LocalDate.parse(oldest));
   }
 
   private String getMostRecentDate(String date) {
-    Date recent = new Date(date);
+    LocalDate recent = LocalDate.parse(date);
     if (dates.contains(recent.toString())) {
       return recent.toString();
     } else {
-      recent.advance(-1);
+      recent = recent.minusDays(1);
       return getMostRecentDate(recent.toString());
     }
   }

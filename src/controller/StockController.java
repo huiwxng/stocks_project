@@ -2,13 +2,14 @@ package controller;
 
 import java.io.IOException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
 import model.commands.PortfolioRebalanceCommand;
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
-import model.Date;
 import model.stock.Stock;
 import model.commands.Command;
 import model.commands.LoadPortfolioCommand;
@@ -405,7 +406,7 @@ public class StockController implements IController {
       Command<Double> command = new StockNetGainCommand(start, end);
       double netGain = userData.execute(command);
       lineSeparator();
-      writeMessage("Net Gain from " + start + " to " + end + ": $" + netGain + "\n");
+      writeMessage(String.format("Net Gain from %s to %s: $%.2f\n", start, end, netGain));
     } catch (IllegalArgumentException e) {
       lineSeparator();
       writeMessage(e.getMessage() + " Please try again.\n");
@@ -455,9 +456,9 @@ public class StockController implements IController {
 
   private String setDate(Scanner scanner) {
     StringBuilder date = new StringBuilder();
-    String year;
-    String month;
-    String day;
+    int year;
+    int month;
+    int day;
     boolean validYear = false;
     boolean validMonth = false;
     boolean validDay = false;
@@ -467,7 +468,7 @@ public class StockController implements IController {
       writeMessage("Date: \n");
       while (!validYear) {
         writeMessage("Year: ");
-        year = scanner.nextLine().trim();
+        year = Integer.parseInt(scanner.nextLine().trim());
         if (isValidYear(year)) {
           validYear = true;
           date.append(year);
@@ -479,10 +480,10 @@ public class StockController implements IController {
       }
       while (!validMonth) {
         writeMessage("Month: ");
-        month = scanner.nextLine().trim();
+        month = Integer.parseInt(scanner.nextLine().trim());
         if (isValidMonth(month)) {
           validMonth = true;
-          date.append('-').append(month);
+          date.append('-').append(String.format("%02d", month));
         } else {
           lineSeparator();
           writeMessage("Invalid month. Please try again.\n");
@@ -491,10 +492,10 @@ public class StockController implements IController {
       }
       while (!validDay) {
         writeMessage("Day: ");
-        day = scanner.nextLine().trim();
+        day = Integer.parseInt(scanner.nextLine().trim());
         if (isValidDay(day)) {
           validDay = true;
-          date.append('-').append(day);
+          date.append('-').append(String.format("%02d", day));
         } else {
           lineSeparator();
           writeMessage("Invalid day. Please try again.\n");
@@ -648,9 +649,9 @@ public class StockController implements IController {
 
   private boolean isValidDate(String date) {
     try {
-      Date valid = new Date(date);
+      LocalDate valid = LocalDate.parse(date);
       return true;
-    } catch (IllegalArgumentException e) {
+    } catch (DateTimeParseException e) {
       return false;
     }
   }
@@ -676,40 +677,16 @@ public class StockController implements IController {
     return false;
   }
 
-  private boolean isValidYear(String year) {
-    try {
-      int yearNum = Integer.parseInt(year);
-      if (yearNum > 0) {
-        return true;
-      }
-    } catch (NumberFormatException e) {
-      return false;
-    }
-    return false;
+  private boolean isValidYear(int year) {
+    return year > 0;
   }
 
-  private boolean isValidMonth(String month) {
-    try {
-      int monthNum = Integer.parseInt(month);
-      if (monthNum > 0 && monthNum < 13) {
-        return true;
-      }
-    } catch (NumberFormatException e) {
-      return false;
-    }
-    return false;
+  private boolean isValidMonth(int month) {
+    return month > 0 && month < 13;
   }
 
-  private boolean isValidDay(String day) {
-    try {
-      int dayNum = Integer.parseInt(day);
-      if (dayNum > 0 && dayNum < 31) {
-        return true;
-      }
-    } catch (NumberFormatException e) {
-      return false;
-    }
-    return false;
+  private boolean isValidDay(int day) {
+    return day > 0 && day < 31;
   }
 
   private void lineSeparator() {

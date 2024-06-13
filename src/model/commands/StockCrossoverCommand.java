@@ -1,9 +1,9 @@
 package model.commands;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Date;
 import model.stock.Stock;
 import model.user.UserData;
 
@@ -82,28 +82,28 @@ public class StockCrossoverCommand implements Command<List<String>> {
     List<String> dates = stock.getAllDates();
     String oldest = dates.get(dates.size() - 1);
     String newest = dates.get(0);
-    Date newestDate = new Date(newest);
+    LocalDate newestDate = LocalDate.parse(newest);
+    LocalDate oldestDate = LocalDate.parse(oldest);
+    LocalDate startDate = LocalDate.parse(start);
+    LocalDate endDate = LocalDate.parse(end);
 
-    Date startDate = new Date(start);
-    Date endDate = new Date(end);
-
-    if (endDate.isBefore(oldest)) {
+    if (endDate.isBefore(oldestDate)) {
       throw new IllegalArgumentException("We do not have data before this end date.");
     }
 
-    if (newestDate.isBefore(start)) {
+    if (newestDate.isBefore(startDate)) {
       throw new IllegalArgumentException("We do not have data after this start date.");
     }
 
-    if (endDate.isBefore(start)) {
+    if (endDate.isBefore(startDate)) {
       throw new IllegalArgumentException("The start date must be before the end date.");
     }
 
-    if (startDate.isBefore(oldest)) {
+    if (startDate.isBefore(oldestDate)) {
       advanceStart(stock);
     }
 
-    if (newestDate.isBefore(end)) {
+    if (newestDate.isBefore(endDate)) {
       decreaseEnd(stock);
     }
   }
@@ -111,10 +111,11 @@ public class StockCrossoverCommand implements Command<List<String>> {
   private void advanceStart(Stock stock) {
     List<String> dates = stock.getAllDates();
     String oldest = dates.get(dates.size() - 1);
-    Date startDate = new Date(start);
+    LocalDate startDate = LocalDate.parse(start);
+    LocalDate oldestDate = LocalDate.parse(oldest);
 
-    while (startDate.isBefore(oldest)) {
-      startDate.advance(1);
+    while (startDate.isBefore(oldestDate)) {
+      startDate = startDate.plusDays(1);
     }
 
     this.start = startDate.toString();
@@ -123,11 +124,11 @@ public class StockCrossoverCommand implements Command<List<String>> {
   private void decreaseEnd(Stock stock) {
     List<String> dates = stock.getAllDates();
     String newest = dates.get(0);
-    Date newestDate = new Date(newest);
-    Date endDate = new Date(end);
+    LocalDate newestDate = LocalDate.parse(newest);
+    LocalDate endDate = LocalDate.parse(end);
 
-    while (newestDate.isBefore(endDate.toString())) {
-      endDate.advance(-1);
+    while (newestDate.isBefore(endDate)) {
+      endDate = endDate.minusDays(1);
     }
 
     this.end = endDate.toString();
