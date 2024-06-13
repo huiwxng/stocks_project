@@ -13,17 +13,6 @@ public class PortfolioRebalanceCommand implements Command<String> {
   public PortfolioRebalanceCommand(String date, int... weights) {
     this.date = date;
     this.weights = weights;
-  }
-
-  /**
-   * Executes the command onto a {@link UserData} object.
-   *
-   * @param user {@link UserData} object
-   * @return a value given the command
-   */
-  @Override
-  public String execute(UserData user) {
-    // checks
     int sum = 0;
     for (int weight : weights) {
       if (weight < 0) {
@@ -34,7 +23,16 @@ public class PortfolioRebalanceCommand implements Command<String> {
     if (sum != 100) {
       throw new IllegalArgumentException("Weights must add up to 100.");
     }
+  }
 
+  /**
+   * Executes the command onto a {@link UserData} object.
+   *
+   * @param user {@link UserData} object
+   * @return a value given the command
+   */
+  @Override
+  public String execute(UserData user) {
     Portfolio pf = user.getCurrentPortfolio();
     Command<Double> getValue = new PortfolioGetValueCommand(date);
     double totalValue = user.execute(getValue);
