@@ -8,6 +8,7 @@ import model.portfolio.Portfolio;
 import model.user.BasicUserData;
 import model.user.LoadPortfolioCommand;
 import model.user.PortfolioGetValueCommand;
+import model.user.PortfolioRebalanceCommand;
 import model.user.StockCrossoverCommand;
 import model.user.StockMovingAverageCommand;
 import model.user.StockNetGainCommand;
@@ -191,6 +192,35 @@ public class CommandTest {
       Command<Double> testThrow = new PortfolioGetValueCommand("2024-10-14");
       user.execute(testThrow);
     });
+  }
+
+  @Test
+  public void testPortfolioRebalanceCommand() {
+    Command<Double> getValue;
+    Command<String> rebalance;
+
+    user.setCurrentPortfolio(p);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<String> test = new PortfolioRebalanceCommand("2024-06-04");
+      user.execute(test);
+    });
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<String> test = new PortfolioRebalanceCommand("2024-06-04", 100);
+      user.execute(test);
+    });
+
+    user.setCurrentPortfolio(p1);
+    rebalance = new PortfolioRebalanceCommand("2024-06-04", 100);
+    getValue = new PortfolioGetValueCommand("2024-06-04");
+    assertEquals(1943.50, user.execute(getValue), 0.01);
+
+    user.setCurrentPortfolio(p2);
+    rebalance = new PortfolioRebalanceCommand("2024-06-04", 80, 20);
+    user.execute(rebalance);
+    getValue = new PortfolioGetValueCommand("2024-06-04");
+    assertEquals(3694.80, user.execute(getValue), 0.01);
+    System.out.println(user.getCurrentPortfolio().getComposition("2024-06-04"));
   }
 
   @Test

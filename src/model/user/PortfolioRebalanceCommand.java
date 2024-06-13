@@ -11,16 +11,6 @@ public class PortfolioRebalanceCommand implements Command<String> {
 
   public PortfolioRebalanceCommand(String date, int... weights) {
     this.date = date;
-    int sum = 0;
-    for (int weight : weights) {
-      if (weight < 0) {
-        throw new IllegalArgumentException("Weights cannot be negative.");
-      }
-      sum += weight;
-    }
-    if (sum != 100) {
-      throw new IllegalArgumentException("Weights must add up to 100.");
-    }
     this.weights = weights;
   }
 
@@ -32,10 +22,25 @@ public class PortfolioRebalanceCommand implements Command<String> {
    */
   @Override
   public String execute(UserData user) {
+    // checks
+    int sum = 0;
+    for (int weight : weights) {
+      if (weight < 0) {
+        throw new IllegalArgumentException("Weights cannot be negative.");
+      }
+      sum += weight;
+    }
+    if (sum != 100) {
+      throw new IllegalArgumentException("Weights must add up to 100.");
+    }
+
     Portfolio pf = user.getCurrentPortfolio();
     Command<Double> getValue = new PortfolioGetValueCommand(date);
     double totalValue = user.execute(getValue);
     List<Stock> stocks = pf.getStocks(date);
+    if (stocks.size() != weights.length) {
+      throw new IllegalArgumentException("There are an uneven number of stocks and weights.");
+    }
     List<Double> shares = pf.getShares(date);
 
     for (int i = 0; i < stocks.size(); i++) {
@@ -43,7 +48,6 @@ public class PortfolioRebalanceCommand implements Command<String> {
       double currentShares = shares.get(i);
 
       String ticker = currentStock.getTicker();
-      double currentShares = shares.get(i);
       double weight = (double) weights[i] / 100;
       double price = currentStock.getClosingPrice(date);
       double targetValue = weight * totalValue;
