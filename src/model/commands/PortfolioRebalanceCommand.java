@@ -33,14 +33,18 @@ public class PortfolioRebalanceCommand implements Command<String> {
    */
   @Override
   public String execute(UserData user) {
-    Portfolio pf = user.getCurrentPortfolio();
+    Portfolio portfolio = user.getCurrentPortfolio();
+    if (portfolio == null) {
+      throw new IllegalArgumentException("No current portfolio set.");
+    }
+    
     Command<Double> getValue = new PortfolioGetValueCommand(date);
     double totalValue = user.execute(getValue);
-    List<Stock> stocks = pf.getStocks(date);
+    List<Stock> stocks = portfolio.getStocks(date);
     if (stocks.size() != weights.length) {
       throw new IllegalArgumentException("There are an uneven number of stocks and weights.");
     }
-    List<Double> shares = pf.getShares(date);
+    List<Double> shares = portfolio.getShares(date);
 
     for (int i = 0; i < stocks.size(); i++) {
       Stock currentStock = stocks.get(i);
@@ -54,9 +58,9 @@ public class PortfolioRebalanceCommand implements Command<String> {
       double diff = targetShares - currentShares;
       if (diff < 0 ) {
         diff *= -1;
-        pf.sellStock(ticker, diff, date);
+        portfolio.sellStock(ticker, diff, date);
       } else if (diff > 0) {
-        pf.buyStock(ticker, diff, date);
+        portfolio.buyStock(ticker, diff, date);
       }
     }
     return "Portfolio re-balanced successfully.";
