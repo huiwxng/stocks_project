@@ -158,8 +158,8 @@ public class StockController implements IController {
     int userInputNum;
     try {
       userInputNum = Integer.parseInt(userInput);
-      if (userInputNum >= 2 && userInputNum <= userData.getNumPortfolios() + 1) {
-        userData.setCurrentPortfolio(userData.getPortfolio(userInputNum - 2));
+      if (userInputNum >= 3 && userInputNum <= userData.getNumPortfolios() + 2) {
+        userData.setCurrentPortfolio(userData.getPortfolio(userInputNum - 3));
         state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
       } else {
         lineSeparator();
@@ -629,6 +629,7 @@ public class StockController implements IController {
   private void farewellMessage() {
     lineSeparator();
     writeMessage("Thanks for using our virtual stocks program!\n");
+    lineSeparator();
   }
 
   private void returnPrompt() {
