@@ -262,10 +262,51 @@ public class CommandTest {
   @Test
   public void testPortfolioPerformanceCommand() {
     user.setCurrentPortfolio(p2);
-    user.getCurrentPortfolio().buyStock("aapl", 10, "2023-06-04");
+    String expected = "Performance of portfolio portfolio 2 from 2023-06-04 to 2024-06-04\n" +
+            "\n" +
+            "JUN 2023: \n" +
+            "JUL 2023: \n" +
+            "AUG 2023: \n" +
+            "SEP 2023: \n" +
+            "OCT 2023: \n" +
+            "NOV 2023: \n" +
+            "DEC 2023: \n" +
+            "JAN 2024: \n" +
+            "FEB 2024: \n" +
+            "MAR 2024: \n" +
+            "APR 2024: \n" +
+            "MAY 2024: \n" +
+            "JUN 2024: **************************************************\n" +
+            "\n" +
+            "Scale: * = 73.90";
+
     Command<String> visualize;
     visualize = new PortfolioPerformanceCommand("2023-06-04", "2024-06-04");
-    System.out.println(user.execute(visualize));
+
+    assertEquals(expected, user.execute(visualize));
+
+    user.getCurrentPortfolio().buyStock("aapl", 10, "2023-06-04");
+    expected = "Performance of portfolio portfolio 2 from 2023-06-04 to 2024-06-04\n" +
+            "\n" +
+            "JUN 2023: ****************\n" +
+            "JUL 2023: *****************\n" +
+            "AUG 2023: ****************\n" +
+            "SEP 2023: ****************\n" +
+            "OCT 2023: ***************\n" +
+            "NOV 2023: ***************\n" +
+            "DEC 2023: ****************\n" +
+            "JAN 2024: ****************\n" +
+            "FEB 2024: ****************\n" +
+            "MAR 2024: ***************\n" +
+            "APR 2024: **************\n" +
+            "MAY 2024: ****************\n" +
+            "JUN 2024: **************************************************\n" +
+            "\n" +
+            "Scale: * = 112.77";
+
+    visualize = new PortfolioPerformanceCommand("2023-06-04", "2024-06-04");
+
+    assertEquals(expected, user.execute(visualize));
 
     Command<Double> getValue = new PortfolioGetValueCommand("2023-06-04");
     assertEquals(1809.5, user.execute(getValue), 0.01);
