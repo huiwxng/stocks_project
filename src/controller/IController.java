@@ -1,7 +1,9 @@
 package controller;
 
 /**
- * Interface for the controller.
+ * Interface for the controller of our stocks simulation program.
+ * Implementations of this interface "control" and manage the flow
+ * between the model, view, and user input.
  */
 public interface IController {
   /**
