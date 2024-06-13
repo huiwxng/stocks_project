@@ -148,7 +148,7 @@ public class StockController implements IController {
     try {
       lineSeparator();
       Command<String> command = new LoadPortfolioCommand(fileName);
-      writeMessage(command.execute(userData) + "\n");
+      writeMessage(userData.execute(command) + "\n");
       state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
     } catch (IllegalArgumentException e) {
       lineSeparator();
@@ -343,7 +343,7 @@ public class StockController implements IController {
     }
     Command<String> command = new PortfolioRebalanceCommand(date, weights);
     try {
-      command.execute(userData);
+      userData.execute(command);
       lineSeparator();
       writeMessage("Stocks for " + userData.getCurrentPortfolio().getName() + " on "
               + date + " rebalanced.\n");

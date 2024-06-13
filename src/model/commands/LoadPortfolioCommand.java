@@ -63,6 +63,9 @@ public class LoadPortfolioCommand implements Command<String> {
         boolean type = parts[typeIndex].trim().equalsIgnoreCase("buy");
         String ticker = parts[tickerIndex].trim();
         double amount = Double.parseDouble(parts[amountIndex].trim());
+        if (type && amount % 1 != 0) {
+          throw new IllegalArgumentException("Cannot buy fractional shares.");
+        }
 
         if (type) {
           pf.buyStock(ticker, amount, date);

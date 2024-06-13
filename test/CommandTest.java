@@ -236,6 +236,7 @@ public class CommandTest {
   @Test
   public void testLoadPortfolioCommand() {
     Command<String> loadPF;
+    List<String> expected = new ArrayList<>();
 
     assertThrows(IllegalArgumentException.class, () -> {
       // tests for missing file
@@ -244,13 +245,24 @@ public class CommandTest {
 
     // tests that a CSV file that is formatted properly is loaded
     loadPF = new LoadPortfolioCommand("test");
-    loadPF.execute(user);
+    user.execute(loadPF);
     assertEquals(4, user.getNumPortfolios());
+    expected.add("AMZN: 100 share(s)");
+    assertEquals(expected, user.getCurrentPortfolio().getComposition("2024-06-04"));
+    expected = new ArrayList<>();
+    expected.add("AMZN: 50 share(s)");
+    assertEquals(expected, user.getCurrentPortfolio().getComposition("2024-06-05"));
+
+    // tests that the user cannot buy fractional shares through the csv
+    assertThrows(IllegalArgumentException.class, () -> {
+      Command<String> test = new LoadPortfolioCommand("buyFractional");
+      user.execute(test);
+    });
 
     // tests that a CSV file that is not formatted properly isn't loaded
     Command<String> loadPF2 = new LoadPortfolioCommand("badFormat");
     assertThrows(IllegalArgumentException.class, () -> {
-      loadPF2.execute(user);
+      user.execute(loadPF2);
     });
 
     // tests that a file that isn't a CSV file can't be loaded
