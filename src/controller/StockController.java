@@ -146,6 +146,7 @@ public class StockController implements IController {
     writeMessage("Filename (no .csv): ");
     String fileName = scanner.nextLine();
     try {
+      lineSeparator();
       Command<String> command = new LoadPortfolioCommand(fileName);
       writeMessage(command.execute(userData) + "\n");
       state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
@@ -472,61 +473,59 @@ public class StockController implements IController {
 
   private String setDate(Scanner scanner) {
     StringBuilder date = new StringBuilder();
-    String year;
-    String month;
-    String day;
+    String year = "";
+    String month = "";
+    String day = "";
     boolean validYear = false;
     boolean validMonth = false;
     boolean validDay = false;
-    boolean validDate = false;
-    while (!validDate) {
-      lineSeparator();
-      writeMessage("Date: \n");
-      while (!validYear) {
+
+    while (!validYear || !validMonth || !validDay) {
+      if (!validYear) {
+        lineSeparator();
         writeMessage("Year: ");
         year = scanner.nextLine().trim();
         if (isValidYear(year)) {
           validYear = true;
-          date.append(year);
         } else {
-          lineSeparator();
           writeMessage("Invalid year. Please try again.\n");
-          lineSeparator();
         }
       }
-      while (!validMonth) {
+      if (!validMonth) {
+        lineSeparator();
         writeMessage("Month: ");
         month = scanner.nextLine().trim();
         if (isValidMonth(month)) {
           validMonth = true;
-          date.append('-').append(String.format("%02d", Integer.parseInt(month)));
         } else {
-          lineSeparator();
           writeMessage("Invalid month. Please try again.\n");
-          lineSeparator();
         }
       }
-      while (!validDay) {
+      if (!validDay) {
+        lineSeparator();
         writeMessage("Day: ");
         day = scanner.nextLine().trim();
         if (isValidDay(day)) {
           validDay = true;
-          date.append('-').append(String.format("%02d", Integer.parseInt(day)));
         } else {
-          lineSeparator();
           writeMessage("Invalid day. Please try again.\n");
-          lineSeparator();
         }
       }
-      if (isValidDate(date.toString())) {
-        validDate = true;
-      } else {
-        lineSeparator();
-        writeMessage("Invalid date. Please try again.\n");
-      }
     }
+
+    date.append(year).append('-')
+            .append(String.format("%02d", Integer.parseInt(month))).append('-')
+            .append(String.format("%02d", Integer.parseInt(day)));
+
+    if (!isValidDate(date.toString())) {
+      lineSeparator();
+      writeMessage("Invalid date. Please try again.\n");
+      return setDate(scanner);
+    }
+
     return date.toString();
   }
+
 
   private String setStartDate(Scanner scanner) {
     lineSeparator();
@@ -668,7 +667,7 @@ public class StockController implements IController {
     try {
       LocalDate valid = LocalDate.parse(date);
       return true;
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       return false;
     }
   }
