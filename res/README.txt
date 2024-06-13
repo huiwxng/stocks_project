@@ -9,9 +9,12 @@ FEATURES:
 	- Create portfolios
 	- View the stocks within each portfolio
 	- Get the value of a portfolio on a given valid date
+	- Get the value distribution of a portfolio on a given date
 	- Buy stocks to add to a portfolio
 	- Sell stocks to remove from a portfolio
+	- Visualize portfolio performance with a bar graph
 	- Delete portfolios
+	- Save and load portfolios to and from files
 
 VALID STOCKS LIST (without access to internet):
 - AAPL (1999-11-01 to 2024-06-04)

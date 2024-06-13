@@ -1,4 +1,17 @@
 DESIGN
+
+DESIGN CHANGES:
+- Changed from using our own Date class to using the java's LocalDate
+- We changed the implementation for adding and removing stocks (from directly adding to a list of stocks and shares) to adding to a list of transactions and calculating all the transactions in that list to get the list of stocks and shares.
+	- We needed to change to this design to account for adding dates to buying and selling stocks
+- Added a method to our Portfolio class to get the portfolio value distribution
+- Added 2 commands:
+	- PortfolioRebalanceCommand rebalances the portfolio given a list of weights
+	- PortfolioPerformanceCommand returns a graph of the performance of the portfolio over a period of time
+- We decided to use CSV files to represent our portfolios when we save or when we load them, each row represents a transaction and our program goes through the csv and calculates the transactions in the file
+
+
+OLD DESIGN
 - Model/View/Controller using Command Design Pattern
 	- (MODEL) A UserData interface that represents the user and acts as our main Model
 		- BasicUserData implements the methods in the UserData interface

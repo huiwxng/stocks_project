@@ -77,4 +77,15 @@ public interface Portfolio {
    * @return a string for success of portfolio creation
    */
   String save();
+
+  /*
+   * DESIGN CHANGES FOR ASSIGNMENT 5:
+   *
+   * We changed the type for stocks amount to double to account for fractional shares. We changed
+   * the implementation for adding and removing stocks (from directly adding to a list of stocks
+   * and shares) to adding to a list of transactions and calculating all the transactions in that
+   * list to get the list of stocks and shares. We also switched from using our own Date class to
+   * using LocalDate. We continued using the Command Design Pattern for rebalance and visualizing
+   * the performance, but we added a new method for getting the distribution of portfolio value.
+   */
 }
