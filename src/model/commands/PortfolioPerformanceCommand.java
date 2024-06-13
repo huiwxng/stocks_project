@@ -60,7 +60,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
     graph.append(String.format("Performance of portfolio %s from %s to %s\n\n", portfolio.getName(),
                     startDate.toString(), endDate.toString()));
 
-    scale = getScale(user);
+    scale = getScale();
     draw();
 
     graph.append(String.format("\nScale: * = %.2f", scale));
@@ -77,7 +77,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
     return "";
   }
 
-  private double getScale(UserData user) {
+  private double getScale() {
     int days;
     int weeks = (int) WEEKS.between(startDate, endDate.plusWeeks(1));
     int months = (int) MONTHS.between(startDate, endDate.plusMonths(1));
