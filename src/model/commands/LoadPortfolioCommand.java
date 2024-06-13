@@ -71,7 +71,8 @@ public class LoadPortfolioCommand implements Command<String> {
       }
 
       user.addPortfolio(pf);
-      msg = "Successfully loaded the portfolio";
+      user.setCurrentPortfolio(pf);
+      msg = "Successfully loaded the portfolio from " + path;
     } catch (IOException | NumberFormatException e) {
       throw new IllegalArgumentException("Error reading CSV file: " + e.getMessage());
     } catch (IllegalArgumentException e) {

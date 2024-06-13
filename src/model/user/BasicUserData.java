@@ -32,6 +32,7 @@ public class BasicUserData implements UserData {
   @Override
   public void addPortfolio(Portfolio portfolio) {
     portfolios.add(portfolio);
+    setCurrentPortfolio(portfolio);
   }
 
   /**

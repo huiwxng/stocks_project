@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
+import model.commands.PortfolioPerformanceCommand;
 import model.commands.PortfolioRebalanceCommand;
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
@@ -139,7 +140,6 @@ public class StockController implements IController {
     lineSeparator();
     writeMessage(name + " portfolio created.\n");
     state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
-    userData.setCurrentPortfolio(portfolio);
   }
 
   private void loadPortfolio(Scanner scanner) {
@@ -147,7 +147,8 @@ public class StockController implements IController {
     String fileName = scanner.nextLine();
     try {
       Command<String> command = new LoadPortfolioCommand(fileName);
-      command.execute(userData);
+      writeMessage(command.execute(userData) + "\n");
+      state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
     } catch (IllegalArgumentException e) {
       lineSeparator();
       writeMessage(e.getMessage() + " Please try again.\n");
@@ -180,18 +181,21 @@ public class StockController implements IController {
         portfolioValue(scanner);
         break;
       case "3":
-        addStocks(scanner);
+        buyStocks(scanner);
         break;
       case "4":
-        removeStocks(scanner);
+        sellStocks(scanner);
         break;
       case "5":
         rebalancePortfolio(scanner);
         break;
       case "6":
-        deletePortfolio();
+        visualizePerformance(scanner);
         break;
       case "7":
+        deletePortfolio();
+        break;
+      case "8":
         savePortfolio();
         break;
       case "r":
@@ -235,7 +239,21 @@ public class StockController implements IController {
     }
   }
 
-  private void addStocks(Scanner scanner) {
+  private void visualizePerformance(Scanner scanner) {
+    String start = setStartDate(scanner);
+    String end = setEndDate(scanner, start);
+    lineSeparator();
+    Command<String> command = new PortfolioPerformanceCommand(start, end);
+    try {
+      String graph = userData.execute(command);
+      writeMessage(graph + "\n");
+      lineSeparator();
+    } catch (IllegalArgumentException e) {
+      writeMessage(e.getMessage() + " Please try again.\n");
+    }
+  }
+
+  private void buyStocks(Scanner scanner) {
     String addedTicker = "";
     int addedShareCount = 0;
     boolean validTickerToAdd = false;
@@ -271,7 +289,7 @@ public class StockController implements IController {
     }
   }
 
-  private void removeStocks(Scanner scanner) {
+  private void sellStocks(Scanner scanner) {
     String removedTicker = "";
     int removedShareCount = 0;
     boolean validTickerToRemove = false;
@@ -599,8 +617,9 @@ public class StockController implements IController {
     writeMessage("3: Buy Stock(s)\n");
     writeMessage("4: Sell Stock(s)\n");
     writeMessage("5: Rebalance Portfolio\n");
-    writeMessage("6: Delete Portfolio\n");
-    writeMessage("7: Save Portfolio (to a CSV file)\n");
+    writeMessage("6: Visualize Performance\n");
+    writeMessage("7: Delete Portfolio\n");
+    writeMessage("8: Save Portfolio (to a CSV file)\n");
     returnPrompt();
     quitPrompt();
   }
