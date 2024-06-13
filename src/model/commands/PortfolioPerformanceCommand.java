@@ -8,6 +8,7 @@ import model.portfolio.Portfolio;
 import model.user.UserData;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.DECADES;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.WEEKS;
 import static java.time.temporal.ChronoUnit.YEARS;
@@ -15,8 +16,6 @@ import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 public class PortfolioPerformanceCommand implements Command<String> {
-  private String start;
-  private String end;
   private LocalDate startDate;
   private LocalDate endDate;
   private StringBuilder graph;
@@ -24,10 +23,10 @@ public class PortfolioPerformanceCommand implements Command<String> {
   private List<LocalDate> times;
   private List<Double> values;
   private double scale;
+  private UserData user;
+  private double max;
 
   public PortfolioPerformanceCommand(String start, String end) {
-    this.start = start;
-    this.end = end;
     this.graph = new StringBuilder();
     this.timescale = "DAYS";
     this.times = new ArrayList<>();
@@ -51,6 +50,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
    */
   @Override
   public String execute(UserData user) {
+    this.user = user;
     Portfolio portfolio = user.getCurrentPortfolio();
     if (portfolio == null) {
       throw new IllegalArgumentException("No current portfolio set.");
@@ -82,10 +82,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
     int weeks = (int) WEEKS.between(startDate, endDate.plusWeeks(1));
     int months = (int) MONTHS.between(startDate, endDate.plusMonths(1));
     int years = (int) YEARS.between(startDate, endDate.plusYears(1));
-
-    graph.append("weeks: ").append(weeks);
-    graph.append("months: ").append(months);
-    graph.append("years: ").append(years);
+    int decades = (int) DECADES.between(startDate, endDate.plusYears(10));
 
     if (startDate.isEqual(endDate)) {
       days = 1;
@@ -93,30 +90,36 @@ public class PortfolioPerformanceCommand implements Command<String> {
       days = (int) DAYS.between(startDate, endDate.plusDays(1));
       if (days <= 30) {
         timescale = "DAYS";
-      } else if (days <= 210) {
+      } else if (weeks <= 30) {
         timescale = "WEEKS";
-      } else if (days <= 900) {
+      } else if (months <= 30) {
         timescale = "MONTHS";
-      } else if (years <= 10950) {
+      } else if (years <= 30) {
         timescale = "YEARS";
-      } else {
-        throw new IllegalArgumentException("Cannot calculate the performance for over 30 years");
+      } else if (decades <= 30) {
+        timescale = "DECADES";
+      }
+      else {
+        throw new IllegalArgumentException("Cannot calculate the performance for over 30 decades");
       }
     }
 
     double max = 0.0;
     switch (timescale) {
       case "DAYS":
-        max = getMaxValue(days, user);
+        max = getMaxValue(days);
         break;
       case "WEEKS":
-        max = getMaxValue(weeks, user);
+        max = getMaxValue(weeks);
         break;
       case "MONTHS":
-        max = getMaxValue(months, user);
+        max = getMaxValue(months);
         break;
       case "YEARS":
-        max = getMaxValue(years, user);
+        max = getMaxValue(years);
+        break;
+      case "DECADES":
+        max = getMaxValue(decades);
         break;
       default:
         break;
@@ -125,45 +128,48 @@ public class PortfolioPerformanceCommand implements Command<String> {
     return max / 50;
   }
 
-  private double getMaxValue(int num, UserData user) {
+  private double getMaxValue(int num) {
     Command<Double> getValue;
-    double max = 0.0;
+    max = 0.0;
     double value = 0.0;
-    if (timescale.equalsIgnoreCase("MONTH")) {
-      startDate = startDate.with(lastDayOfMonth());
-    } else if (timescale.equalsIgnoreCase("YEAR")) {
-      startDate = startDate.with(lastDayOfYear());
+    LocalDate date = startDate;
+    if (timescale.equalsIgnoreCase("MONTHS")) {
+      value = getValue(date);
+      addToArrays(date, value);
+      date = date.with(lastDayOfMonth());
+    } else if (timescale.equalsIgnoreCase("YEARS")) {
+      value = getValue(date);
+      addToArrays(date, value);
+      date = date.with(lastDayOfYear());
     }
 
-    for (int i = 0; i < num && startDate.isBefore(endDate); i++) {
-      String date = startDate.toString();
-      getValue = new PortfolioGetValueCommand(date);
-      value = user.execute(getValue);
-      if (value > max) {
-        max = value;
-      }
+    for (int i = 0; i < num && date.isBefore(endDate); i++) {
+      value = getValue(date);
       switch (timescale) {
         case "DAYS":
-          addToArrays(startDate, value);
-          startDate = startDate.plusDays(1);
+          addToArrays(date, value);
+          date = date.plusDays(1);
           break;
         case "WEEKS":
-          addToArrays(startDate, value);
-          startDate = startDate.plusWeeks(1);
+          addToArrays(date, value);
+          date = date.plusWeeks(1);
           break;
         case "MONTHS":
-          addToArrays(startDate, value);
-          startDate = startDate.plusMonths(1);
+          addToArrays(date, value);
+          date = date.plusMonths(1);
           break;
         case "YEARS":
-          addToArrays(startDate, value);
-          startDate = startDate.plusYears(1);
+          addToArrays(date, value);
+          date = date.plusYears(1);
           break;
+        case "DECADES":
+          addToArrays(date, value);
+          date = date.plusYears(10);
         default:
           break;
       }
     }
-    if (startDate.isAfter(endDate)) {
+    if (date.isAfter(endDate)) {
       getValue = new PortfolioGetValueCommand(endDate.toString());
       value = user.execute(getValue);
       if (value > max) {
@@ -177,6 +183,15 @@ public class PortfolioPerformanceCommand implements Command<String> {
   private void addToArrays(LocalDate date, double value) {
     times.add(date);
     values.add(value);
+  }
+
+  private double getValue(LocalDate date) {
+    Command<Double> getValue = new PortfolioGetValueCommand(date.toString());
+    double value = user.execute(getValue);
+    if (value > max) {
+      max = value;
+    }
+    return value;
   }
 
   private void draw() {
