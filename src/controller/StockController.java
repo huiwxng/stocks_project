@@ -247,7 +247,6 @@ public class StockController implements IController {
     try {
       String graph = userData.execute(command);
       writeMessage(graph + "\n");
-      lineSeparator();
     } catch (IllegalArgumentException e) {
       writeMessage(e.getMessage() + " Please try again.\n");
     }
