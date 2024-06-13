@@ -151,7 +151,6 @@ public class StockController implements IController {
       writeMessage(userData.execute(command) + "\n");
       state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
     } catch (IllegalArgumentException e) {
-      lineSeparator();
       writeMessage(e.getMessage() + " Please try again.\n");
     }
   }
@@ -330,6 +329,7 @@ public class StockController implements IController {
     List<Stock> currentStocks = userData.getCurrentPortfolio().getStocks(date);
     int[] weights = new int[currentStocks.size()];
     for (int i = 0; i < currentStocks.size(); i++) {
+      lineSeparator();
       writeMessage("Weight for " + currentStocks.get(i).getTicker() + " (0%-100%): ");
       String weight = scanner.nextLine().trim();
       while (!isValidWeight(weight)) {
@@ -341,8 +341,8 @@ public class StockController implements IController {
       }
       weights[i] = Integer.parseInt(weight);
     }
-    Command<String> command = new PortfolioRebalanceCommand(date, weights);
     try {
+      Command<String> command = new PortfolioRebalanceCommand(date, weights);
       userData.execute(command);
       lineSeparator();
       writeMessage("Stocks for " + userData.getCurrentPortfolio().getName() + " on "
@@ -350,7 +350,6 @@ public class StockController implements IController {
     } catch (IllegalArgumentException e) {
       lineSeparator();
       writeMessage(e.getMessage() + " Please try again.\n");
-      lineSeparator();
     }
   }
 

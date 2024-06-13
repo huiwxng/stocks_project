@@ -48,6 +48,9 @@ public class PortfolioRebalanceCommand implements Command<String> {
     if (portfolio == null) {
       throw new IllegalArgumentException("No current portfolio set.");
     }
+    if (portfolio.getStocks(date).size() == 1) {
+      throw new IllegalArgumentException("Cannot rebalance with one stock in portfolio.");
+    }
     
     Command<Double> getValue = new PortfolioGetValueCommand(date);
     double totalValue = user.execute(getValue);
