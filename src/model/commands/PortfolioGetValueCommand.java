@@ -1,4 +1,4 @@
-package model.user;
+package model.commands;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import model.Date;
 import model.portfolio.Portfolio;
 import model.stock.Stock;
+import model.user.UserData;
 
 /**
  * Command to get the value of all the stocks in the portfolio.

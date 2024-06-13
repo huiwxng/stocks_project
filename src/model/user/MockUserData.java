@@ -2,6 +2,7 @@ package model.user;
 
 import java.util.List;
 
+import model.commands.Command;
 import model.portfolio.Portfolio;
 import model.stock.Stock;
 

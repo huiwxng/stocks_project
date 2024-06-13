@@ -1,9 +1,10 @@
-package model.user;
+package model.commands;
 
 import java.util.List;
 
 import model.portfolio.Portfolio;
 import model.stock.Stock;
+import model.user.UserData;
 
 public class PortfolioRebalanceCommand implements Command<String> {
   private final String date;

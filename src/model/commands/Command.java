@@ -1,4 +1,6 @@
-package model.user;
+package model.commands;
+
+import model.user.UserData;
 
 /**
  * Interface for commands.

@@ -3,6 +3,7 @@ package model.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.commands.Command;
 import model.portfolio.Portfolio;
 import model.stock.BasicStock;
 import model.stock.Stock;

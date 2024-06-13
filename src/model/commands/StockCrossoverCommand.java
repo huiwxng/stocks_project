@@ -1,10 +1,11 @@
-package model.user;
+package model.commands;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import model.Date;
 import model.stock.Stock;
+import model.user.UserData;
 
 /**
  * Command to get the x-days crossover.

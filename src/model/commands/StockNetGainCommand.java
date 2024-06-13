@@ -1,6 +1,7 @@
-package model.user;
+package model.commands;
 
 import model.stock.Stock;
+import model.user.UserData;
 
 /**
  * Command to get the net gain of a stock.

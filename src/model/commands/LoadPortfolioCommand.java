@@ -1,4 +1,4 @@
-package model.user;
+package model.commands;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
+import model.user.UserData;
 
 public class LoadPortfolioCommand implements Command<String> {
   private final String dirPath = "res/portfolios/";

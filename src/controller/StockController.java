@@ -8,12 +8,12 @@ import java.util.Scanner;
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.Date;
-import model.user.Command;
-import model.user.LoadPortfolioCommand;
-import model.user.PortfolioGetValueCommand;
-import model.user.StockCrossoverCommand;
-import model.user.StockMovingAverageCommand;
-import model.user.StockNetGainCommand;
+import model.commands.Command;
+import model.commands.LoadPortfolioCommand;
+import model.commands.PortfolioGetValueCommand;
+import model.commands.StockCrossoverCommand;
+import model.commands.StockMovingAverageCommand;
+import model.commands.StockNetGainCommand;
 import model.user.UserData;
 
 /**
