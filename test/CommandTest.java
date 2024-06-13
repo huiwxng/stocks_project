@@ -262,9 +262,15 @@ public class CommandTest {
   @Test
   public void testPortfolioPerformanceCommand() {
     user.setCurrentPortfolio(p2);
+    user.getCurrentPortfolio().buyStock("aapl", 10, "2023-06-04");
     Command<String> visualize;
-    visualize = new PortfolioPerformanceCommand("2024-06-04", "2024-06-04");
+    visualize = new PortfolioPerformanceCommand("2023-06-04", "2024-06-04");
     System.out.println(user.execute(visualize));
 
+    Command<Double> getValue = new PortfolioGetValueCommand("2023-06-04");
+    assertEquals(1809.5, user.execute(getValue), 0.01);
+
+    getValue = new PortfolioGetValueCommand("2024-06-04");
+    assertEquals(5638.3, user.execute(getValue), 0.01);
   }
 }

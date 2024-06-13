@@ -79,9 +79,9 @@ public class PortfolioPerformanceCommand implements Command<String> {
 
   private double getScale(UserData user) {
     int days;
-    int weeks = (int) WEEKS.between(startDate, endDate.plusDays(1));
-    int months = (int) MONTHS.between(startDate, endDate.plusDays(1));
-    int years = (int) YEARS.between(startDate, endDate.plusDays(1));
+    int weeks = (int) WEEKS.between(startDate, endDate.plusWeeks(1));
+    int months = (int) MONTHS.between(startDate, endDate.plusMonths(1));
+    int years = (int) YEARS.between(startDate, endDate.plusYears(1));
 
     if (startDate.equals(endDate)) {
       days = 1;
