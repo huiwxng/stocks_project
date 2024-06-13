@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+import model.commands.PortfolioRebalanceCommand;
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.Date;
+import model.stock.Stock;
 import model.commands.Command;
 import model.commands.LoadPortfolioCommand;
 import model.commands.PortfolioGetValueCommand;
@@ -184,9 +186,12 @@ public class StockController implements IController {
         removeStocks(scanner);
         break;
       case "5":
-        deletePortfolio();
+        rebalancePortfolio(scanner);
         break;
       case "6":
+        deletePortfolio();
+        break;
+      case "7":
         savePortfolio();
         break;
       case "r":
@@ -293,6 +298,35 @@ public class StockController implements IController {
           break;
         }
       }
+    }
+  }
+
+  private void rebalancePortfolio(Scanner scanner) {
+    String date = setDate(scanner);
+    List<Stock> currentStocks = userData.getCurrentPortfolio().getStocks(date);
+    int[] weights = new int[currentStocks.size()];
+    for (int i = 0; i < currentStocks.size(); i++) {
+      writeMessage("Weight for " + currentStocks.get(i).getTicker() + " (0%-100%): ");
+      String weight = scanner.nextLine().trim();
+      while (!isValidWeight(weight)) {
+        lineSeparator();
+        writeMessage("Invalid weight. Please try again.\n");
+        lineSeparator();
+        writeMessage("Weight for " + currentStocks.get(i).getTicker() + " (): ");
+        weight = scanner.nextLine().trim();
+      }
+      weights[i] = Integer.parseInt(weight);
+    }
+    Command<String> command = new PortfolioRebalanceCommand(date, weights);
+    try {
+      command.execute(userData);
+      lineSeparator();
+      writeMessage("Stocks for " + userData.getCurrentPortfolio().getName() + " on "
+              + date + " rebalanced.\n");
+    } catch (IllegalArgumentException e) {
+      lineSeparator();
+      writeMessage(e.getMessage() + " Please try again.\n");
+      lineSeparator();
     }
   }
 
@@ -488,7 +522,7 @@ public class StockController implements IController {
     boolean validXDays = false;
     while (!validXDays) {
       writeMessage("X-Days: ");
-      xDays = scanner.nextLine();
+      xDays = scanner.nextLine().trim();
       try {
         int xDaysNum = Integer.parseInt(xDays);
         if (xDaysNum <= 0) {
@@ -558,8 +592,9 @@ public class StockController implements IController {
     writeMessage("2: Portfolio Value\n");
     writeMessage("3: Buy Stock(s)\n");
     writeMessage("4: Sell Stock(s)\n");
-    writeMessage("5: Delete Portfolio\n");
-    writeMessage("6: Save Portfolio (to a CSV file)\n");
+    writeMessage("5: Rebalance Portfolio\n");
+    writeMessage("6: Delete Portfolio\n");
+    writeMessage("7: Save Portfolio (to a CSV file)\n");
     returnPrompt();
     quitPrompt();
   }
@@ -620,6 +655,18 @@ public class StockController implements IController {
       intArr[i] = Integer.parseInt(arr[i]);
     }
     return String.format("%d-%02d-%02d", intArr[0], intArr[1], intArr[2]);
+  }
+
+  private boolean isValidWeight(String weight) {
+    try {
+      int weightNum = Integer.parseInt(weight);
+      if (weightNum >= 0 && weightNum <= 100) {
+        return true;
+      }
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return false;
   }
 
   private boolean isValidYear(String year) {
