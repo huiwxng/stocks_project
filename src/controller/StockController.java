@@ -219,6 +219,11 @@ public class StockController implements IController {
 
   private void portfolioValue(Scanner scanner) {
     String date = formatDate(setDate(scanner));
+    List<String> distribution = userData.getCurrentPortfolio().getDistribution(date);
+    writeMessage("Portfolio Distribution:\n");
+    for (String str : distribution) {
+      writeMessage(str + "\n");
+    }
     Command<Double> command = new PortfolioGetValueCommand(date);
     try {
       double value = userData.execute(command);
