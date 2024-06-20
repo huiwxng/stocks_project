@@ -35,6 +35,9 @@ public class GraphicView extends JFrame implements IView {
     mainMenu();
   }
 
+  /**
+   * Sets the frame to the main menu with create and load buttons and list of portfolios.
+   */
   public void mainMenu() {
     // set frame
     frame.getContentPane().removeAll();
@@ -58,6 +61,10 @@ public class GraphicView extends JFrame implements IView {
     frame.repaint();
   }
 
+  /**
+   * Makes the frame visible.
+   * @param visible whether we want the frame to be visible or not
+   */
   public void visible(boolean visible) {
     if (visible) {
       frame.setVisible(true);
@@ -121,6 +128,11 @@ public class GraphicView extends JFrame implements IView {
     load.addActionListener(listener);
   }
 
+  /**
+   * Sets the action listeners for the specific portfolio buttons, so they can do something if they
+   * are clicked.
+   * @param listener listener that waits for the action
+   */
   public void setSpecificPortfolioActionListener(ActionListener listener) {
     buy.addActionListener(listener);
     sell.addActionListener(listener);
@@ -274,18 +286,34 @@ public class GraphicView extends JFrame implements IView {
     return inputsPanel;
   }
 
+  /**
+   * Gets the ticker the use inputted in the tickerField.
+   * @return a String representing the ticker
+   */
   public String getTicker() {
     return tickerField.getText().toUpperCase();
   }
 
+  /**
+   * Gets the count of shares of a stock the user wants to buy.
+   * @return an int representing the count
+   */
   public int getCount() {
     return (int) countSpinner.getValue();
   }
 
+  /**
+   * Gets the date the user inputted for the trade date.
+   * @return a String representing the date
+   */
   public String getTradeDate() {
     return new SimpleDateFormat("yyyy-MM-dd").format((Date) tradeDateSpinner.getValue());
   }
 
+  /**
+   * Gets the date the user inputted for the query date.
+   * @return a String representing the date
+   */
   public String getQueryDate() {
     return new SimpleDateFormat("yyyy-MM-dd").format((Date) queryDateSpinner.getValue());
   }
@@ -348,6 +376,10 @@ public class GraphicView extends JFrame implements IView {
     notifications.append(message + "\n");
   }
 
+  /**
+   * Sets the portfolio composition info to the provided message.
+   * @param message message to be set
+   */
   public void showQuery(String message) {
     info.setText(message);
   }
