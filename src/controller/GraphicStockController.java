@@ -165,7 +165,7 @@ public class GraphicStockController implements IController, ActionListener, List
         info.append(str).append("\n");
       }
       view.showQuery(info.toString());
-
+      view.showMessage(String.format("Queried portfolio data from %s.", view.getQueryDate()));
     } catch (IllegalArgumentException e) {
       JOptionPane.showMessageDialog(view, e.getMessage());
     }
