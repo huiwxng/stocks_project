@@ -1,4 +1,4 @@
-FEATURES:
+TEXT UI FEATURES:
 - Allows to the user to view a valid stock (check the valid stocks list):
 	- Check the most recent closing price
 	- Check the closing price on a given valid date
@@ -14,7 +14,14 @@ FEATURES:
 	- Sell stocks to remove from a portfolio
 	- Visualize portfolio performance with a bar graph
 	- Delete portfolios
-	- Save and load portfolios to and from files
+	- Save and load portfolios to and from CSV files
+
+GUI FEATURES:
+- Allows the user to hold portfolios:
+    - Create portfolios
+    - Buy/sell stocks to add to a portfolio on a given date
+    - Query the value and composition of the portfolio on a given date
+    - Save and load portfolios to and from CSV files
 
 VALID STOCKS LIST (without access to internet):
 - AAPL (1999-11-01 to 2024-06-04)
