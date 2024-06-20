@@ -46,20 +46,20 @@ public class GraphicView extends JFrame implements IView {
     frame.setLocationRelativeTo(null);
 
     // set button panel on left
-    JPanel buttonPanel = createInitialButtonPanel();
+    JPanel leftPanel = createMainLeftPanel();
 
     // set portfolios panel on right
-    JPanel portfolioListPanel = createPortfolioListPanel();
+    JPanel portfolioListPanel = createMainRightPanel();
 
     // add panels and make frame visible
-    frame.add(buttonPanel);
+    frame.add(leftPanel);
     frame.add(portfolioListPanel);
     frame.revalidate();
     frame.repaint();
     frame.setVisible(true);
   }
 
-  private JPanel createInitialButtonPanel() {
+  private JPanel createMainLeftPanel() {
     JPanel buttonPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
@@ -76,7 +76,7 @@ public class GraphicView extends JFrame implements IView {
     return buttonPanel;
   }
 
-  private JPanel createPortfolioListPanel() {
+  private JPanel createMainRightPanel() {
     JPanel portfolioListPanel = new JPanel();
     portfolioListPanel.setBorder(BorderFactory.createTitledBorder("Select your portfolio: "));
     portfolioListPanel.setLayout(new BorderLayout());
