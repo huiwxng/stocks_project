@@ -150,6 +150,7 @@ public class GraphicStockController implements IController, ActionListener, List
   private void viewPortfolio() {
     int index = view.currentPortfolioIndex();
     userData.setCurrentPortfolio(userData.getPortfolio(index));
+    view.specificPortfolioMenu();
     view.setSpecificPortfolioActionListener(this);
   }
 }
