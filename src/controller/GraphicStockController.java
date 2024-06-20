@@ -3,6 +3,7 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -11,6 +12,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import model.commands.Command;
 import model.commands.LoadPortfolioCommand;
+import model.commands.PortfolioGetValueCommand;
 import model.portfolio.BasicPortfolio;
 import model.portfolio.Portfolio;
 import model.user.UserData;
@@ -71,6 +73,12 @@ public class GraphicStockController implements IController, ActionListener, List
       case "save":
         savePortfolio();
         break;
+      case "back":
+        goBack();
+        break;
+      case "query":
+        queryPortfolio();
+        break;
       default:
         break;
     }
@@ -122,14 +130,14 @@ public class GraphicStockController implements IController, ActionListener, List
   private void confirmTrade() {
     try {
       if (tradeState) {
-        userData.getCurrentPortfolio().buyStock(view.getTicker(), view.getCount(), view.getDate());
+        userData.getCurrentPortfolio().buyStock(view.getTicker(), view.getCount(), view.getTradeDate());
         view.showMessage(String.format(
                 "Bought %d share(s) of %s on %s.",
-                view.getCount(), view.getTicker(), view.getDate()));
+                view.getCount(), view.getTicker(), view.getTradeDate()));
       } else {
-        userData.getCurrentPortfolio().sellStock(view.getTicker(), view.getCount(), view.getDate());
+        userData.getCurrentPortfolio().sellStock(view.getTicker(), view.getCount(), view.getTradeDate());
         view.showMessage(String.format(
-                "Sold %d share(s) of %s on %s.", view.getCount(), view.getTicker(), view.getDate()));
+                "Sold %d share(s) of %s on %s.", view.getCount(), view.getTicker(), view.getTradeDate()));
       }
     } catch (IllegalArgumentException e) {
       JOptionPane.showMessageDialog(view, e.getMessage());
@@ -138,6 +146,29 @@ public class GraphicStockController implements IController, ActionListener, List
 
   private void savePortfolio() {
       view.showMessage(userData.getCurrentPortfolio().save());
+  }
+
+  private void goBack() {
+    view.mainMenu();
+    view.setInitialActionListener(this);
+    view.setListListener(this);
+  }
+
+  private void queryPortfolio() {
+    try {
+      StringBuilder info = new StringBuilder();
+      Command<Double> getValue = new PortfolioGetValueCommand(view.getQueryDate());
+      double value = userData.execute(getValue);
+      List<String> composition = userData.getCurrentPortfolio().getComposition(view.getQueryDate());
+      info.append(String.format("Portfolio Value: $%.2f\n", value));
+      for (String str : composition) {
+        info.append(str).append("\n");
+      }
+      view.showQuery(info.toString());
+
+    } catch (IllegalArgumentException e) {
+      JOptionPane.showMessageDialog(view, e.getMessage());
+    }
   }
 
   @Override

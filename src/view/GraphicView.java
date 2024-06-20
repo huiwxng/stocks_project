@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
 import model.portfolio.Portfolio;
@@ -19,11 +20,11 @@ public class GraphicView extends JFrame implements IView {
   private final JFrame frame;
   private final DefaultListModel<Portfolio> portfolios;
   private JList<String> portfolioList;
-  private JButton create, load, trade, save;
+  private JButton create, load, trade, save, backButton, query;
   private JToggleButton buy, sell;
-  private JTextArea notifications;
+  private JTextArea notifications, info;
   private JTextField tickerField;
-  private JSpinner countSpinner, dateSpinner;
+  private JSpinner countSpinner, tradeDateSpinner, queryDateSpinner;
 
   /**
    * Construct a view for a graphical user interface.
@@ -31,13 +32,14 @@ public class GraphicView extends JFrame implements IView {
   public GraphicView() {
     frame = new JFrame();
     portfolios = new DefaultListModel<>();
-    initialize();
+    mainMenu();
   }
 
-  private void initialize() {
+  public void mainMenu() {
     // set frame
+    frame.getContentPane().removeAll();
     frame.setTitle("Virtual Stocks Program");
-    frame.setSize(600, 400);
+    frame.setSize(640, 480);
     frame.setResizable(false);
     frame.setLayout(new GridLayout(1, 2));
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -52,6 +54,8 @@ public class GraphicView extends JFrame implements IView {
     // add panels and make frame visible
     frame.add(buttonPanel);
     frame.add(portfolioListPanel);
+    frame.revalidate();
+    frame.repaint();
     frame.setVisible(true);
   }
 
@@ -117,6 +121,8 @@ public class GraphicView extends JFrame implements IView {
     sell.addActionListener(listener);
     trade.addActionListener(listener);
     save.addActionListener(listener);
+    backButton.addActionListener(listener);
+    query.addActionListener(listener);
   }
 
   /**
@@ -168,7 +174,7 @@ public class GraphicView extends JFrame implements IView {
     JPanel leftPanel = createSpecificPortfolioLeftPanel();
 
     // set back button, portfolio name, and composition panel on the right
-    JPanel rightPanel = new JPanel();
+    JPanel rightPanel = createSpecificPortfolioRightPanel();
 
     frame.add(leftPanel);
     frame.add(rightPanel);
@@ -177,7 +183,7 @@ public class GraphicView extends JFrame implements IView {
   }
 
   private JPanel createSpecificPortfolioLeftPanel() {
-    JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 6));
 
     // create buttons
     JPanel togglesPanel = new JPanel(new GridLayout());
@@ -225,32 +231,40 @@ public class GraphicView extends JFrame implements IView {
   }
 
   private JPanel createInputsPanel() {
-    JPanel inputsPanel = new JPanel(new GridLayout(3, 2));
+    JPanel inputsPanel = new JPanel(new GridLayout(3, 3));
 
     // ticker input
+    JPanel tickerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     JLabel tickerLabel = new JLabel("Ticker:");
-    tickerField = new JTextField();
-    inputsPanel.add(tickerLabel);
-    inputsPanel.add(tickerField);
+    tickerField = new JTextField(5);
+    tickerPanel.add(tickerLabel);
+    tickerPanel.add(tickerField);
 
     // count input
+    JPanel countPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     JLabel countLabel = new JLabel("Amount:");
     countSpinner = new JSpinner(new SpinnerNumberModel(
             1, 1, Integer.MAX_VALUE, 1));
     JSpinner.NumberEditor countEditor = new JSpinner.NumberEditor(
             countSpinner, "#");
+    countEditor.getTextField().setColumns(5);
     countSpinner.setEditor(countEditor);
-    inputsPanel.add(countLabel);
-    inputsPanel.add(countSpinner);
+    countPanel.add(countLabel);
+    countPanel.add(countSpinner);
 
     // date input
+    JPanel datePanel = new JPanel(new FlowLayout());
     JLabel dateLabel = new JLabel("Date:");
-    dateSpinner = new JSpinner(new SpinnerDateModel());
+    tradeDateSpinner = new JSpinner(new SpinnerDateModel());
     JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(
-            dateSpinner, "yyyy-MM-dd");
-    dateSpinner.setEditor(dateEditor);
-    inputsPanel.add(dateLabel);
-    inputsPanel.add(dateSpinner);
+            tradeDateSpinner, "yyyy-MM-dd");
+    tradeDateSpinner.setEditor(dateEditor);
+    datePanel.add(dateLabel);
+    datePanel.add(tradeDateSpinner);
+
+    inputsPanel.add(tickerPanel);
+    inputsPanel.add(countPanel);
+    inputsPanel.add(datePanel);
 
     return inputsPanel;
   }
@@ -263,12 +277,16 @@ public class GraphicView extends JFrame implements IView {
     return (int) countSpinner.getValue();
   }
 
-  public String getDate() {
-    return new SimpleDateFormat("yyyy-MM-dd").format((Date) dateSpinner.getValue());
+  public String getTradeDate() {
+    return new SimpleDateFormat("yyyy-MM-dd").format((Date) tradeDateSpinner.getValue());
+  }
+
+  public String getQueryDate() {
+    return new SimpleDateFormat("yyyy-MM-dd").format((Date) queryDateSpinner.getValue());
   }
 
   private JTextArea createNotificationArea() {
-    JTextArea notifications = new JTextArea(4, 20);
+    JTextArea notifications = new JTextArea(8, 23);
     notifications.setFont(new Font("Verdana", Font.PLAIN, 12));
     notifications.setLineWrap(true);
     notifications.setFocusable(false);
@@ -278,12 +296,54 @@ public class GraphicView extends JFrame implements IView {
   }
 
   private JPanel createSpecificPortfolioRightPanel() {
-    JPanel rightPanel = new JPanel(new GridLayout());
+    JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+    TitledBorder border = BorderFactory.createTitledBorder(portfolios.get(
+            currentPortfolioIndex()).getName() + " ");
+    border.setTitleFont(new Font("Verdana", Font.ITALIC, 16));
+    rightPanel.setBorder(border);
+
+    // set date
+    JPanel back = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, -5));
+    backButton = createButton("Main Menu", 100, 30, 12);
+    backButton.setActionCommand("back");
+
+    JPanel title = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+    JPanel datePanel = new JPanel(new FlowLayout());
+    JLabel dateLabel = new JLabel("Date:");
+    queryDateSpinner = new JSpinner(new SpinnerDateModel());
+    JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(
+            queryDateSpinner, "yyyy-MM-dd");
+    queryDateSpinner.setEditor(dateEditor);
+    datePanel.add(dateLabel);
+    datePanel.add(queryDateSpinner);
+
+    query = createButton("Query", 75, 30, 12);
+    query.setActionCommand("query");
+
+    info = new JTextArea(21, 23);
+    info.setFont(new Font("Verdana", Font.PLAIN, 12));
+    info.setLineWrap(true);
+    info.setFocusable(false);
+    info.setEditable(false);
+    info.setBorder(BorderFactory.createTitledBorder("Portfolio Information: "));
+
+    back.add(backButton);
+    title.add(datePanel);
+    title.add(query);
+
+    rightPanel.add(back);
+    rightPanel.add(title);
+    rightPanel.add(info);
+
     return rightPanel;
   }
 
   @Override
   public void showMessage(String message) {
     notifications.append(message + "\n");
+  }
+
+  public void showQuery(String message) {
+    info.setText(message);
   }
 }
