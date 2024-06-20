@@ -56,7 +56,12 @@ public class GraphicView extends JFrame implements IView {
     frame.add(portfolioListPanel);
     frame.revalidate();
     frame.repaint();
-    frame.setVisible(true);
+  }
+
+  public void visible(boolean visible) {
+    if (visible) {
+      frame.setVisible(true);
+    }
   }
 
   private JPanel createMainLeftPanel() {

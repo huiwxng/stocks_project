@@ -49,7 +49,7 @@ public class GraphicStockController implements IController, ActionListener, List
 
   @Override
   public void control() throws IllegalStateException {
-
+    view.visible(true);
   }
 
   @Override
