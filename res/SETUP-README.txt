@@ -1,14 +1,13 @@
 SETUP:
 To run this program, follow these steps:
 1. In the directory that the JAR file is in, you must have:
-    - a folder named 'res' and inside that folder you should have:
-        - a folder named 'data' (this folder will hold all the data for the stocks in csv format)
+	- a folder named 'data' (this folder will hold all the data for the stocks in csv format)
         - a folder named 'portfolios' (this folder will hold your portfolios in csv format)
         - a file called apikey.txt (input your API key from AlphaVantage here)
 2. Navigate to the directory that holds the JAR file
 3. Run the command:
 	java -jar StocksProgram.jar for the graphical user interface
-	java -jar StocksProgram.jar for the text based interface
+	java -jar StocksProgram.jar -text for the text based interface
 	OR
 	Double-click the jar file for the graphical user interface.
 

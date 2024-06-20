@@ -177,7 +177,7 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public String save() {
-    String dirPath = "res/portfolios/";
+    String dirPath = "portfolios/";
     String ext = ".csv";
     String path = dirPath + getName() + ext;
     String msg;

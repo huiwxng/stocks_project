@@ -15,7 +15,7 @@ import model.user.UserData;
  * can manipulate in the program.
  */
 public class LoadPortfolioCommand implements Command<String> {
-  private final String dirPath = "res/portfolios/";
+  private final String dirPath = "portfolios/";
   private final String ext = ".csv";
   private final String filename;
   private final String path;
