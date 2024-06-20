@@ -17,7 +17,8 @@ public class GraphicView extends JFrame implements IView {
   private final JFrame frame;
   private final DefaultListModel<Portfolio> portfolios;
   private JList<String> portfolioList;
-  private JButton create, load, buy, sell, save;
+  private JButton create, load, trade, save;
+  private JToggleButton buy, sell;
   private JTextArea notifications;
 
   /**
@@ -57,11 +58,9 @@ public class GraphicView extends JFrame implements IView {
     gbc.gridy = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.CENTER;
-    create = createButton("Create Portfolio", 200 ,100,
-            new Font("Verdana", Font.PLAIN, 14));
+    create = createButton("Create Portfolio", 200 ,100, 14);
     create.setActionCommand("create");
-    load = createButton("Load (from CSV file)", 200, 100,
-            new Font("Verdana", Font.PLAIN, 14));
+    load = createButton("Load (from CSV file)", 200, 100, 14);
     load.setActionCommand("load");
     buttonPanel.add(create, gbc);
     gbc.gridy++;
@@ -85,11 +84,18 @@ public class GraphicView extends JFrame implements IView {
     return portfolioListPanel;
   }
 
-  private JButton createButton(String name, int width, int height, Font font) {
+  private JButton createButton(String name, int width, int height, int fontsize) {
     JButton button = new JButton(name);
     button.setPreferredSize(new Dimension(width, height));
-    button.setFont(font);
+    button.setFont(new Font("Verdana", Font.PLAIN, fontsize));
     return button;
+  }
+
+  private JToggleButton createToggle(String name, int width, int height, int fontsize) {
+    JToggleButton toggle = new JToggleButton(name);
+    toggle.setPreferredSize(new Dimension(width, height));
+    toggle.setFont(new Font("Verdana", Font.PLAIN, fontsize));
+    return toggle;
   }
 
   /**
@@ -105,6 +111,7 @@ public class GraphicView extends JFrame implements IView {
   public void setSpecificPortfolioActionListener(ActionListener listener) {
     buy.addActionListener(listener);
     sell.addActionListener(listener);
+    trade.addActionListener(listener);
     save.addActionListener(listener);
   }
 
@@ -171,24 +178,38 @@ public class GraphicView extends JFrame implements IView {
     gbc.gridy = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.CENTER;
-    buy = createButton("Buy Stock", 100, 50,
-            new Font("Verdana", Font.PLAIN, 12));
+    JPanel togglesPanel = new JPanel(new GridBagLayout());
+    buy = createToggle("Buy Stock", 100, 50, 12);
     buy.setActionCommand("buy");
-    sell = createButton("Sell Stock", 100, 50,
-            new Font("Verdana", Font.PLAIN, 12));
+    sell = createToggle("Sell Stock", 100, 50, 12);
     sell.setActionCommand("sell");
-    save = createButton("Save (to a CSV file)", 200, 50,
-            new Font("Verdana", Font.PLAIN, 12));
+    trade = createButton("Trade Stock", 100, 50, 12);
+    trade.setActionCommand("trade");
+    save = createButton("Save (to a CSV file)", 200, 50, 12);
+    buy.setSelected(true);
+    buy.setEnabled(true);
     save.setActionCommand("save");
     notifications = createNotificationArea();
-    leftPanel.add(buy, gbc);
+    togglesPanel.add(buy, gbc);
+    gbc.gridx++;
+    togglesPanel.add(sell, gbc);
+    leftPanel.add(togglesPanel, gbc);
     gbc.gridy++;
-    leftPanel.add(sell, gbc);
+    leftPanel.add(trade, gbc);
     gbc.gridy++;
     leftPanel.add(save, gbc);
     gbc.gridy++;
     leftPanel.add(new JScrollPane(notifications), gbc);
     return leftPanel;
+  }
+
+  public JToggleButton getToggle(String name) {
+    if (name.equals("buy")) {
+      return buy;
+    } else if (name.equals("sell")) {
+      return sell;
+    }
+    throw new IllegalArgumentException("Toggle name does not exist.");
   }
 
   private JTextArea createNotificationArea() {

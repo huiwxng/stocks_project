@@ -25,6 +25,7 @@ import view.GraphicView;
 public class GraphicStockController implements IController, ActionListener, ListSelectionListener {
   private final UserData userData;
   private final GraphicView view;
+  private boolean tradeState;
 
   /**
    * Create a controller that works with a specified UserData that contains
@@ -63,6 +64,10 @@ public class GraphicStockController implements IController, ActionListener, List
         buyStock();
         break;
       case "sell":
+        sellStock();
+        break;
+      case "trade":
+        confirmTrade();
         break;
       default:
         break;
@@ -101,7 +106,21 @@ public class GraphicStockController implements IController, ActionListener, List
   }
 
   private void buyStock() {
-    view.showMessage("bought stock");
+    view.showMessage("buying stock");
+    view.getToggle("buy").setSelected(true);
+    view.getToggle("sell").setSelected(false);
+    tradeState = true;
+  }
+
+  private void sellStock() {
+    view.showMessage("selling stock");
+    view.getToggle("sell").setSelected(true);
+    view.getToggle("buy").setSelected(false);
+    tradeState = false;
+  }
+
+  private void confirmTrade() {
+
   }
 
   @Override
