@@ -17,9 +17,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * This class is for testing the StockController.
+ * This class is for testing the TextStockController.
  */
-public class StockControllerTest {
+public class TextStockControllerTest {
   private MockUserData model;
 
   @Before
