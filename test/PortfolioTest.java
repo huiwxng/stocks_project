@@ -137,6 +137,16 @@ public class PortfolioTest {
     expected = new ArrayList<>();
     assertEquals(expected, p2.getComposition("2024-06-03"));
 
+    // invalid date
+    assertThrows(IllegalArgumentException.class, () -> {
+      p.buyStock("AAPL", 10, "bleh");
+    });
+
+    // future date
+    assertThrows(IllegalArgumentException.class, () -> {
+      p.buyStock("AAPL", 10, "3000-10-10");
+    });
+
   }
 
   @Test
@@ -188,6 +198,27 @@ public class PortfolioTest {
     expected = new ArrayList<>();
     expected.add("AAPL: 3 share(s)");
     assertEquals(expected, p1.getComposition("2024-06-05"));
+
+    // test for selling stock that the portfolio does not holds
+    assertThrows(IllegalArgumentException.class, () -> {
+      p2.sellStock("AMZN", 10, "2024-06-04");
+    });
+
+    // test for selling more shares than the portfolio holds
+    assertEquals(expected, p1.getComposition("2024-06-05"));
+    p1.sellStock("AAPL", 10, "2024-06-05");
+    expected = new ArrayList<>();
+    assertEquals(expected, p1.getComposition("2024-06-05"));
+
+    // invalid date
+    assertThrows(IllegalArgumentException.class, () -> {
+      p.sellStock("AAPL", 10, "bleh");
+    });
+
+    // future date
+    assertThrows(IllegalArgumentException.class, () -> {
+      p1.sellStock("AAPL", 10, "3000-10-10");
+    });
   }
 
   @Test

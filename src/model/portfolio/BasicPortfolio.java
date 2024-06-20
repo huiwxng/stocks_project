@@ -97,6 +97,7 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public List<String> getDistribution(String date) {
+    checkDate(date);
     List<String> res = new ArrayList<>();
     for (int i = 0; i < stocks.size(); i++) {
       // error checking in getClosingPrice
@@ -115,6 +116,7 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void buyStock(String ticker, double amount, String date) {
+    checkDate(date);
     checkFuture(date);
     addToTransaction(true, ticker, amount, date);
     try {
@@ -131,6 +133,7 @@ public class BasicPortfolio implements Portfolio {
    */
   @Override
   public void sellStock(String ticker, double amount, String date) throws IllegalArgumentException {
+    checkDate(date);
     checkFuture(date);
     if (isEmpty(date)) {
       throw new IllegalArgumentException("There are no stocks in the portfolio.");
@@ -146,6 +149,14 @@ public class BasicPortfolio implements Portfolio {
   private void checkFuture(String date) {
     if (LocalDate.now().isBefore(LocalDate.parse(date))) {
       throw new IllegalArgumentException("Cannot trade a stock in the future.");
+    }
+  }
+
+  private void checkDate(String date) {
+    try {
+      LocalDate localDate = LocalDate.parse(date);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(e.getMessage());
     }
   }
 
@@ -215,12 +226,8 @@ public class BasicPortfolio implements Portfolio {
   private void processTransactions(String date) {
     stocks = new ArrayList<>();
     shares = new ArrayList<>();
-    LocalDate curr;
-    try {
-      curr = LocalDate.parse(date);
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Invalid date.");
-    }
+    checkDate(date);
+    LocalDate curr = LocalDate.parse(date);
     Collections.sort(transactions);
     for (int i = 0; i < transactions.size(); i++) {
       transactions.get(i).setIndex(i);
