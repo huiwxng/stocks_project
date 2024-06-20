@@ -29,7 +29,7 @@ public class LoadPortfolioCommand implements Command<String> {
     this.path = dirPath + filename + ext;
 
     if (!Files.exists(Path.of(path))) {
-      throw new IllegalArgumentException("This file does not exist.");
+      throw new IllegalArgumentException("This file does not exist in the portfolios folder.");
     }
   }
 

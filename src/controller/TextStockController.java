@@ -1,10 +1,7 @@
 package controller;
 
-import java.io.IOException;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Scanner;
 
 import model.commands.PortfolioPerformanceCommand;
 import model.commands.PortfolioRebalanceCommand;
@@ -18,6 +15,7 @@ import model.commands.StockCrossoverCommand;
 import model.commands.StockMovingAverageCommand;
 import model.commands.StockNetGainCommand;
 import model.user.UserData;
+import view.TextView;
 
 /**
  * This class represents the controller of an interactive virtual stocks application.
@@ -28,10 +26,9 @@ import model.user.UserData;
  * any Appendable to transmit output. There is no official "view", so this
  * controller just uses an Appendable object.
  */
-public class StockController implements IController {
+public class TextStockController implements IController {
   private final UserData userData;
-  private final Readable in;
-  private final Appendable out;
+  private final TextView view;
   private ControllerState state;
 
   /**
@@ -39,64 +36,61 @@ public class StockController implements IController {
    * a list of Portfolios.
    *
    * @param userData the user/UserData to work with (model)
-   * @param in       the Readable object for inputs
-   * @param out      the Appendable object to transmit output
+   * @param view the view that the controller tells what to do
    */
-  public StockController(UserData userData, Readable in, Appendable out) {
-    if ((userData == null) || (in == null) || (out == null)) {
-      throw new IllegalArgumentException("Sheet, readable or appendable is null");
+  public TextStockController(UserData userData, TextView view) {
+    if ((userData == null) || (view == null)) {
+      throw new IllegalArgumentException("UserData or view is null.");
     }
     this.userData = userData;
-    this.in = in;
-    this.out = out;
+    this.view = view;
     this.state = ControllerState.START_MENU;
   }
 
   @Override
   public void control() throws IllegalStateException, InterruptedException {
-    Scanner scanner = new Scanner(in);
-    this.welcomeMessage();
+    welcomeMessage();
     while (this.state != ControllerState.QUIT) {
       printCurrentMenu();
-      writeMessage("Select menu option (number): ");
-      String userInput = scanner.nextLine().trim();
-      processCommand(userInput, scanner);
+      view.showMessage("Select menu option (number): ");
+      String userInput = view.getUserInput();
+      processCommand(userInput);
     }
-    this.farewellMessage();
+    farewellMessage();
   }
 
-  private void processCommand(String userInput, Scanner scanner) {
+  private void processCommand(String userInput) {
     switch (state) {
       case START_MENU:
-        helpStartMenu(userInput, scanner);
+        helpStartMenu(userInput);
         break;
       case PORTFOLIO_MENU:
-        helpPortfolioMenu(userInput, scanner);
+        helpPortfolioMenu(userInput);
         break;
       case SPECIFIC_PORTFOLIO_MENU:
-        helpSpecificPortfolioMenu(userInput, scanner);
+        helpSpecificPortfolioMenu(userInput);
         break;
       case STOCK_MENU:
-        helpStockMenu(userInput, scanner);
+        helpStockMenu(userInput);
         break;
       default:
         break;
     }
   }
 
-  private void helpStartMenu(String userInput, Scanner scanner) {
+  private void helpStartMenu(String userInput) {
     switch (userInput) {
       case "1":
         state = ControllerState.PORTFOLIO_MENU;
         break;
       case "2":
-        writeMessage("Stock Ticker (to be viewed): ");
-        String ticker = scanner.nextLine().trim();
+        view.showMessage("Stock Ticker (to be viewed): ");
+        String ticker = view.getUserInput();
         try {
           userData.setCurrentStock(ticker);
         } catch (Exception e) {
           lineSeparator();
-          writeMessage(e.getMessage() + "\n");
+          view.showMessage(e.getMessage() + "\n");
         }
         state = ControllerState.STOCK_MENU;
         break;
@@ -106,17 +100,17 @@ public class StockController implements IController {
         break;
       default:
         lineSeparator();
-        writeMessage("Invalid input. Please try again.\n");
+        view.showMessage("Invalid input. Please try again.\n");
     }
   }
 
-  private void helpPortfolioMenu(String userInput, Scanner scanner) {
+  private void helpPortfolioMenu(String userInput) {
     switch (userInput) {
       case "1":
-        createPortfolio(scanner);
+        createPortfolio();
         break;
       case "2":
-        loadPortfolio(scanner);
+        loadPortfolio();
         break;
       case "r":
       case "return":
@@ -132,26 +126,26 @@ public class StockController implements IController {
     }
   }
 
-  private void createPortfolio(Scanner scanner) {
-    writeMessage("Name your portfolio: ");
-    String name = scanner.nextLine();
+  private void createPortfolio() {
+    view.showMessage("Name your portfolio: ");
+    String name = view.getUserInput();
     Portfolio portfolio = new BasicPortfolio(name);
     userData.addPortfolio(portfolio);
     lineSeparator();
-    writeMessage(name + " portfolio created.\n");
+    view.showMessage(name + " portfolio created.\n");
     state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
   }
 
-  private void loadPortfolio(Scanner scanner) {
-    writeMessage("Filename (no .csv): ");
-    String fileName = scanner.nextLine();
+  private void loadPortfolio() {
+    view.showMessage("Filename (no .csv): ");
+    String fileName = view.getUserInput();
     try {
       lineSeparator();
       Command<String> command = new LoadPortfolioCommand(fileName);
-      writeMessage(userData.execute(command) + "\n");
+      view.showMessage(userData.execute(command) + "\n");
       state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
     } catch (IllegalArgumentException e) {
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
@@ -164,33 +158,33 @@ public class StockController implements IController {
         state = ControllerState.SPECIFIC_PORTFOLIO_MENU;
       } else {
         lineSeparator();
-        writeMessage("There is no portfolio with that number.\n");
+        view.showMessage("There is no portfolio with that number.\n");
       }
     } catch (NumberFormatException e) {
       lineSeparator();
-      writeMessage("Invalid input. Please try again.\n");
+      view.showMessage("Invalid input. Please try again.\n");
     }
   }
 
-  private void helpSpecificPortfolioMenu(String userInput, Scanner scanner) {
+  private void helpSpecificPortfolioMenu(String userInput) {
     switch (userInput) {
       case "1":
-        viewStocks(scanner);
+        viewStocks();
         break;
       case "2":
-        portfolioValue(scanner);
+        portfolioValue();
         break;
       case "3":
-        buyStocks(scanner);
+        buyStocks();
         break;
       case "4":
-        sellStocks(scanner);
+        sellStocks();
         break;
       case "5":
-        rebalancePortfolio(scanner);
+        rebalancePortfolio();
         break;
       case "6":
-        visualizePerformance(scanner);
+        visualizePerformance();
         break;
       case "7":
         deletePortfolio();
@@ -208,136 +202,136 @@ public class StockController implements IController {
         break;
       default:
         lineSeparator();
-        writeMessage("Invalid input. Please try again.\n");
+        view.showMessage("Invalid input. Please try again.\n");
     }
   }
 
-  private void viewStocks(Scanner scanner) {
-    String date = formatDate(setDate(scanner));
+  private void viewStocks() {
+    String date = formatDate(setDate());
     lineSeparator();
-    writeMessage("Stocks in " + userData.getCurrentPortfolio().getName() + " on " + date + ":\n");
+    view.showMessage("Stocks in " + userData.getCurrentPortfolio().getName() + " on " + date + ":\n");
     for (String stock : userData.getCurrentPortfolio().getComposition(date)) {
-      writeMessage(stock + "\n");
+      view.showMessage(stock + "\n");
     }
   }
 
-  private void portfolioValue(Scanner scanner) {
-    String date = formatDate(setDate(scanner));
+  private void portfolioValue() {
+    String date = formatDate(setDate());
     List<String> distribution = userData.getCurrentPortfolio().getDistribution(date);
     lineSeparator();
-    writeMessage("Portfolio Distribution:\n");
+    view.showMessage("Portfolio Distribution:\n");
     for (String str : distribution) {
-      writeMessage(str + "\n");
+      view.showMessage(str + "\n");
     }
     Command<Double> command = new PortfolioGetValueCommand(date);
     try {
       double value = userData.execute(command);
       lineSeparator();
-      writeMessage("Portfolio value: $" + formatDouble(value) + "\n");
+      view.showMessage("Portfolio value: $" + formatDouble(value) + "\n");
     } catch (IllegalArgumentException e) {
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
-  private void visualizePerformance(Scanner scanner) {
-    String start = setStartDate(scanner);
-    String end = setEndDate(scanner, start);
+  private void visualizePerformance() {
+    String start = setStartDate();
+    String end = setEndDate();
     lineSeparator();
     Command<String> command = new PortfolioPerformanceCommand(start, end);
     try {
       String graph = userData.execute(command);
-      writeMessage(graph + "\n");
+      view.showMessage(graph + "\n");
     } catch (IllegalArgumentException e) {
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
-  private void buyStocks(Scanner scanner) {
+  private void buyStocks() {
     String addedTicker = "";
     int addedShareCount = 0;
     boolean validTickerToAdd = false;
     while (!validTickerToAdd) {
-      writeMessage("Stock Ticker (to be added): ");
-      addedTicker = scanner.nextLine().trim();
+      view.showMessage("Stock Ticker (to be added): ");
+      addedTicker = view.getUserInput();
       boolean validShareCountToAdd = false;
       while (!validShareCountToAdd) {
         try {
-          writeMessage("Number of shares to add: ");
-          addedShareCount = Integer.parseInt(scanner.nextLine().trim());
-          String date = formatDate(setDate(scanner));
+          view.showMessage("Number of shares to add: ");
+          addedShareCount = Integer.parseInt(view.getUserInput());
+          String date = formatDate(setDate());
           try {
             userData.getCurrentPortfolio().buyStock(addedTicker, addedShareCount, date);
             lineSeparator();
-            writeMessage("Added " + addedShareCount + " " + addedTicker.toUpperCase()
+            view.showMessage("Added " + addedShareCount + " " + addedTicker.toUpperCase()
                     + " to " + userData.getCurrentPortfolio().getName() + "\n");
           } catch (Exception e) {
             lineSeparator();
-            writeMessage(e.getMessage() + " Please try again.\n");
+            view.showMessage(e.getMessage() + " Please try again.\n");
           }
           validShareCountToAdd = true;
           validTickerToAdd = true;
         } catch (NumberFormatException e) {
           lineSeparator();
-          writeMessage("Invalid stock share amount. Please try again.\n");
+          view.showMessage("Invalid stock share amount. Please try again.\n");
         } catch (IllegalArgumentException e) {
           lineSeparator();
-          writeMessage("Invalid ticker or stock share amount. Please try again.\n");
+          view.showMessage("Invalid ticker or stock share amount. Please try again.\n");
           break;
         }
       }
     }
   }
 
-  private void sellStocks(Scanner scanner) {
+  private void sellStocks() {
     String removedTicker = "";
     int removedShareCount = 0;
     boolean validTickerToRemove = false;
     while (!validTickerToRemove) {
-      writeMessage("Stock Ticker (to be removed): ");
-      removedTicker = scanner.nextLine().trim();
+      view.showMessage("Stock Ticker (to be removed): ");
+      removedTicker = view.getUserInput();
       boolean validShareCountToRemove = false;
       while (!validShareCountToRemove) {
         try {
-          writeMessage("Number of shares to remove: ");
-          removedShareCount = Integer.parseInt(scanner.nextLine().trim());
-          String date = formatDate(setDate(scanner));
+          view.showMessage("Number of shares to remove: ");
+          removedShareCount = Integer.parseInt(view.getUserInput());
+          String date = formatDate(setDate());
           try {
             userData.getCurrentPortfolio().sellStock(removedTicker, removedShareCount, date);
             lineSeparator();
-            writeMessage("Removed " + removedShareCount + " " + removedTicker.toUpperCase()
+            view.showMessage("Removed " + removedShareCount + " " + removedTicker.toUpperCase()
                     + " from " + userData.getCurrentPortfolio().getName() + "\n");
           } catch (Exception e) {
             lineSeparator();
-            writeMessage(e.getMessage() + " Please try again.\n");
+            view.showMessage(e.getMessage() + " Please try again.\n");
           }
           validShareCountToRemove = true;
           validTickerToRemove = true;
         } catch (NumberFormatException e) {
           lineSeparator();
-          writeMessage("Stock share amount must be a whole number. Please try again.\n");
+          view.showMessage("Stock share amount must be a whole number. Please try again.\n");
         } catch (IllegalArgumentException e) {
           lineSeparator();
-          writeMessage(e.getMessage() + " Please try again.\n");
+          view.showMessage(e.getMessage() + " Please try again.\n");
           break;
         }
       }
     }
   }
 
-  private void rebalancePortfolio(Scanner scanner) {
-    String date = formatDate(setDate(scanner));
+  private void rebalancePortfolio() {
+    String date = formatDate(setDate());
     List<Stock> currentStocks = userData.getCurrentPortfolio().getStocks(date);
     int[] weights = new int[currentStocks.size()];
     for (int i = 0; i < currentStocks.size(); i++) {
       lineSeparator();
-      writeMessage("Weight for " + currentStocks.get(i).getTicker() + " (0%-100%): ");
-      String weight = scanner.nextLine().trim();
+      view.showMessage("Weight for " + currentStocks.get(i).getTicker() + " (0%-100%): ");
+      String weight = view.getUserInput();
       while (!isValidWeight(weight)) {
         lineSeparator();
-        writeMessage("Invalid weight. Please try again.\n");
+        view.showMessage("Invalid weight. Please try again.\n");
         lineSeparator();
-        writeMessage("Weight for " + currentStocks.get(i).getTicker() + " (): ");
-        weight = scanner.nextLine().trim();
+        view.showMessage("Weight for " + currentStocks.get(i).getTicker() + " (): ");
+        weight = view.getUserInput();
       }
       weights[i] = Integer.parseInt(weight);
     }
@@ -345,42 +339,42 @@ public class StockController implements IController {
       Command<String> command = new PortfolioRebalanceCommand(date, weights);
       userData.execute(command);
       lineSeparator();
-      writeMessage("Stocks for " + userData.getCurrentPortfolio().getName() + " on "
+      view.showMessage("Stocks for " + userData.getCurrentPortfolio().getName() + " on "
               + date + " rebalanced.\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
   private void deletePortfolio() {
     userData.removePortfolio(userData.getCurrentPortfolio());
     lineSeparator();
-    writeMessage("Portfolio " + userData.getCurrentPortfolio().getName() + " deleted.\n");
+    view.showMessage("Portfolio " + userData.getCurrentPortfolio().getName() + " deleted.\n");
     state = ControllerState.PORTFOLIO_MENU;
   }
 
   private void savePortfolio() {
     lineSeparator();
-    writeMessage(userData.getCurrentPortfolio().save() + "\n");
+    view.showMessage(userData.getCurrentPortfolio().save() + "\n");
   }
 
-  private void helpStockMenu(String userInput, Scanner scanner) {
+  private void helpStockMenu(String userInput) {
     switch (userInput) {
       case "1":
         lastClosingPrice();
         break;
       case "2":
-        closingPrice(scanner);
+        closingPrice();
         break;
       case "3":
-        netGain(scanner);
+        netGain();
         break;
       case "4":
-        xDayMovingAverage(scanner);
+        xDayMovingAverage();
         break;
       case "5":
-        xDayCrossovers(scanner);
+        xDayCrossovers();
         break;
       case "r":
       case "return":
@@ -392,62 +386,62 @@ public class StockController implements IController {
         break;
       default:
         lineSeparator();
-        writeMessage("Invalid input. Please try again.\n");
+        view.showMessage("Invalid input. Please try again.\n");
     }
   }
 
   private void lastClosingPrice() {
     lineSeparator();
-    writeMessage("Last Closing Price: $"
+    view.showMessage("Last Closing Price: $"
             + userData.getCurrentStock().getAllClosingPrices()
             .get(userData.getCurrentStock().getAllClosingPrices().size() - 1) + "\n");
   }
 
-  private void closingPrice(Scanner scanner) {
-    String date = formatDate(setDate(scanner));
+  private void closingPrice() {
+    String date = formatDate(setDate());
     try {
       lineSeparator();
-      writeMessage("Closing Price for " + formatDate(date) + ": $"
+      view.showMessage("Closing Price for " + formatDate(date) + ": $"
               + userData.getCurrentStock().getClosingPrice(date) + "\n");
     } catch (IllegalArgumentException e) {
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
       lineSeparator();
     }
   }
 
-  private void netGain(Scanner scanner) {
-    String start = setStartDate(scanner);
-    String end = setEndDate(scanner, start);
+  private void netGain() {
+    String start = setStartDate();
+    String end = setEndDate();
     try {
       Command<Double> command = new StockNetGainCommand(start, end);
       double netGain = userData.execute(command);
       lineSeparator();
-      writeMessage("Net Gain from " + start + " to " + end + ": $" + formatDouble(netGain) + "\n");
+      view.showMessage("Net Gain from " + start + " to " + end + ": $" + formatDouble(netGain) + "\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
-  private void xDayMovingAverage(Scanner scanner) {
-    String date = formatDate(setDate(scanner));
-    String xDays = setXDays(scanner);
+  private void xDayMovingAverage() {
+    String date = formatDate(setDate());
+    String xDays = setXDays();
     try {
       Command<Double> command = new StockMovingAverageCommand(date, Integer.parseInt(xDays));
       double movingAverage = userData.execute(command);
       lineSeparator();
-      writeMessage("X-Day Moving Average on " + formatDate(date) + " for " + xDays + " days: $"
+      view.showMessage("X-Day Moving Average on " + formatDate(date) + " for " + xDays + " days: $"
               + movingAverage + "\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
-  private void xDayCrossovers(Scanner scanner) {
-    String start = setStartDate(scanner);
-    String end = setEndDate(scanner, start);
-    String xDays = setXDays(scanner);
+  private void xDayCrossovers() {
+    String start = setStartDate();
+    String end = setEndDate();
+    String xDays = setXDays();
     try {
       Command<List<String>> command
               = new StockCrossoverCommand(start, end, Integer.parseInt(xDays));
@@ -456,21 +450,21 @@ public class StockController implements IController {
       for (int i = 0; i < crossovers.size(); i++) {
         if (i % 5 == 0) {
           if (i != 0) {
-            writeMessage("\n");
+            view.showMessage("\n");
           }
-          writeMessage(crossovers.get(i));
+          view.showMessage(crossovers.get(i));
         } else {
-          writeMessage(", " + crossovers.get(i));
+          view.showMessage(", " + crossovers.get(i));
         }
       }
-      writeMessage("\n");
+      view.showMessage("\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
-      writeMessage(e.getMessage() + " Please try again.\n");
+      view.showMessage(e.getMessage() + " Please try again.\n");
     }
   }
 
-  private String setDate(Scanner scanner) {
+  private String setDate() {
     StringBuilder date = new StringBuilder();
     String year = "";
     String month = "";
@@ -481,32 +475,32 @@ public class StockController implements IController {
     while (!validYear || !validMonth || !validDay) {
       if (!validYear) {
         lineSeparator();
-        writeMessage("Year: ");
-        year = scanner.nextLine().trim();
+        view.showMessage("Year: ");
+        year = view.getUserInput();
         if (isValidYear(year)) {
           validYear = true;
         } else {
-          writeMessage("Invalid year. Please try again.\n");
+          view.showMessage("Invalid year. Please try again.\n");
         }
       }
       if (!validMonth) {
         lineSeparator();
-        writeMessage("Month (number): ");
-        month = scanner.nextLine().trim();
+        view.showMessage("Month (number): ");
+        month = view.getUserInput();
         if (isValidMonth(month)) {
           validMonth = true;
         } else {
-          writeMessage("Invalid month. Please try again.\n");
+          view.showMessage("Invalid month. Please try again.\n");
         }
       }
       if (!validDay) {
         lineSeparator();
-        writeMessage("Day: ");
-        day = scanner.nextLine().trim();
+        view.showMessage("Day: ");
+        day = view.getUserInput();
         if (isValidDay(day)) {
           validDay = true;
         } else {
-          writeMessage("Invalid day. Please try again.\n");
+          view.showMessage("Invalid day. Please try again.\n");
         }
       }
     }
@@ -516,30 +510,30 @@ public class StockController implements IController {
 
     if (!isValidDate(date.toString())) {
       lineSeparator();
-      writeMessage("Invalid date. Please try again.\n");
-      return setDate(scanner);
+      view.showMessage("Invalid date. Please try again.\n");
+      return setDate();
     }
     return date.toString();
   }
 
-  private String setStartDate(Scanner scanner) {
+  private String setStartDate() {
     lineSeparator();
-    writeMessage("Start Date: \n");
-    return setDate(scanner);
+    view.showMessage("Start Date: \n");
+    return setDate();
   }
 
-  private String setEndDate(Scanner scanner, String startDateString) {
+  private String setEndDate() {
     lineSeparator();
-    writeMessage("End Date: \n");
-    return setDate(scanner);
+    view.showMessage("End Date: \n");
+    return setDate();
   }
 
-  private String setXDays(Scanner scanner) {
+  private String setXDays() {
     String xDays = "";
     boolean validXDays = false;
     while (!validXDays) {
-      writeMessage("X-Days: ");
-      xDays = scanner.nextLine().trim();
+      view.showMessage("X-Days: ");
+      xDays = view.getUserInput();
       try {
         int xDaysNum = Integer.parseInt(xDays);
         if (xDaysNum <= 0) {
@@ -548,18 +542,10 @@ public class StockController implements IController {
         validXDays = true;
       } catch (NumberFormatException e) {
         lineSeparator();
-        writeMessage("X-Days must be a positive integer. Please try again.\n");
+        view.showMessage("X-Days must be a positive integer. Please try again.\n");
       }
     }
     return xDays;
-  }
-
-  private void writeMessage(String message) throws IllegalStateException {
-    try {
-      out.append(message);
-    } catch (IOException e) {
-      throw new IllegalStateException(e.getMessage());
-    }
   }
 
   private void printCurrentMenu() throws IllegalStateException, InterruptedException {
@@ -585,18 +571,18 @@ public class StockController implements IController {
 
   private void printStartMenu() {
     lineSeparator();
-    writeMessage("1: View Portfolios\n");
-    writeMessage("2: View Stocks\n");
+    view.showMessage("1: View Portfolios\n");
+    view.showMessage("2: View Stocks\n");
     quitPrompt();
   }
 
   private void printPortfolioMenu() {
     lineSeparator();
-    writeMessage("1: Create Portfolio\n");
-    writeMessage("2: Load Portfolio (from a CSV file)\n");
+    view.showMessage("1: Create Portfolio\n");
+    view.showMessage("2: Load Portfolio (from a CSV file)\n");
     int portfolioIndex = 3;
     for (int i = 0; i < userData.getNumPortfolios(); i++) {
-      writeMessage(portfolioIndex++ + ": " + userData.getPortfolio(i).getName() + "\n");
+      view.showMessage(portfolioIndex++ + ": " + userData.getPortfolio(i).getName() + "\n");
     }
     returnPrompt();
     quitPrompt();
@@ -604,15 +590,15 @@ public class StockController implements IController {
 
   private void printSpecificPortfolioMenu() {
     lineSeparator();
-    writeMessage(userData.getCurrentPortfolio().getName() + "\n");
-    writeMessage("1: View Stocks\n");
-    writeMessage("2: Portfolio Value\n");
-    writeMessage("3: Buy Stock(s)\n");
-    writeMessage("4: Sell Stock(s)\n");
-    writeMessage("5: Rebalance Portfolio\n");
-    writeMessage("6: Visualize Performance\n");
-    writeMessage("7: Delete Portfolio\n");
-    writeMessage("8: Save Portfolio (to a CSV file)\n");
+    view.showMessage(userData.getCurrentPortfolio().getName() + "\n");
+    view.showMessage("1: View Stocks\n");
+    view.showMessage("2: Portfolio Value\n");
+    view.showMessage("3: Buy Stock(s)\n");
+    view.showMessage("4: Sell Stock(s)\n");
+    view.showMessage("5: Rebalance Portfolio\n");
+    view.showMessage("6: Visualize Performance\n");
+    view.showMessage("7: Delete Portfolio\n");
+    view.showMessage("8: Save Portfolio (to a CSV file)\n");
     returnPrompt();
     quitPrompt();
   }
@@ -621,41 +607,41 @@ public class StockController implements IController {
     lineSeparator();
     try {
       String ticker = userData.getCurrentStock().getTicker();
-      writeMessage(ticker + "\n");
+      view.showMessage(ticker + "\n");
     } catch (IllegalArgumentException e) {
-      writeMessage("You are not currently viewing a stock. Please try again.\n");
+      view.showMessage("You are not currently viewing a stock. Please try again.\n");
       state = ControllerState.START_MENU;
       printStartMenu();
       return;
     }
-    writeMessage("1: Last Closing Price\n");
-    writeMessage("2: Closing Price\n");
-    writeMessage("3: Net Gain\n");
-    writeMessage("4: X-Day Moving Average\n");
-    writeMessage("5: X-Day Crossovers\n");
+    view.showMessage("1: Last Closing Price\n");
+    view.showMessage("2: Closing Price\n");
+    view.showMessage("3: Net Gain\n");
+    view.showMessage("4: X-Day Moving Average\n");
+    view.showMessage("5: X-Day Crossovers\n");
     returnPrompt();
     quitPrompt();
   }
 
   private void welcomeMessage() {
     lineSeparator();
-    writeMessage("Welcome to the virtual stocks program!\n" +
+    view.showMessage("Welcome to the virtual stocks program!\n" +
             "In menus that are numbered, input your number option.\n" +
             "Otherwise, type string input if prompted.\n");
   }
 
   private void farewellMessage() {
     lineSeparator();
-    writeMessage("Thanks for using our virtual stocks program!\n");
+    view.showMessage("Thanks for using our virtual stocks program!\n");
     lineSeparator();
   }
 
   private void returnPrompt() {
-    writeMessage("(r or return to go back)\n");
+    view.showMessage("(r or return to go back)\n");
   }
 
   private void quitPrompt() {
-    writeMessage("(q or quit to quit)\n");
+    view.showMessage("(q or quit to quit)\n");
   }
 
   private boolean isValidDate(String date) {
@@ -725,7 +711,7 @@ public class StockController implements IController {
   }
 
   private void lineSeparator() {
-    writeMessage("-------------------------------------------------\n");
+    view.showMessage("-------------------------------------------------\n");
   }
 
   private String formatDouble(double num) {

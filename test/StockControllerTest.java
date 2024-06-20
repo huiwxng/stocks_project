@@ -3,11 +3,13 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import controller.IController;
 import controller.Interaction;
-import controller.StockController;
+import controller.TextStockController;
 import model.portfolio.Portfolio;
 import model.user.MockUserData;
 import model.user.UserData;
+import view.TextView;
 
 import static controller.Interaction.inputs;
 import static controller.Interaction.prints;
@@ -72,7 +74,7 @@ public class StockControllerTest {
     }
     StringReader in = new StringReader(userInput.toString());
     StringBuilder out = new StringBuilder();
-    StockController controller = new StockController(model, in, out);
+    IController controller = new TextStockController(model, new TextView(in, out));
     controller.control();
     assertEquals(expected.toString(), out.toString());
   }
@@ -122,7 +124,7 @@ public class StockControllerTest {
   }
 
   private String farewellMessage() {
-    return lineSeparator() + "Thanks for using our virtual stocks program!\n";
+    return lineSeparator() + "Thanks for using our virtual stocks program!\n" + lineSeparator();
   }
 
   private String returnMessage() {

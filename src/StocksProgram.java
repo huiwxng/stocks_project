@@ -1,8 +1,8 @@
-import java.io.InputStreamReader;
-
-import controller.StockController;
+import controller.GraphicStockController;
+import controller.IController;
 import model.user.BasicUserData;
 import model.user.UserData;
+import view.GraphicView;
 
 /**
  * The driver of this application.
@@ -15,9 +15,7 @@ public class StocksProgram {
    */
   public static void main(String[] args) throws InterruptedException {
     UserData userData = new BasicUserData();
-    Readable in = new InputStreamReader(System.in);
-    Appendable out = System.out;
-    StockController controller = new StockController(userData, in, out);
+    IController controller = new GraphicStockController(userData, new GraphicView());
     controller.control();
   }
 }
