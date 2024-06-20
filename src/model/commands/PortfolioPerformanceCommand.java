@@ -162,7 +162,7 @@ public class PortfolioPerformanceCommand implements Command<String> {
       }
     }
 
-    while(date.isBefore(endDate)) {
+    while (date.isBefore(endDate)) {
       value = getValue(date);
       switch (timescale) {
         case "DAYS":
