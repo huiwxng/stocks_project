@@ -42,6 +42,7 @@ public class GraphicStockController implements IController, ActionListener, List
     this.view = view;
     view.setInitialActionListener(this);
     view.setListListener(this);
+    this.tradeState = true;
   }
 
   @Override
@@ -58,8 +59,6 @@ public class GraphicStockController implements IController, ActionListener, List
       case "load":
         loadPortfolio();
         break;
-      case "save":
-        break;
       case "buy":
         buyStock();
         break;
@@ -68,6 +67,9 @@ public class GraphicStockController implements IController, ActionListener, List
         break;
       case "trade":
         confirmTrade();
+        break;
+      case "save":
+        savePortfolio();
         break;
       default:
         break;
@@ -106,21 +108,36 @@ public class GraphicStockController implements IController, ActionListener, List
   }
 
   private void buyStock() {
-    view.showMessage("buying stock");
     view.getToggle("buy").setSelected(true);
     view.getToggle("sell").setSelected(false);
     tradeState = true;
   }
 
   private void sellStock() {
-    view.showMessage("selling stock");
     view.getToggle("sell").setSelected(true);
     view.getToggle("buy").setSelected(false);
     tradeState = false;
   }
 
   private void confirmTrade() {
+    try {
+      if (tradeState) {
+        userData.getCurrentPortfolio().buyStock(view.getTicker(), view.getCount(), view.getDate());
+        view.showMessage(String.format(
+                "Bought %d share(s) of %s on %s.",
+                view.getCount(), view.getTicker(), view.getDate()));
+      } else {
+        userData.getCurrentPortfolio().sellStock(view.getTicker(), view.getCount(), view.getDate());
+        view.showMessage(String.format(
+                "Sold %d share(s) of %s on %s.", view.getCount(), view.getTicker(), view.getDate()));
+      }
+    } catch (IllegalArgumentException e) {
+      JOptionPane.showMessageDialog(view, e.getMessage());
+    }
+  }
 
+  private void savePortfolio() {
+      view.showMessage(userData.getCurrentPortfolio().save());
   }
 
   @Override
@@ -132,7 +149,7 @@ public class GraphicStockController implements IController, ActionListener, List
 
   private void viewPortfolio() {
     int index = view.currentPortfolioIndex();
-    view.specificPortfolioMenu(userData.getPortfolio(index));
+    userData.setCurrentPortfolio(userData.getPortfolio(index));
     view.setSpecificPortfolioActionListener(this);
   }
 }

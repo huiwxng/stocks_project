@@ -1,5 +1,7 @@
 package view;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -20,6 +22,8 @@ public class GraphicView extends JFrame implements IView {
   private JButton create, load, trade, save;
   private JToggleButton buy, sell;
   private JTextArea notifications;
+  private JTextField tickerField;
+  private JSpinner countSpinner, dateSpinner;
 
   /**
    * Construct a view for a graphical user interface.
@@ -58,7 +62,7 @@ public class GraphicView extends JFrame implements IView {
     gbc.gridy = 0;
     gbc.fill = GridBagConstraints.NONE;
     gbc.anchor = GridBagConstraints.CENTER;
-    create = createButton("Create Portfolio", 200 ,100, 14);
+    create = createButton("Create Portfolio", 200, 100, 14);
     create.setActionCommand("create");
     load = createButton("Load (from CSV file)", 200, 100, 14);
     load.setActionCommand("load");
@@ -105,7 +109,7 @@ public class GraphicView extends JFrame implements IView {
    */
   public void setInitialActionListener(ActionListener listener) {
     create.addActionListener(listener);
-    load.addActionListener(listener);;
+    load.addActionListener(listener);
   }
 
   public void setSpecificPortfolioActionListener(ActionListener listener) {
@@ -128,6 +132,7 @@ public class GraphicView extends JFrame implements IView {
   /**
    * Updates the currently displayed list of portfolios by adding the new
    * list of portfolios.
+   *
    * @param newPortfolios new list of portfolios to be added
    */
   public void updatePortfolioList(List<Portfolio> newPortfolios) {
@@ -144,6 +149,7 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Gets the index of the current portfolio / the portfolio the user selected from the list.
+   *
    * @return int representing the index
    */
   public int currentPortfolioIndex() {
@@ -152,9 +158,8 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Loads the portfolio menu for a specific portfolio.
-   * @param portfolio portfolio that menu is to be loaded for
    */
-  public void specificPortfolioMenu(Portfolio portfolio) {
+  public void specificPortfolioMenu() {
     // reset frame
     frame.getContentPane().removeAll();
     frame.setLayout(new GridLayout(1, 2));
@@ -172,37 +177,44 @@ public class GraphicView extends JFrame implements IView {
   }
 
   private JPanel createSpecificPortfolioLeftPanel() {
-    JPanel leftPanel = new JPanel(new GridBagLayout());
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.anchor = GridBagConstraints.CENTER;
-    JPanel togglesPanel = new JPanel(new GridBagLayout());
-    buy = createToggle("Buy Stock", 100, 50, 12);
+    JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
+    // create buttons
+    JPanel togglesPanel = new JPanel(new GridLayout());
+    buy = createToggle("Buy Stock", 125, 50, 12);
     buy.setActionCommand("buy");
-    sell = createToggle("Sell Stock", 100, 50, 12);
-    sell.setActionCommand("sell");
-    trade = createButton("Trade Stock", 100, 50, 12);
-    trade.setActionCommand("trade");
-    save = createButton("Save (to a CSV file)", 200, 50, 12);
     buy.setSelected(true);
-    buy.setEnabled(true);
+    sell = createToggle("Sell Stock", 125, 50, 12);
+    sell.setActionCommand("sell");
+    togglesPanel.add(buy);
+    togglesPanel.add(sell);
+    leftPanel.add(togglesPanel);
+
+    // create input fields
+    JPanel inputsPanel = createInputsPanel();
+    leftPanel.add(inputsPanel);
+
+    // create trade/save buttons
+    trade = createButton("Confirm Trade", 200, 50, 12);
+    trade.setActionCommand("trade");
+    leftPanel.add(trade);
+    save = createButton("Save (to a CSV file)", 200, 50, 12);
     save.setActionCommand("save");
+    leftPanel.add(save);
+
+    // create notification area
     notifications = createNotificationArea();
-    togglesPanel.add(buy, gbc);
-    gbc.gridx++;
-    togglesPanel.add(sell, gbc);
-    leftPanel.add(togglesPanel, gbc);
-    gbc.gridy++;
-    leftPanel.add(trade, gbc);
-    gbc.gridy++;
-    leftPanel.add(save, gbc);
-    gbc.gridy++;
-    leftPanel.add(new JScrollPane(notifications), gbc);
+    leftPanel.add(new JScrollPane(notifications));
+
     return leftPanel;
   }
 
+  /**
+   * Gets the button that is toggled for the trade (buy/sell).
+   *
+   * @param name name of the button (buy/sell)
+   * @return button that isi toggled
+   */
   public JToggleButton getToggle(String name) {
     if (name.equals("buy")) {
       return buy;
@@ -212,8 +224,51 @@ public class GraphicView extends JFrame implements IView {
     throw new IllegalArgumentException("Toggle name does not exist.");
   }
 
+  private JPanel createInputsPanel() {
+    JPanel inputsPanel = new JPanel(new GridLayout(3, 2));
+
+    // ticker input
+    JLabel tickerLabel = new JLabel("Ticker:");
+    tickerField = new JTextField();
+    inputsPanel.add(tickerLabel);
+    inputsPanel.add(tickerField);
+
+    // count input
+    JLabel countLabel = new JLabel("Amount:");
+    countSpinner = new JSpinner(new SpinnerNumberModel(
+            1, 1, Integer.MAX_VALUE, 1));
+    JSpinner.NumberEditor countEditor = new JSpinner.NumberEditor(
+            countSpinner, "#");
+    countSpinner.setEditor(countEditor);
+    inputsPanel.add(countLabel);
+    inputsPanel.add(countSpinner);
+
+    // date input
+    JLabel dateLabel = new JLabel("Date:");
+    dateSpinner = new JSpinner(new SpinnerDateModel());
+    JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(
+            dateSpinner, "yyyy-MM-dd");
+    dateSpinner.setEditor(dateEditor);
+    inputsPanel.add(dateLabel);
+    inputsPanel.add(dateSpinner);
+
+    return inputsPanel;
+  }
+
+  public String getTicker() {
+    return tickerField.getText().toUpperCase();
+  }
+
+  public int getCount() {
+    return (int) countSpinner.getValue();
+  }
+
+  public String getDate() {
+    return new SimpleDateFormat("yyyy-MM-dd").format((Date) dateSpinner.getValue());
+  }
+
   private JTextArea createNotificationArea() {
-    JTextArea notifications = new JTextArea(3, 20);
+    JTextArea notifications = new JTextArea(4, 20);
     notifications.setFont(new Font("Verdana", Font.PLAIN, 12));
     notifications.setLineWrap(true);
     notifications.setFocusable(false);

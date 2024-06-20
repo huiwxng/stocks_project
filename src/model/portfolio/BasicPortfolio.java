@@ -29,6 +29,7 @@ public class BasicPortfolio implements Portfolio {
 
   /**
    * Constructs a new portfolio object.
+   *
    * @param name of the portfolio
    */
   public BasicPortfolio(String name) {
@@ -141,6 +142,7 @@ public class BasicPortfolio implements Portfolio {
 
   /**
    * Checks if the portfolio has stocks inside.
+   *
    * @return true if there are stocks within, false otherwise
    */
   @Override
