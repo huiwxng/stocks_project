@@ -5,7 +5,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -130,14 +131,17 @@ public class GraphicStockController implements IController, ActionListener, List
   private void confirmTrade() {
     try {
       if (tradeState) {
-        userData.getCurrentPortfolio().buyStock(view.getTicker(), view.getCount(), view.getTradeDate());
+        userData.getCurrentPortfolio().buyStock(view.getTicker(), view.getCount(),
+                view.getTradeDate());
         view.showMessage(String.format(
                 "Bought %d share(s) of %s on %s.",
                 view.getCount(), view.getTicker(), view.getTradeDate()));
       } else {
-        userData.getCurrentPortfolio().sellStock(view.getTicker(), view.getCount(), view.getTradeDate());
+        userData.getCurrentPortfolio().sellStock(view.getTicker(), view.getCount(),
+                view.getTradeDate());
         view.showMessage(String.format(
-                "Sold %d share(s) of %s on %s.", view.getCount(), view.getTicker(), view.getTradeDate()));
+                "Sold %d share(s) of %s on %s.", view.getCount(), view.getTicker(),
+                view.getTradeDate()));
       }
     } catch (IllegalArgumentException e) {
       JOptionPane.showMessageDialog(view, e.getMessage());
@@ -145,7 +149,7 @@ public class GraphicStockController implements IController, ActionListener, List
   }
 
   private void savePortfolio() {
-      view.showMessage(userData.getCurrentPortfolio().save());
+    view.showMessage(userData.getCurrentPortfolio().save());
   }
 
   private void goBack() {

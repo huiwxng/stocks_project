@@ -209,7 +209,8 @@ public class TextStockController implements IController {
   private void viewStocks() {
     String date = formatDate(setDate());
     lineSeparator();
-    view.showMessage("Stocks in " + userData.getCurrentPortfolio().getName() + " on " + date + ":\n");
+    view.showMessage("Stocks in " + userData.getCurrentPortfolio().getName() +
+            " on " + date + ":\n");
     for (String stock : userData.getCurrentPortfolio().getComposition(date)) {
       view.showMessage(stock + "\n");
     }
@@ -416,7 +417,8 @@ public class TextStockController implements IController {
       Command<Double> command = new StockNetGainCommand(start, end);
       double netGain = userData.execute(command);
       lineSeparator();
-      view.showMessage("Net Gain from " + start + " to " + end + ": $" + formatDouble(netGain) + "\n");
+      view.showMessage("Net Gain from " + start + " to " + end + ": $" +
+              formatDouble(netGain) + "\n");
     } catch (IllegalArgumentException e) {
       lineSeparator();
       view.showMessage(e.getMessage() + " Please try again.\n");

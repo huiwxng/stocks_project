@@ -1,9 +1,15 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.awt.*;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
@@ -20,11 +26,20 @@ public class GraphicView extends JFrame implements IView {
   private final JFrame frame;
   private final DefaultListModel<Portfolio> portfolios;
   private JList<String> portfolioList;
-  private JButton create, load, trade, save, backButton, query;
-  private JToggleButton buy, sell;
-  private JTextArea notifications, info;
+  private JButton create;
+  private JButton load;
+  private JButton trade;
+  private JButton save;
+  private JButton backButton;
+  private JButton query;
+  private JToggleButton buy;
+  private JToggleButton sell;
+  private JTextArea notifications;
+  private JTextArea info;
   private JTextField tickerField;
-  private JSpinner countSpinner, tradeDateSpinner, queryDateSpinner;
+  private JSpinner countSpinner;
+  private JSpinner tradeDateSpinner;
+  private JSpinner queryDateSpinner;
 
   /**
    * Construct a view for a graphical user interface.
@@ -63,6 +78,7 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Makes the frame visible.
+   *
    * @param visible whether we want the frame to be visible or not
    */
   public void visible(boolean visible) {
@@ -131,6 +147,7 @@ public class GraphicView extends JFrame implements IView {
   /**
    * Sets the action listeners for the specific portfolio buttons, so they can do something if they
    * are clicked.
+   *
    * @param listener listener that waits for the action
    */
   public void setSpecificPortfolioActionListener(ActionListener listener) {
@@ -288,6 +305,7 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Gets the ticker the use inputted in the tickerField.
+   *
    * @return a String representing the ticker
    */
   public String getTicker() {
@@ -296,6 +314,7 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Gets the count of shares of a stock the user wants to buy.
+   *
    * @return an int representing the count
    */
   public int getCount() {
@@ -304,6 +323,7 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Gets the date the user inputted for the trade date.
+   *
    * @return a String representing the date
    */
   public String getTradeDate() {
@@ -312,6 +332,7 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Gets the date the user inputted for the query date.
+   *
    * @return a String representing the date
    */
   public String getQueryDate() {
@@ -378,6 +399,7 @@ public class GraphicView extends JFrame implements IView {
 
   /**
    * Sets the portfolio composition info to the provided message.
+   *
    * @param message message to be set
    */
   public void showQuery(String message) {
