@@ -4,19 +4,35 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.WindowConstants;
 
 import model.portfolio.Portfolio;
+
 
 /**
  * This class represents an implementation of the view using JFrame for a
@@ -277,10 +293,8 @@ public class GraphicView extends JFrame implements IView {
     // count input
     JPanel countPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     JLabel countLabel = new JLabel("Amount:");
-    countSpinner = new JSpinner(new SpinnerNumberModel(
-            1, 1, Integer.MAX_VALUE, 1));
-    JSpinner.NumberEditor countEditor = new JSpinner.NumberEditor(
-            countSpinner, "#");
+    countSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+    JSpinner.NumberEditor countEditor = new JSpinner.NumberEditor(countSpinner, "#");
     countEditor.getTextField().setColumns(5);
     countSpinner.setEditor(countEditor);
     countPanel.add(countLabel);
@@ -290,8 +304,7 @@ public class GraphicView extends JFrame implements IView {
     JPanel datePanel = new JPanel(new FlowLayout());
     JLabel dateLabel = new JLabel("Date:");
     tradeDateSpinner = new JSpinner(new SpinnerDateModel());
-    JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(
-            tradeDateSpinner, "yyyy-MM-dd");
+    JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(tradeDateSpinner, "yyyy-MM-dd");
     tradeDateSpinner.setEditor(dateEditor);
     datePanel.add(dateLabel);
     datePanel.add(tradeDateSpinner);
@@ -365,8 +378,7 @@ public class GraphicView extends JFrame implements IView {
     JPanel datePanel = new JPanel(new FlowLayout());
     JLabel dateLabel = new JLabel("Date:");
     queryDateSpinner = new JSpinner(new SpinnerDateModel());
-    JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(
-            queryDateSpinner, "yyyy-MM-dd");
+    JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(queryDateSpinner, "yyyy-MM-dd");
     queryDateSpinner.setEditor(dateEditor);
     datePanel.add(dateLabel);
     datePanel.add(queryDateSpinner);
